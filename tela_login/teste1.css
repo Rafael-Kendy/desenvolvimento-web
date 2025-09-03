@@ -1,7 +1,7 @@
 /* estilo geral do corpo da pagina */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
+    background-color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,13 +11,16 @@ body {
 
 /* Container principal do login */
 .login-container {
-    background-color: #ffffff;
+    background-color: #f0d3d3;
     padding: 30px 40px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 320px;
     text-align: center;
 }
+
+
+/*----------------------------------------------------------------------------------  */
 
 /* Título do formulário(Criar conta) */
 h2 {
@@ -48,6 +51,8 @@ h2 {
     box-sizing: border-box; /* garante que o padding não afete a largura total */
 }
 
+/*----------------------------------------------------------------------------------  */
+
 /* estilo do botão */
 button {
     width: 100%;
@@ -67,6 +72,7 @@ button:hover {
     background-color: #0056b3;/*cor ao passar o mouse em cima  */
 }
 
+/*----------------------------------------------------------------------------------  */
 
 /* estilo para o parágrafo abaixo do título */
 .subtexto-login {
@@ -77,11 +83,10 @@ button:hover {
 }
 
 /* estilo para a palavra "ou" */
-.subtexto-login .cor-titulo {
+.subtexto-login .cor-subtitulo {
     color: #333; 
     font-weight: bold; /* negrito */
 }
-
 
 /* estilo para o link(entre com uma conta existente) */
 .subtexto-login a {
@@ -95,4 +100,68 @@ button:hover {
     text-decoration: underline; /* sublinhado ao passar o mouse */
     color: #0056b3; /* muda de cor ao passar o mouse */
     
+}
+
+/*----------------------------------------------------------------------------------  */
+
+
+/* subtexto "termos de uso" abaixo do formulário */
+.subtexto-termos-uso{
+    margin-top: 8px;
+    font-size: 12px;      /* menor que os 14px do subtexto-login */
+    color: #6b7280;       /* cinza */
+}
+
+/* o link herda o cinza; opcional: sublinhado para indicar clicável */
+.subtexto-termos-uso a {
+    text-decoration: none;
+    color: #6b7280;  
+    
+}
+
+.subtexto-termos-uso a:hover {
+    color: #4b5563;       /* cinza um pouco mais escuro no hover */
+}
+
+
+/*----------------------------------------------------------------------------------  */
+
+/* subtexto "ou acesse usando" */
+.subtexto-acesso {
+    margin-top: 13px;     
+    font-size: 12px;       
+    color: #6b7280;        
+    text-align: center;    
+}
+
+
+/*----------------------------------------------------------------------------------  */
+
+.btn-social {
+    display: inline-block;  /* para o link se comportar como botão */
+    text-decoration: none;  /* remove o sublinhado */
+    padding: 8px 16px;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+}
+
+
+/* Gmail */
+.btn-social.gmail {
+    background-color: #DB4437; /* vermelho Gmail */
+}
+.btn-social.gmail:hover {
+    background-color: #C33D30; /* vermelho mais escuro */
+}
+
+/* Facebook */
+.btn-social.facebook {
+    background-color: #1877F2; /* azul Facebook */
+}
+.btn-social.facebook:hover {
+    background-color: #145DBE; /* azul mais escuro */
 }
