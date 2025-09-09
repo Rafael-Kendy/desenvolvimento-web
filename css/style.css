@@ -1,15 +1,24 @@
 /* Cores: 
-  - Branco: #f8f8ff
-  - Preto: #0b1215
-  - Cinza claro: #e9e9ef
-  - Cinza médio: #bdbec4
-  - Cinza escuro: #737477
-  - Azul principal: #144dc2 
-  - Vermelho para texto: #d85a5a
-  - Verde para input: #89cf99
+  - Branco: var(--white)
+  - Preto: var(--black)
+  - Cinza claro: var(--lightgray)
+  - Cinza médio: var(--gray)
+  - Cinza escuro: var(--darkgray)
+  - Azul principal: var(--blue) 
+  - Vermelho para texto: var(--red)
+  - Verde para input: var(--green)
+  */
+:root{
+  --white: #f8f8ff;
+  --black: #0b1215;
+  --lightgray: #e9e9ef;
+  --gray: #bdbec4;
+  --darkgray: #737477;
+  --blue: #144dc2;
+  --red: #d85a5a;
+  --green: #89cf99
+}
 
-
-*/
 /* Geral ======================================================================================================= */
 * {
   box-sizing: border-box;
@@ -19,8 +28,8 @@
 }
 body {
   font-family: "Roboto", sans-serif;
-  background-color: #f8f8ff;
-  color: #0b1215;
+  background-color: var(--white);
+  color: var(--black);
   margin: 0;
   padding: 0;
 }
@@ -28,34 +37,33 @@ body a {
   text-decoration: none;
 }
 body a:hover {
-  color: #d85a5a;
+  color: var(--red);
 }
 h1 {
   text-align: center;
   font-size: 4em;
 }
-.img-small{
-  width: 150px;
-  height: auto;
+figure{
+  margin: 0;
 }
 /* Fontes/estilos ---------------------------------*/
 .dark {
-  color: #0b1215;
+  color: var(--black);
 }
 .light {
-  color: #f8f8ff;
+  color: var(--white);
 }
 .medium-gray{
-  color: #bdbec4;
+  color: var(--gray);
 }
 .bold{
   font-weight: bold;
 }
 .blue{
-  color: #144dc2;
+  color: var(--blue);
 }
 .dark-gray{
-  color: #737477;
+  color: var(--darkgray);
 }
 .center{
   text-align: center;
@@ -66,7 +74,7 @@ h1 {
 .subtitle {
   text-align: center;
   font-size: 1.7em;
-  color: #737477;
+  color: var(--darkgray);
 }
 .main-hero {
   padding-top: 2%;
@@ -82,25 +90,47 @@ figure .main-background{
 }
 figure img {
   width: 100%;
-  height: auto; /* pra manter a proporção */
+  height: auto;
   display: block;     
   overflow: hidden;
-  margin-top: -30px;
 }
 
+/* Parte das lições ------------------------------- */
 .lessons-parts{
   display: flex;
   justify-content: space-around;
   text-align: center;
-  padding-top: 3%;
+  padding-top: 1%;
 }
-.individual {
-  display: flex;
-  flex-direction: column; /* organiza ícone, título e texto em coluna */
-  align-items: center; /* alinha todos os itens no centro */
-  max-width: 250px; /* opcional: limita a largura do texto */
-  background-color: #e9e9ef;
-  padding: 2%;
+.individual-cards {
+  background-color: var(--lightgray);
+  max-width: 22%;
+  padding: 1%;
+}
+.img-small{
+  width: 125px;
+  height: auto;
+  display: block;
+  margin: 0 auto; 
+}
+.individual-cards h3{
+  margin-top: 10%;
+  margin-bottom: 3%;
+}
+.individual-cards p{
+  margin: 0;
+}
+.lessons h2{
+  margin-bottom: 0;
+}
+.lessons p{
+  margin-top: 0.3%;
+}
+
+/* Parte dos tópicos ------------------------------ */
+.topics{
+  margin-top: 2%;
+  background-color: var(--lightgray);
 }
 
 /* Cabeçalho =================================================================================================== */
@@ -135,14 +165,14 @@ header {
 }
 .search {
   width: 15em;
-  padding: 3px 6px 3px 26px; /* espaço extra à esquerda pro ícone */
+  padding: 3px 6px 3px 26px;
   font-size: 1em;
   border: 0px;
   border-radius: 3px;
-  background-color: #e9e9ef;
+  background-color: var(--lightgray);
 }
 input:hover{
-  background-color: #89cf99;
+  background-color: var(--green);
 }
 .input-container i {
   padding-top: 6px;
@@ -165,8 +195,8 @@ input:hover{
 
 /* Rodapé ====================================================================================================== */
 footer {
-  background-color: #0b1215;
-  color: #f8f8ff;
+  background-color: var(--black);
+  color: var(--white);
   padding: 0.5% 20%;
 }
 .footer-flexbox {
@@ -183,7 +213,7 @@ footer li {
   margin-bottom: 0.5em;
 }
 .copyright {
-  color: #bdbec4;
+  color: var(--gray);
   font-size: 0.8em;
 }
 
