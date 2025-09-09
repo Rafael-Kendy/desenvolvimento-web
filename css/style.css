@@ -14,7 +14,6 @@
 * {
   box-sizing: border-box;
 }
-
 .general-width{
   padding: 0.5% 25%;
 }
@@ -31,7 +30,15 @@ body a {
 body a:hover {
   color: #d85a5a;
 }
-
+h1 {
+  text-align: center;
+  font-size: 4em;
+}
+.img-small{
+  width: 150px;
+  height: auto;
+}
+/* Fontes/estilos ---------------------------------*/
 .dark {
   color: #0b1215;
 }
@@ -46,6 +53,62 @@ body a:hover {
 }
 .blue{
   color: #144dc2;
+}
+.dark-gray{
+  color: #737477;
+}
+.center{
+  text-align: center;
+}
+
+
+/* Home page =================================================================================================== */
+.subtitle {
+  text-align: center;
+  font-size: 1.7em;
+  color: #737477;
+}
+.main-hero {
+  padding-top: 2%;
+}
+.lessons{
+  padding-top: 2%;
+  font-size: 1.2em;
+}
+
+figure .main-background{
+  padding: 0;
+  margin: 0;
+}
+figure img {
+  width: 100%;
+  height: auto; /* pra manter a proporção */
+  display: block;     
+  overflow: hidden;
+  margin-top: -30px;
+}
+
+.lessons-parts{
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  padding-top: 3%;
+}
+.individual {
+  display: flex;
+  flex-direction: column; /* organiza ícone, título e texto em coluna */
+  align-items: center; /* alinha todos os itens no centro */
+  max-width: 250px; /* opcional: limita a largura do texto */
+  background-color: #e9e9ef;
+  padding: 2%;
+}
+
+/* Cabeçalho =================================================================================================== */
+header {
+  display: flex; /* usa flexbox */
+  justify-content: space-between; /* como vai alinhar horizontalmente */
+  align-items: center; /* alinhamento vertical */
+  padding: 0.5% 20%;
 }
 
 /* Parte do logo ---------------------------------- */
@@ -63,41 +126,6 @@ body a:hover {
   font-size: 1.3em;
   text-decoration: none;
   margin-right: 5%;
-}
-
-/* Home page =================================================================================================== */
-h1 {
-  text-align: center;
-  font-size: 4em;
-}
-.subtitle {
-  text-align: center;
-  font-size: 1.7em;
-  color: #737477;
-}
-.main-hero {
-  padding-top: 2%;
-}
-figure .main-background{
-  padding: 0;
-  margin: 0;
-}
-
-figure img {
-  width: 100%;
-  height: auto; /* pra manter a proporção */
-  display: block;     
-  overflow: hidden;
-  margin-top: -125px;
-}
-
-
-/* Cabeçalho =================================================================================================== */
-header {
-  display: flex; /* usa flexbox */
-  justify-content: space-between; /* como vai alinhar horizontalmente */
-  align-items: center; /* alinhamento vertical */
-  padding: 0.5% 20%;
 }
 
 /* Buscar ----------------------------------------- */
