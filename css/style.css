@@ -1,13 +1,4 @@
-/* Cores: 
-  - Branco: var(--white)
-  - Preto: var(--black)
-  - Cinza claro: var(--lightgray)
-  - Cinza médio: var(--gray)
-  - Cinza escuro: var(--darkgray)
-  - Azul principal: var(--blue) 
-  - Vermelho para texto: var(--red)
-  - Verde para input: var(--green)
-  */
+/*Cores:*/
 :root{
   --white: #f8f8ff;
   --black: #0b1215;
@@ -16,37 +7,10 @@
   --darkgray: #737477;
   --blue: #144dc2;
   --red: #d85a5a;
-  --green: #89cf99
+  --green: #89cf99;
+  --gold: #cd9812
 }
-
-/* Geral ======================================================================================================= */
-* {
-  box-sizing: border-box;
-}
-.general-width{
-  padding: 0.5% 25%;
-}
-body {
-  font-family: "Roboto", sans-serif;
-  background-color: var(--white);
-  color: var(--black);
-  margin: 0;
-  padding: 0;
-}
-body a {
-  text-decoration: none;
-}
-body a:hover {
-  color: var(--red);
-}
-h1 {
-  text-align: center;
-  font-size: 4em;
-}
-figure{
-  margin: 0;
-}
-/* Fontes/estilos ---------------------------------*/
+/*Fontes/estilos-----------------------------------*/
 .dark {
   color: var(--black);
 }
@@ -62,107 +26,171 @@ figure{
 .blue{
   color: var(--blue);
 }
+.gold{
+  color: var(--gold);
+}
 .dark-gray{
   color: var(--darkgray);
 }
+
+.bg-lightgray{
+  background-color: var(--lightgray);
+}
+.bg-white{
+  background-color: var(--white);
+}
+.bg-black{
+  background-color: var(--black);
+}
+
 .center{
   text-align: center;
 }
-
-
-/* Home page =================================================================================================== */
-.subtitle {
-  text-align: center;
-  font-size: 1.7em;
-  color: var(--darkgray);
+.general-width{
+  padding: 0.5% 25%;
 }
-.main-hero {
-  padding-top: 2%;
-}
-.lessons{
-  padding-top: 2%;
-  font-size: 1.2em;
+.flex-center{
+  display: flex;
+  align-items: center;
 }
 
-figure .main-background{
+main{
+  font-size: 1.1em;
+}
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: var(--white);
+  color: var(--black);
+  margin: 0;
   padding: 0;
+  line-height: 1.4;
+}
+body a {
+  text-decoration: none;
+}
+body a:hover {
+  color: var(--red);
+}
+input:hover{
+  background-color: var(--green);
+}
+
+h1 {
+  font-size: 3em;
+}
+h2{
+  font-size: 1.6em;
+  margin: 0;
+  padding-top: 2%;
+}
+h3{
+  margin: 0;
+  padding-top: 10%;
+}
+figure{
+  margin: 0px;
+}
+p{
   margin: 0;
 }
-figure img {
-  width: 100%;
-  height: auto;
-  display: block;     
-  overflow: hidden;
-}
 
-/* Parte das lições ------------------------------- */
-.lessons-parts{
-  display: flex;
-  justify-content: space-around;
-  text-align: center;
-  padding-top: 1%;
-}
-.individual-cards {
-  background-color: var(--lightgray);
-  max-width: 22%;
-  padding: 1%;
+/*Home========================================================================================================*/
+.subtitle{
+  font-size: 1.6em;
 }
 .img-small{
   width: 125px;
   height: auto;
-  display: block;
-  margin: 0 auto; 
 }
-.individual-cards h3{
-  margin-top: 10%;
-  margin-bottom: 3%;
-}
-.individual-cards p{
-  margin: 0;
-}
-.lessons h2{
-  margin-bottom: 0;
-}
-.lessons p{
-  margin-top: 0.3%;
+.lessons{
+  padding-bottom: 3%;
 }
 
-/* Parte dos tópicos ------------------------------ */
+.cards{
+  padding-top: 2%;
+  display: flex;
+  justify-content: space-around;
+  gap: 10%;
+}
+.card{
+  padding: 3%;
+  border-radius: 5px;
+  width: 20%;
+}
+.cards-titles{
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.9em;
+}
+.cards-small{
+  display: flex;
+  justify-content: space-around;
+  gap: 5%;
+  font-size: 0.9em;
+}
+.card-small{
+  padding: 8% 3% 8% 3%;
+  border-radius: 5px;
+  width: 220px;
+}
+.img-smaller{
+  width: 65px;
+  height: auto;
+}
 .topics{
-  margin-top: 2%;
-  background-color: var(--lightgray);
+  padding-bottom: 3%;
 }
 
-/* Cabeçalho =================================================================================================== */
-header {
-  display: flex; /* usa flexbox */
-  justify-content: space-between; /* como vai alinhar horizontalmente */
-  align-items: center; /* alinhamento vertical */
+.reg-card{
+  display: flex;
+  justify-content: space-between;
+  align-items:center;
+  background-color: var(--blue);
+  color: var(--white);
+  border-radius: 5px;
+  margin: 5%;
+  padding: 1%;
+  gap: 10%;
+}
+.reg-text{
+  padding-left: 2%;
+}
+.reg-btn{
+  display: inline-block;
+  padding: 2% 4%;
+  margin: 2% 0% 1% 0%;
+  background: var(--white);
+  color: var(--blue);
+  text-decoration: none;
+  font-size: 1.1em;
+  border-radius: 3px;
+}
+.reg-card img{
+  width: 30em;
+  border-radius: 3px;
+}
+
+
+
+/*Cabeçalho===================================================================================================*/
+header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0.5% 20%;
 }
 
-/* Parte do logo ---------------------------------- */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 3%;
-}
-.logo-img img {
-  height: 42px;
-  width: 42px;
+.logo-img img{
+  height: 40px;
+  width: 40px;
 }
 .logo-text {
   font-family: "Roboto Slab", sans-serif;
   font-size: 1.3em;
   text-decoration: none;
-  margin-right: 5%;
+  margin-left: 5%;
 }
 
-/* Buscar ----------------------------------------- */
-.input-container {
-  display: flex;
-  width: 100%;
-}
 .search {
   width: 15em;
   padding: 3px 6px 3px 26px;
@@ -171,64 +199,55 @@ header {
   border-radius: 3px;
   background-color: var(--lightgray);
 }
-input:hover{
-  background-color: var(--green);
-}
-.input-container i {
-  padding-top: 6px;
-  padding-right: 22px;
-  min-width: 50px;
-  text-align: center;
+.search-icon{
+  padding-left: 3px;
   position: absolute;
 }
-
-/* Navegação -------------------------------------- */
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 25%;
-}
-.nav-links .icon-manual img {
-  height: 38px;
-  width: 38px;
-}
-
-/* Rodapé ====================================================================================================== */
-footer {
-  background-color: var(--black);
-  color: var(--white);
-  padding: 0.5% 20%;
-}
-.footer-flexbox {
+.nav-links{
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-footer ul {
+.icon img{
+  width: 35px;
+  height: auto;
+}
+.nav-links {
+  gap: 10%;
+  justify-content: flex-end;
+}
+
+/*Rodapé======================================================================================================*/
+footer{
+  background-color: var(--black);
+  color: var(--white);
+  padding: 0.5% 20%;
+}
+.footer-flexbox{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+footer ul{
   list-style: none;
   padding: 0;
   margin: 1em;
 }
-footer li {
+footer li{
   margin-bottom: 0.5em;
 }
-.copyright {
+.icon-small img{
+  width: 28px;
+  height: auto; 
+}
+.copyright{
   color: var(--gray);
-  font-size: 0.8em;
+  font-size: 0.85em;
+  padding-left: 2%;
 }
-
-/* Esquerda --------------------------------------- */
-footer .icons{
-  margin-top: 2em;
-}
-.icon-manual-small img{
-  height: 25px;
-  width: 25px;
-}
-
-
-/* Direita ---------------------------------------- */
-footer .sections{
+.sections{
   display: flex;
-  gap: 10em;
+  justify-content: flex-end;
+  padding-right: 2%;
+  gap: 30%;
 }
