@@ -321,6 +321,95 @@ p{
 }
 
 
+/*Perfil======================================================================================================*/
+#registro{
+  background-color: var(--lightgray);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-size: 1.1em;
+}
+#registro h1{
+  margin-bottom: 0;
+}
+#registro button{
+  width: 100%;
+  padding: 3%;
+  background-color: var(--blue);
+  border: none;
+  border-radius: 3px;
+  color: var(--white);
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 3%;
+}
+#registro button:hover{
+  background-color: var(--red);
+}
+.login-container {
+  background-color: var(--white);
+  padding: 2% 3%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 15%;
+  text-align: center;
+  color: var(--black);
+}
+/* deixa o texto do campo(digite sua...) mais a esq  */
+.input-group {
+  margin-bottom: 20px; /*define a distancia entre os containers*/
+  text-align: left;
+}
+/* estilo do texto em cima dos campos(nome,email...) */
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--black);
+  font-weight: bold;
+}
+/* estilo da borda dos campos onde digita */
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  box-sizing: border-box; /* garante que o padding não afete a largura total */
+  background-color: var(--lightgray);
+}
+.input-group input:hover{
+  background-color: var(--green);
+}
+.btn-social {
+    display: inline-block;  /* para o link se comportar como botão */
+    text-decoration: none;  /* remove o sublinhado */
+    padding: 2% 4%;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--white);
+    font-weight: bold;
+}
+/* Gmail */
+.btn-social.gmail {
+    background-color: #DB4437; /* vermelho Gmail */
+}
+.btn-social.gmail:hover {
+    background-color: var(--gray); /* vermelho mais escuro */
+}
+
+/* Facebook */
+.btn-social.facebook {
+    background-color: #1877F2; /* azul Facebook */
+}
+.btn-social.facebook:hover {
+    background-color: var(--gray); /* azul mais escuro */
+}
+
+
 /*Cabeçalho===================================================================================================*/
 header{
   display: flex;
