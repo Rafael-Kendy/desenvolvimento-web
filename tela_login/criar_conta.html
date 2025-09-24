@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tela </title>
-    <link rel="stylesheet" href="teste1.css"><!--href faz o link com outro arqv -->
+    <link rel="stylesheet" href="css/style.css"><!--href faz o link com outro arqv -->
 </head>
 <body>  <!-- Conteudo do container -->
     <div class="login-container">
@@ -12,7 +12,7 @@
             <h2>Criar Conta</h2>
 
             <p class="subtexto-login"><!--subtitulo-->
-                <span class="cor-subtitulo">ou</span> <a href="login.html">entre com uma conta existente</a>
+                <span class="cor-subtitulo">ou</span> <a href="login.html">entre com uma conta existente</a> <!-- linka com a pagina de login-->
             </p>
 
 
@@ -41,7 +41,7 @@
 
             
             <p class="subtexto-termos-uso"><!--termos de uso-->
-                <a href="termosUso.html">termos de uso</a>
+                <a href="#" id="abrir-modal-termos">termos de uso</a><!--faz o link com o modal js-->
             </p>
 
 
@@ -62,5 +62,19 @@
 
         </form>
     </div>
+
+            <!-- modal do js-->
+           <div id="modal-termos" class="modal-container">
+                <div class="modal-content">
+                <span class="modal-fechar">&times;</span> <h2>Termos de Uso</h2>
+                <p>
+                     apenas um show eh pika
+                </p>
+                </div>
+
+    </div>
+
+    <script src="scripts.js"></script> <!-- linka com o js-->
+
 </body>
 </html>
