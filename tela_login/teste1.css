@@ -22,7 +22,7 @@ body {
 
 /*----------------------------------------------------------------------------------  */
 
-/* Título do formulário(Criar conta) */
+/* titulo do formulário(criar conta) */
 h2 {
     margin-bottom: 25px;
     color: #333;
@@ -164,4 +164,54 @@ button:hover {
 }
 .btn-social.facebook:hover {
     background-color: #145DBE; /* azul mais escuro */
+}
+
+
+
+
+/* ------------------------------------------------------------------------------------------- */
+
+/* container do modal */
+.modal-container {
+    display: none; /* começa escondido */
+    position: fixed; /* fixa na tela */
+    z-index: 1000; /* pra centralizar na tela */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(77, 72, 103, 0.6); /* fundo quando clica em termos de uso */
+    /*display: flex;*/ /* tava iniciaXndo ja com a tela aberta */
+    justify-content: center;
+    align-items: center;
+}
+
+/* caixa de conteúdo do modal */
+.modal-content {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 20px 30px;
+    border-radius: 8px; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 80%; 
+    max-width: 600px;
+    position: relative; 
+    max-height: 80vh; 
+    overflow-y: auto; 
+}
+
+/* botão 'X' para fechar */
+.modal-fechar {
+    position: absolute; 
+    top: 10px;
+    right: 15px;
+    color: #000000;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.modal-fechar:hover {
+    color: #ff0000;
 }
