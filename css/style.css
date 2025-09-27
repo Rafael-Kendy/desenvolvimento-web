@@ -203,6 +203,29 @@ p{
   font-size: 1.1em;
 }
 
+.mini-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* duas colunas */
+  gap: 0.8rem; /* espaço entre mini-cards */
+  margin-top: 1rem;
+}
+
+.mini-card {
+  background-color: var(--white);
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 0.95em;
+  color: var(--black);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.mini-card:hover {
+  transform: scale(1.1);
+  background-color: var(--white);
+}
+
 .img-smaller{
   width: 65px;
   height: auto;
