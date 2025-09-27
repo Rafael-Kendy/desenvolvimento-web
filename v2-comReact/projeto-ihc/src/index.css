@@ -72,6 +72,19 @@
   display: flex;
   align-items: center;
 }
+.flex-space{
+  display: flex;
+  justify-content: space-around;
+}
+
+.img-small{
+  width: 125px;
+  height: auto;
+}
+.icon-small img{
+  width: 28px;
+  height: auto; 
+}
 
 main{
   font-size: 1.1rem;
@@ -111,6 +124,9 @@ figure{
 }
 p{
   margin: 0;
+}
+.component{
+  padding-bottom: 3%;
 }
 
 /*Cabeçalho===================================================================================================*/
@@ -166,7 +182,7 @@ header button{
 
 .modal{
   position: fixed;
-  top: 20%;
+  top: 18%;
   left: 30%;
   transform: translate(-50%, -50%);
   transition: 200ms ease-in-out;
@@ -204,12 +220,94 @@ header button{
 }
 #overlay{
   position: fixed;
-  opacity: 0;
+  opacity: 0.25;
   transition: 200ms ease-in-out;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: var(--black);
-  pointer-events: none;
+  pointer-events: all;
+}
+
+
+/*Principal===================================================================================================*/
+.subtitle{
+  font-size: 1.6rem;
+}
+.main-bg img{
+  margin-top: 1%;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.cards{
+  padding-top: 2%;
+  display: flex;
+  justify-content: space-around;
+  gap: 3%;
+}
+.card{
+  padding: 3%;
+  border-radius: 5px;
+  width: 20%;
+}
+
+.card-small{
+  padding: 3%;
+  border-radius: 5px;
+  width: 220px;
+}
+.img-smaller{
+  width: 65px;
+  height: auto;
+}
+
+.reg-card{
+  display: flex;
+  justify-content: space-between;
+  align-items:center;
+  background-color: var(--blue);
+  color: var(--white);
+  border-radius: 5px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 10%;
+}
+.reg-text{
+  padding-left: 2%;
+}
+.reg-btn{
+  display: inline-block;
+  padding: 2% 4%;
+  margin: 2% 0% 1% 0%;
+  background: var(--white);
+  color: var(--blue);
+  text-decoration: none;
+  font-size: 1.1rem;
+  border-radius: 3px;
+}
+.reg-card img{
+  width: 30rem;
+  border-radius: 3px;
+}
+
+/*Rodapé===================================================================================================*/
+
+.footer-flexbox{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.copyright{
+  color: var(--gray);
+  font-size: 0.85rem;
+  padding-left: 2%;
+}
+.sections{
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 2%;
+  gap: 30%;
 }

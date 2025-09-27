@@ -35,7 +35,7 @@ function Header({links=[], activePage}){
                     />
                 </div>
                 {links.map((link)=>(
-                    <Link key={link.href} to={link.href} className={activePage==link.id ? "blue":"dark"}>
+                    <Link key={link.href} to={link.href} className={activePage==link.id ? "dark":"blue"}>
                         {link.label}
                     </Link>
                 ))}

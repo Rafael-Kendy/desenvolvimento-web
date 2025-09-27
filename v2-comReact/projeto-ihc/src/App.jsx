@@ -1,5 +1,10 @@
 import { useState } from 'react'
 import Header from "./components/header";
+import Hero from "./components/hero";
+import ComoFunc from './components/como-funciona';
+import AlgunsTop from './components/alguns-topicos'
+import RegCard from './components/registro-card'
+import Footer from './components/footer'
 
 function App() {
   const links=[
@@ -11,6 +16,19 @@ function App() {
   return (
     <div>
       <Header links={links} activePage="landing"/>
+      <main>
+        <Hero />
+        <ComoFunc />
+        <div className="bg-lightgray">
+          <AlgunsTop />
+        </div>
+        <div className="component bg-black">
+          <RegCard />
+        </div>
+      </main>
+      <div className="bg-black">
+        <Footer links={links} activePage="landing"/>
+      </div>
     </div>
   )
 }
