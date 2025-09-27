@@ -118,6 +118,12 @@ p{
 .subtitle{
   font-size: 1.6rem;
 }
+
+/* texto menor que subtítulo (tipo "clique aqui") */
+.subsubtitle{
+  font-size: 1.2em;
+}
+
 .img-small{
   width: 125px;
   height: auto;
@@ -159,6 +165,44 @@ p{
   border-radius: 5px;
   width: 220px;
 }
+
+/* opções p/ cards maiores */
+.cards-large {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* display de 2 colunas */
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.card-large {
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.card-large figure {
+  margin: 0 0 1rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.card-large img {
+  width: 80px;
+  height: auto;
+}
+
+.card-large h3 {
+  margin-top: 0.5rem;
+  font-size: 1.4em;
+}
+
+.card-large p {
+  margin-top: 0.5rem;
+  color: var(--darkgray);
+  font-size: 1.1em;
+}
+
 .img-smaller{
   width: 65px;
   height: auto;
