@@ -417,9 +417,13 @@ p{
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
   font-size: 1.1rem;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 0;
+  box-sizing: border-box; 
 }
 #registro h1{
   margin-bottom: 0;
