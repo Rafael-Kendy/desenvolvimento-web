@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="css/style.css"> </head> <!-- linka com o css-->
+    <link rel="stylesheet" href="css/style.css"> <!-- linka com o css-->
+</head> 
+
 <body id="registro"> <!--aplica as mesmas regras do css-->
+
     <div class="login-container"><!-- reutiliza o css -->
-        <form action="#" method="post">
+
+        <!--o form serve para dizer q atua como formulario, para coletar informações-->
+        <form action="perfil.html" method="get"><!--linka pro perfil,diz ao navegador para qual pagina ele deve enviar os dados do formulario e qual pagina levar o usuario apos o envio-->
             <h2>Login</h2>
 
             <p class="subtitle">
@@ -17,7 +22,8 @@
             <div class="input-group">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="Digite seu email" required>
-            </div>
+            </div><!-- o type garante q tenha que ser um formato de email, com @ e pontos-->
+            <!-- o proprio navegador verifica se o type ta certo e exibe msg se n tiver-->
 
             <div class="input-group">
                 <label for="password">Senha</label>
@@ -34,6 +40,7 @@
                 <a href="https://mail.google.com" class="btn-social gmail">Gmail</a>
                 <a href="https://www.facebook.com" class="btn-social facebook">Facebook</a>
             </div>
+
         </form>
     </div>
 
