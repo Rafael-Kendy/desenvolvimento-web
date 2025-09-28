@@ -62,6 +62,9 @@
 .justify{
   text-align: justify;
 }
+.justify-left{
+  justify-content: left;
+}
 .general-width{
   padding: 0.5rem;
   max-width: 1200px;
@@ -164,66 +167,6 @@ p{
   padding: 8% 3% 8% 3%;
   border-radius: 5px;
   width: 220px;
-}
-
-/* opções p/ cards maiores */
-.cards-large {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* display de 2 colunas */
-  gap: 2rem;
-  padding: 2rem 0;
-}
-
-.card-large {
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.card-large figure {
-  margin: 0 0 1rem 0;
-  display: flex;
-  justify-content: center;
-}
-
-.card-large img {
-  width: 80px;
-  height: auto;
-}
-
-.card-large h3 {
-  margin-top: 0.5rem;
-  font-size: 1.4em;
-}
-
-.card-large p {
-  margin-top: 0.5rem;
-  color: var(--darkgray);
-  font-size: 1.1em;
-}
-
-.mini-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* duas colunas */
-  gap: 0.8rem; /* espaço entre mini-cards */
-  margin-top: 1rem;
-}
-
-.mini-card {
-  background-color: var(--white);
-  border-radius: 6px;
-  padding: 0.8rem;
-  font-size: 0.95em;
-  color: var(--black);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-  text-align: center;
-  transition: transform 0.2s ease;
-}
-
-.mini-card:hover {
-  transform: scale(1.1);
-  background-color: var(--white);
 }
 
 .img-smaller{
@@ -408,6 +351,67 @@ p{
 }
 .pdf{
   margin-top: 2%;
+}
+
+/*Tópicos=====================================================================================================*/
+.cards-large {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* display de 2 colunas */
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.card-large {
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;  
+}
+
+.card-large figure {
+  margin: 0 0 1rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.card-large img {
+  width: 80px;
+  height: auto;
+}
+
+.card-large h3 {
+  margin-top: 0.5rem;
+  font-size: 1.4em;
+}
+
+.card-large p {
+  margin-top: 0.5rem;
+  color: var(--darkgray);
+  font-size: 1.1em;
+}
+
+.mini-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* duas colunas */
+  gap: 0.8rem; /* espaço entre mini-cards */
+  margin-top: 1rem;
+}
+
+.mini-card {
+  background-color: var(--white);
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 0.95em;
+  color: var(--black);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.mini-card:hover {
+  transform: scale(1.1);
+  background-color: var(--white);
 }
 
 

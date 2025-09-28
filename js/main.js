@@ -1,12 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-  fetch("assets/header.html")
+  fetch("../assets/header.html")
     .then(res => res.text())
     .then(data => {
       document.getElementById("header").innerHTML = data
       initModal();
     });
 
-  fetch("assets/footer.html")
+  fetch("../assets/footer.html")
     .then(res => res.text())
     .then(data => document.getElementById("footer").innerHTML = data);
 });
