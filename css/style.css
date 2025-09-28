@@ -511,6 +511,94 @@ p{
   accent-color: var(--blue);
 }
 
+/* Layout principal: conteúdo à esquerda, vídeo/menu à direita */
+.lesson-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* esquerda maior que direita */
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Coluna da esquerda */
+.lesson-steps .step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.lesson-steps .step img {
+  width: 200px;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.lesson-steps .step p {
+  flex: 1;
+  font-size: 1.05em;
+  line-height: 1.6;
+  color: var(--darkgray);
+}
+
+/* Coluna da direita */
+.lesson-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.lesson-video {
+  background: var(--lightgray);
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.lesson-video iframe {
+  width: 100%;
+  height: 250px;
+  border-radius: 6px;
+}
+
+.lesson-menu {
+  background: var(--lightgray);
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.lesson-menu h3 {
+  margin-bottom: 1rem;
+}
+.lesson-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.lesson-menu li {
+  margin-bottom: 0.6rem;
+}
+.lesson-menu a {
+  text-decoration: none;
+  color: var(--blue);
+}
+.lesson-menu a:hover {
+  text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .lesson-container {
+    grid-template-columns: 1fr; /* tudo em uma coluna */
+  }
+  .lesson-steps .step {
+    flex-direction: column;
+  }
+  .lesson-steps .step img {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
 /*Perfil======================================================================================================*/
 #registro{
   background-color: var(--lightgray);
