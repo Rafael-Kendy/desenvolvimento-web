@@ -175,7 +175,7 @@ p{
   width: 220px;
 }
 
-/* opções p/ cards maiores */
+/* cards maiores */
 .cards-large {
   display: grid;
   grid-template-columns: 1fr 1fr; /* display de 2 colunas */
@@ -187,7 +187,15 @@ p{
   border-radius: 20px;
   padding: 2rem;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  text-align: center;
+  text-align: center;  
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.card-large:hover {
+  transform: scale(1.03);
+  background-color: var(--lightgray);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
 .card-large figure {
@@ -214,8 +222,8 @@ p{
 
 .mini-cards {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* duas colunas */
-  gap: 0.8rem; /* espaço entre mini-cards */
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 0.8rem; 
   margin-top: 1rem;
 }
 
@@ -225,14 +233,8 @@ p{
   padding: 0.8rem;
   font-size: 0.95em;
   color: var(--black);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  box-shadow: 0 5px 25px rgba(0,0,0,0.08);
   text-align: center;
-  transition: transform 0.2s ease;
-}
-
-.mini-card:hover {
-  transform: scale(1.1);
-  background-color: var(--white);
 }
 
 .img-smaller{
@@ -404,7 +406,6 @@ p{
   border: 4px solid var(--blue);
 }
 
-
 /*Diretrizes==================================================================================================*/
 .guidelines{
   padding: 1% 15%;
@@ -419,63 +420,7 @@ p{
   margin-top: 2%;
 }
 
-/*Tópicos=====================================================================================================*/
-
-/* cards */
-.cards-large {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* display de 2 colunas */
-  gap: 2rem;
-  padding: 2rem 0;
-}
-.card-large {
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 10px 10px rgba(0,0,0,0.1);
-  text-align: center; 
-  cursor: pointer; 
-  transition: all .4s ease;
-}
-.card-large:hover {
-  transform: scale(1.03);
-  background-color: var(--lightgray);
-}
-.card-large figure {
-  margin: 0 0 1rem 0;
-  display: flex;
-  justify-content: center;
-}
-.card-large img {
-  width: 80px;
-  height: auto;
-}
-.card-large h3 {
-  margin-top: 0.5rem;
-  font-size: 1.4em;
-}
-.card-large p {
-  margin-top: 0.5rem;
-  color: var(--darkgray);
-  font-size: 1.1em;
-}
-.mini-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* duas colunas */
-  gap: 0.8rem; /* espaço entre mini-cards */
-  margin-top: 2rem;
-}
-.mini-card {
-  background-color: var(--white);
-  border-radius: 6px;
-  padding: 0.8rem;
-  font-size: 0.95em;
-  color: var(--black);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-  text-align: center;
-  transition: transform 0.2s ease;
-}
-
-/* listas */
+/*listas para lições*/
 .lesson-logo img {
   width: 140px;
   height: auto;
