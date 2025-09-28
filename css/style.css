@@ -659,7 +659,7 @@ p{
   background-color: var(--lightgray);
 }
 .input-group input:hover{
-  background-color: var(--gray); 
+  background-color: var(--green); 
 }
 .btn-social {
     display: inline-block;  /* para o link se comportar como botão */
@@ -1077,4 +1077,8 @@ footer li{
 
 .danger-option .option-title {
     color: var(--red);
+}
+
+.settings-option .option-title {
+    color: var(--blue);
 }
