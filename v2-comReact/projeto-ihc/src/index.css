@@ -315,3 +315,109 @@ header button{
   padding-right: 2%;
   gap: 30%;
 }
+
+
+/*Registro=========================================================================================*/
+
+#registro {
+  background-color: var(--lightgray);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  font-size: 1.1rem;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 0;
+  box-sizing: border-box;
+}
+
+#registro h1 {
+  margin-bottom: 0;
+}
+
+#registro button {
+  width: 100%;
+  padding: 3%;
+  background-color: var(--blue);
+  border: none;
+  border-radius: 3px;
+  color: var(--white);
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 3%;
+}
+
+#registro button:hover {
+  background-color: var(--darkblue);
+}
+
+
+.login-container {
+  background-color: var(--white);
+  padding: 2% 3%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+  color: var(--black);
+  min-height: 480px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--black);
+  font-weight: bold;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  box-sizing: border-box;
+  background-color: var(--lightgray);
+}
+
+.input-group input:hover {
+  background-color: var(--gray);
+}
+
+.btn-social {
+  display: inline-block;
+  text-decoration: none;
+  padding: 2% 4%;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--white);
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-social.gmail {
+  background-color: #DB4437; /* vermelho gmail */
+}
+
+.btn-social.gmail:hover {
+  background-color: #c23321;
+}
+
+.btn-social.facebook {
+  background-color: #1877F2; /* azul facebook */
+}
+
+.btn-social.facebook:hover {
+  background-color: #166fe5;
+}
