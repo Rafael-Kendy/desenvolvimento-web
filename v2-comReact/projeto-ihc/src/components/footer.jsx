@@ -6,15 +6,15 @@ import git from "./assets/img/git_icon.png";
 
 function Footer({activePage}){
     const aboutLinks = [
-        { label: "Sobre", to: "/sobre", className: "lightblue" },
-        { label: "Equipe", to: "/equipe", className: "lightblue" },
-        { label: "Diretrizes", to: "/diretrizes", className: "lightblue" }
+        { id: "about", label: "Sobre", to: "/sobre", className: "lightblue" },
+        { id: "team",label: "Equipe", to: "/equipe", className: "lightblue" },
+        { id: "guidelines",label: "Diretrizes", to: "/diretrizes", className: "lightblue" }
     ];
 
     const helpLinks = [
-        { label: "FAQ", to: "/faq", className: "medium-gray" },
-        { label: "Guias da comunidade", to: "/guias", className: "medium-gray" },
-        { label: "Contato", to: "/contato", className: "medium-gray" }
+        { id: "faq",label: "FAQ", to: "/faq", className: "medium-gray" },
+        { id: "guides",label: "Guias da comunidade", to: "/guias", className: "medium-gray" },
+        { id: "contact",label: "Contato", to: "/contato", className: "medium-gray" }
     ];
 
     return (
@@ -50,7 +50,7 @@ function Footer({activePage}){
                             <ul>
                                 {aboutLinks.map((link)=>(
                                     <li key={link.to}>
-                                        <Link className={link.className} to={link.to}>
+                                        <Link className={activePage==link.id ? "light":link.className} to={link.to}>
                                             {link.label}
                                         </Link>
                                     </li>

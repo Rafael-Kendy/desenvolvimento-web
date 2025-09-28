@@ -2,10 +2,26 @@ import Header from "./components/header";
 import Hero from "./components/hero";
 import ComoFunc from './components/como-funciona';
 import AlgunsTop from './components/alguns-topicos'
-import RegCard from './components/registro-card'
+import CardGrande from './components/card-grande'
 import Footer from './components/footer'
 
+import person from "./components/assets/img/pexels-by-andrea_piacquadio.jpg";
+
 function App() {
+  const content={
+    title: "Inicie seu aprendizado hoje",
+    text: [
+      "Aprenda a usar o computador e a internet de forma simples e prática, com lições acessíveis e interativas.",
+      "Participe gratuitamente e comece já a explorar nossos conteúdos.",
+    ]
+  };
+  const btns=[
+    {href: "/registro", label: "Crie sua conta"}
+  ];
+  const img={
+    src: person, alt: "Um jovem",  
+  }
+
   return (
     <div>
       <Header activePage="landing"/>
@@ -15,11 +31,11 @@ function App() {
         <div className="bg-lightgray">
           <AlgunsTop />
         </div>
-        <div className="component bg-black">
-          <RegCard />
-        </div>
       </main>
-      <Footer/>
+      <div className="component bg-black">
+        <CardGrande content={content} buttons={btns} image={img}/>
+      </div>
+      <Footer activePage="landing"/>
     </div>
   )
 }

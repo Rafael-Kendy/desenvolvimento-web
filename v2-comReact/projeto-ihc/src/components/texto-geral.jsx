@@ -10,8 +10,15 @@ function TextoGeral({texts}){
                             ):(
                                 <h2 className="center">{text.title}</h2> 
                             )}
+
                             {text.content.map((p)=>(
-                                <p>{p.txt}</p>
+                                <div>
+                                {text.type=="center" ? (
+                                    <p className="center">{p.txt}</p>
+                                ):(
+                                    <p>{p.txt}</p>
+                                )}
+                                </div>
                             ))}
                         </div>
                     </div>
