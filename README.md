@@ -25,3 +25,19 @@ Contém o enunciado referente a primeira entrega do projeto.
 ### equipe.html - Nossa equipe
 
 Breve introdução da nossa equipe que fez o desenvolvimento do site.
+
+
+### topicos_todos.html - Todos os tópicos
+
+Porção do site onde ficarão em disposição os assuntos, mostrando alguns dos tópicos cobertos dentro de cada tema.
+
+
+### internet.html, computadores.html, mensagens.html - Tópicos individuais
+
+Dentro de ../topics. Onde onde estão reunidos as páginas do fluxo de navegação do site a partir da escolha do tópico que o usuário deseja estudar. Aqui estão os arquivos .html referentes a cada um dos tópicos disponíveis. Os tópicos foram escolhidos para demonstração, e não serão limitados a estes.
+
+
+### pg_rede.html - Lição
+
+Dentro de ../topics/internet, uma das lições propriamente ditas. São compostas por imagens, passo-a-passo e vídeo quando disponível, bem como as próximas lições ou próximo tópico, em ordem. A página referente a cada uma das lições pode ser encontrada na pasta de seu respectivo tópico, como em ../topics/computadores e ../topics/mensagens.
+
