@@ -1,3 +1,5 @@
+import person from "./assets/img/pexels-by-andrea_piacquadio.jpg";
+
 function RegCard(){
     return (
         <regcard className="general-width">
@@ -11,7 +13,7 @@ function RegCard(){
 					<a href="#" className="reg-btn bold">Crie sua conta</a>
 				</div>
 				<div>
-					<img src="./src/assets/img/pexels-by-andrea_piacquadio.jpg" alt="Um jovem"/>
+					<img src={person} alt="Um jovem"/>
 				</div>
 			</div>
         </regcard>

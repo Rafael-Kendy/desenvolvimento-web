@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Header from "./components/header";
 import Hero from "./components/hero";
 import ComoFunc from './components/como-funciona';
@@ -8,6 +7,13 @@ import Footer from './components/footer'
 
 function App() {
   const links=[
+    {id:"topics", href: "/topicos", label: "Tópicos"},
+    {id:"community", href: "/comunidade", label: "Comunidade"},
+    {id:"about", href: "/sobre", label: "Sobre"}
+  ];
+
+  const footer_links=[
+    {id:"guidelines", href:"/diretrizes", label: "Diretrizes"},
     {id:"topics", href: "/topicos", label: "Tópicos"},
     {id:"community", href: "/comunidade", label: "Comunidade"},
     {id:"about", href: "/sobre", label: "Sobre"}
@@ -27,7 +33,7 @@ function App() {
         </div>
       </main>
       <div className="bg-black">
-        <Footer links={links} activePage="landing"/>
+        <Footer links={footer_links} activePage="landing"/>
       </div>
     </div>
   )

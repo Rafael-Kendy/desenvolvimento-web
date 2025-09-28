@@ -1,6 +1,7 @@
 import {useState} from "react"; //hook pra guardar estado
 import {Link} from "react-router-dom"; //equivale ao <a>
-import logo from "../assets/img/main_logo.png";
+import logo from "./assets/img/main_logo.png";
+import user from "./assets/img/user_icon.png";
 
 function Header({links=[], activePage}){
     const [isModalOpen, setModalOpen] = useState(false); //se a pop ta aberta ou nao
@@ -40,7 +41,7 @@ function Header({links=[], activePage}){
                     </Link>
                 ))}
                 <Link to="/registro" className="icon">
-                    <img src="./src/assets/img/user_icon.png" alt="Perfil" />
+                    <img src={user} alt="Perfil" />
                 </Link>
             </nav>
         </div>

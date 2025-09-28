@@ -1,7 +1,24 @@
-import {useState} from "react"; //hook pra guardar estado
+import { Routes, Route } from "react-router-dom";
+
 import {Link} from "react-router-dom"; //equivale ao <a>
+import logo from "./assets/img/main_logo.png";
+import git from "./assets/img/git_icon.png";
+
+import Diretrizes from '../pages/diretrizes';
 
 function Footer({links=[], activePage}){
+    const aboutLinks = [
+        { label: "Sobre", to: "/sobre", className: "lightblue" },
+        { label: "Equipe", to: "/equipe", className: "lightblue" },
+        { label: "Diretrizes", to: "/diretrizes", className: "lightblue" }
+    ];
+
+    const helpLinks = [
+        { label: "FAQ", to: "/faq", className: "medium-gray" },
+        { label: "Guias da comunidade", to: "/guias", className: "medium-gray" },
+        { label: "Contato", to: "/contato", className: "medium-gray" }
+    ];
+
     return (
         <footer className="general-width">
             <div className="footer-flexbox">
@@ -9,7 +26,7 @@ function Footer({links=[], activePage}){
                     <li>
                         <div className="flex-center">
                             <div className="logo-img">
-                                <img src="./src/assets/img/main_logo_alt.png" alt="Logo"/>
+                                <img src={logo} alt="Logo"/>
                             </div>
                             <div className="logo-text light">
                                 <span>ChaveDigital</span>
@@ -22,7 +39,7 @@ function Footer({links=[], activePage}){
                     <li className="icon-small">
                         <nav>
                             <a href="https://github.com/Rafael-Kendy/desenvolvimento-web/tree/main" className="icon-manual-small" target="blank">
-                                <img src="./src/assets/img/git_icon.png" alt="Github"/>
+                                <img src={git} alt="Github"/>
                             </a>
                         </nav>
                     </li>
@@ -30,26 +47,34 @@ function Footer({links=[], activePage}){
 
                 <div className="sections">
                     <div>
-                        <div className="bold">Sobre nós</div>
+                        <div className="bold light">Sobre nós</div>
                         <ul>
-                            <li><a className="lightblue" href="../sobre.html">Sobre</a></li>
-                            <li><a className="lightblue" href="../equipe.html">Equipe</a></li>
-                            <li><a className="lightblue" href="../diretrizes.html">Diretrizes</a></li>
+                            {aboutLinks.map((link)=>(
+                                <li key={link.to}>
+                                    <Link className={link.className} to={link.to}>
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
                     <div> 
-                        <div className="bold">Ajuda</div>
+                        <div className="bold light">Ajuda</div>
                         <ul>
-                            <li><a className="medium-gray" href="#">FAQ</a></li>
-                            <li><a className="medium-gray" href="#">Guias da comunidade</a></li>
-                            <li><a className="medium-gray" href="#">Contato</a></li>
+                            {helpLinks.map((link)=>(
+                                <li key={link.to}>
+                                    <Link className={link.className} to={link.to}>
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>
             </div>
             <hr/>
-            <p class="copyright">© DWCO8A - 2025/2. Todos os direitos bem reservados.</p>
+            <p className="copyright">© DWCO8A - 2025/2. Todos os direitos bem reservados.</p>
         </footer>
     );
 }

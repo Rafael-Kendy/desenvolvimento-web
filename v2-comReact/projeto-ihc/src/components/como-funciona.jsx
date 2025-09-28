@@ -1,6 +1,6 @@
-import booksImg from "../assets/img/books.png";
-import studyImg from "../assets/img/study.png";
-import chatImg from "../assets/img/chat.png";
+import booksImg from "./assets/img/books.png";
+import studyImg from "./assets/img/study.png";
+import chatImg from "./assets/img/chat.png";
 
 const cards=[
     {

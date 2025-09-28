@@ -1,3 +1,5 @@
+import bg from "./assets/img/main-bg.png";
+
 function Hero(){
     return(
         <hero className="center">
@@ -12,7 +14,7 @@ function Hero(){
             </div>
 
             <figure className="main-bg">
-                <img src="./src/assets/img/main-bg.png" alt="Mountains" />
+                <img src={bg} alt="Mountains" />
             </figure>
         </hero>
     );

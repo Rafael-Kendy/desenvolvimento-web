@@ -1,11 +1,11 @@
-import www from "../assets/img/site.png";
-import social from "../assets/img/social-media-hand.png";
-import msg from "../assets/img/messages.png";
-import cart from "../assets/img/shopping-cart.png";
-import app from "../assets/img/apps.png";
-import file from "../assets/img/folder-open.png";
-import img from "../assets/img/picture.png";
-import doc from "../assets/img/document.png";
+import www from "./assets/img/site.png";
+import social from "./assets/img/social-media-hand.png";
+import msg from "./assets/img/messages.png";
+import cart from "./assets/img/shopping-cart.png";
+import app from "./assets/img/apps.png";
+import file from "./assets/img/folder-open.png";
+import img from "./assets/img/picture.png";
+import doc from "./assets/img/document.png";
 
 
 const topics=[
