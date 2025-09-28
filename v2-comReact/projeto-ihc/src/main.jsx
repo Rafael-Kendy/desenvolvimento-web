@@ -6,11 +6,13 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom"
 import App from './App.jsx'
 import Diretrizes from './pages/diretrizes.jsx'
 import Sobre from './pages/sobre.jsx'
+import Registro from './pages/registro.jsx'
 
 const router = createBrowserRouter([
   {path:"/", element:<App/>},
   {path:"/diretrizes", element:<Diretrizes/>},
   {path:"/sobre", element:<Sobre/>},
+  {path:"/registro", element:<Registro/>},
 ]);
 
 createRoot(document.getElementById('root')).render(
