@@ -1045,6 +1045,7 @@ footer li{
 
 .settings-option:hover {
     background-color: var(--lightgray);
+    color: var(--red)
 }
 
 .settings-list .settings-option:last-child {
@@ -1080,5 +1081,5 @@ footer li{
 }
 
 .settings-option .option-title {
-    color: var(--blue);
+    color: var(--black);
 }
