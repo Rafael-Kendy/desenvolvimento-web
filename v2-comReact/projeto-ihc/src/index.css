@@ -390,11 +390,12 @@ header button{
 
 .login-container {
   background-color: var(--white);
-  padding: 2% 3%;
+  padding: 3% 8%;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 500px;
   margin: 0 auto;
+  min-width: 450px;
+  max-width: 1000px;
   width: 100%;
   text-align: center;
   color: var(--black);
