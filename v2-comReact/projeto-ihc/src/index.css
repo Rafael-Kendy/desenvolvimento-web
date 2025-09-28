@@ -67,6 +67,9 @@
   margin: 0 auto;
   width: 100%;
 }
+.guidelines{
+  padding: 1% 15%;
+}
 
 .flex-center{
   display: flex;
@@ -123,6 +126,7 @@ figure{
   margin: 0px;
 }
 p{
+  padding-top: 2%;
   margin: 0;
 }
 .component{

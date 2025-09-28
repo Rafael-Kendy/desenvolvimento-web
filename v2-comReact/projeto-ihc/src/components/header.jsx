@@ -3,9 +3,16 @@ import {Link} from "react-router-dom"; //equivale ao <a>
 import logo from "./assets/img/main_logo.png";
 import user from "./assets/img/user_icon.png";
 
-function Header({links=[], activePage}){
+const links=[
+    {id:"topics", href: "/topicos", label: "Tópicos"},
+    {id:"community", href: "/comunidade", label: "Comunidade"},
+    {id:"about", href: "/sobre", label: "Sobre"}
+];
+
+function Header({activePage}){
     const [isModalOpen, setModalOpen] = useState(false); //se a pop ta aberta ou nao
     const [searchValue, setSearchValue] = useState(""); //texto da busca
+
 
     const toggleModal = () => setModalOpen(!isModalOpen); //abre/fecha a modal
 
