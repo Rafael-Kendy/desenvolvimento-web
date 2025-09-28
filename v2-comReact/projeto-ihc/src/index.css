@@ -302,6 +302,64 @@ header button{
   border-radius: 3px;
 }
 
+.cards-large {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* display de 2 colunas */
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.card-large {
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;  
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.card-large:hover {
+  transform: scale(1.03);
+  background-color: var(--lightgray);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.card-large figure {
+  margin: 0 0 1rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.card-large img {
+  width: 80px;
+  height: auto;
+}
+
+.card-large h3 {
+  margin-top: 0.5rem;
+  font-size: 1.4em;
+}
+
+.card-large p {
+  margin-top: 0.5rem;
+  color: var(--darkgray);
+  font-size: 1.1em;
+}
+
+.mini-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 0.8rem; 
+  margin-top: 1rem;
+}
+
+.mini-card {
+  background-color: var(--white);
+  border-radius: 5px;
+  padding: 0.8rem;
+  font-size: 1em;
+  color: var(--black);
+  text-align: center;
+}
 
 /*Sobre===================================================================================================*/
 .references {
