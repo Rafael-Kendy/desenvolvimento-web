@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import {Link} from "react-router-dom"; //equivale ao <a>
-import logo from "./assets/img/main_logo.png";
+import logo from "./assets/img/main_logo_alt.png";
 import git from "./assets/img/git_icon.png";
 
 function Footer({activePage}){

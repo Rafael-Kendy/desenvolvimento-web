@@ -13,7 +13,7 @@ function CardGrande({content=[], buttons=[], image=null}){
 
 					<div className="bigcard-buttons">
 						{buttons.map((btn, i)=>(
-							<Link key={i} to={btn.href || "#"} className="bigcard-btn bold" target="_blank" rel="noopener noreferrer">{btn.label}</Link>
+							<Link key={i} to={btn.href || "#"} className="bigcard-btn bold">{btn.label}</Link>
 						))}
 					</div>
 				</div>

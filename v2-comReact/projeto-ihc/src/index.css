@@ -328,6 +328,23 @@ header button{
   padding-left: 3%;
 }
 
+.image-text{
+  display: flex;
+  align-items: center;
+}
+.image-text-inv{
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+}
+.imag-lado img{
+  width: 200px;
+  height: auto;
+  border-radius: 200px;
+  margin: 1% 5%;
+  border: 4px solid var(--black);
+}
+
 
 /*Rodapé===================================================================================================*/
 
