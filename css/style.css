@@ -39,7 +39,13 @@
 .lightblue{
   color: var(--lightblue);
 }
+.gray{
+  color: var(--gray);
+}
 
+.bg-gray{
+  background-color: var(--gray);
+}
 .bg-lightgray{
   background-color: var(--lightgray);
 }
@@ -354,49 +360,50 @@ p{
 }
 
 /*Tópicos=====================================================================================================*/
+
+/* cards */
 .cards-large {
   display: grid;
   grid-template-columns: 1fr 1fr; /* display de 2 colunas */
   gap: 2rem;
   padding: 2rem 0;
 }
-
 .card-large {
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  text-align: center;  
+  box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+  text-align: center; 
+  cursor: pointer; 
+  transition: all .4s ease;
 }
-
+.card-large:hover {
+  transform: scale(1.03);
+  background-color: var(--lightgray);
+}
 .card-large figure {
   margin: 0 0 1rem 0;
   display: flex;
   justify-content: center;
 }
-
 .card-large img {
   width: 80px;
   height: auto;
 }
-
 .card-large h3 {
   margin-top: 0.5rem;
   font-size: 1.4em;
 }
-
 .card-large p {
   margin-top: 0.5rem;
   color: var(--darkgray);
   font-size: 1.1em;
 }
-
 .mini-cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* duas colunas */
   gap: 0.8rem; /* espaço entre mini-cards */
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
-
 .mini-card {
   background-color: var(--white);
   border-radius: 6px;
@@ -406,14 +413,94 @@ p{
   box-shadow: 0 2px 5px rgba(0,0,0,0.08);
   text-align: center;
   transition: transform 0.2s ease;
+}
+
+/* listas */
+.lesson-logo img {
+  width: 140px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.lesson-title {
+  display: flex;
+  justify-content: center;   
+  align-items: center;       
+  gap: 1.5rem;               
+  margin-top: 0rem;          
+  text-align: left;          
+}
+
+.lesson-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 0.4rem;
+}
+
+.lesson-text h1 {
+  margin-bottom: 0.1rem;
+}
+
+.lesson-box {
+  background: var(--lightgray);
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  max-width: 800px;
+  margin: 2rem auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+.lesson-box h2 {
+  text-align: center;
+  color: var(--blue);
+  margin-bottom: 1rem;
+}
+
+.lesson-list{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lesson-list li{
+  margin: 0.2rem 0;
+}
+
+.lesson-list label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0;
+  background: var(--white);
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-size: 1.05em;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   cursor: pointer;
+  transition: background 0.2s ease;
+  width: auto;
+  min-width: 700px;
+  justify-content: left;
 }
 
-.mini-card:hover {
-  transform: scale(1.1);
-  background-color: var(--white);
+.lesson-list label:hover {
+  background: var(--gray);
 }
 
+.lesson-list input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  accent-color: var(--blue);
+}
 
 /*Perfil======================================================================================================*/
 #registro{
@@ -691,6 +778,7 @@ footer li{
 }
 
 /* Estilo para cada item da lista de tópicos */
+
 .topic-item {
     display: flex;
     justify-content: space-between;
@@ -729,7 +817,9 @@ footer li{
 }
 
 .topic-name {
-    font-size: 1.1em;
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 1.5em;
 }
 
 .topic-progress {
