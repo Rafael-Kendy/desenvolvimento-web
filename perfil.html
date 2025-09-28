@@ -9,29 +9,28 @@
 
 
 <body>
-<div id="header"></div>
+<div id="header"></div><!--carrega o cabeçalho principal-->
 
-<div id="registro"> <!--pega o mesmo fundo e centralização(regras) do css-->
+<main id="registro"> <!--pega o mesmo fundo e centralização(regras) do css-->
 
+    <div class="profile-container">
+        <div class="profile-header"><!--cabeçalho do perfil-->
 
-<div class="profile-container">
-
-    <div class="profile-header"><!--cabeçalho-->
-
-        <div class="profile-pic">
+        <div class="profile-pic"><!--foto do perfil-->
             <img src="assets/sexy.png" alt="Foto do Perfil">
         </div>
 
 
-        <div class="profile-info">
+        <div class="profile-info"><!--informações do usuário-->
             <div class="username-section">
-                 <h1 class="blue">Nome Do Usuario</h1>
-                <a href="#" class="settings-icon">&#9881;</a><!-- o codigo é pra inserir a engrenagem-->
-            </div>
+                 <h1 class="gold">Nome Do Usuario</h1>
+                 <a href="configuracoes.html" class="settings-icon">&#9881;</a><!-- o codigo é pra inserir a engrenagem-->
+            </div><!--href linka com o configurações -->
             <p class="dark-gray">emaildousuario@exemplo.com</p>
         </div>
 
     </div>
+
 
     <div class="profile-description">
         <h2>Descrição do Perfil</h2>
@@ -42,14 +41,11 @@
 
 </div>
 
-
     <div class="progress-container">
-
-        <h2>Progresso</h2>
+        <h2>Progresso</h2><!--progresso do usuário nos tópicos de estudo-->
 
         <div class="topics-list">
-
-            <div class="topic-item">
+            <div class="topic-item"><!--serve pra representar um topico na lista de progresso-->
 
                 <div class="topic-info">
                     <div class="topic-icon">
@@ -65,7 +61,7 @@
 
             </div>
 
-            <div class="topic-item">
+            <div class="topic-item"><!--representa outro topico-->
 
                 <div class="topic-info">
                     <div class="topic-icon">
@@ -91,7 +87,7 @@
     <h2>Postagens</h2>
     <div class="posts-list">
 
-        <div class="post-item">
+        <div class="post-item"><!--representa uma postagem-->
 
             <div class="post-content">
                 <p class="post-topic dark-gray">Tópico</p>
@@ -104,8 +100,8 @@
                     <span>Imagem</span>
                 </div>
                 <div class="post-stats dark-gray">
-                    <span>&#128077; 15 Likes</span>
-                    <span>&#128172; 3 Comentários</span>
+                    <span>&#128077; 15 Likes</span><!--codigo do joinha-->
+                    <span>&#128172; 3 Comentários</span><!--codigo do balao de comentário-->
                 </div>
             </div>
 
@@ -128,15 +124,12 @@
                     <span>&#128172; 11 Comentários</span>
                 </div>
             </div>
-
         </div>
-        </div>
-
     </div>
-    
 </div>
+</main>
 
-    <div id="footer"></div>
+    <div id="footer"></div><!--carrega o rodapé-->
     <script src="js/main.js"></script>
 
 </body>
