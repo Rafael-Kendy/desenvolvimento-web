@@ -91,8 +91,12 @@ body {
   margin: 0;
   padding: 0;
   line-height: 1.4;
-  
+  /*
+  background: #f4f4f4 url("../assets/img/main-bg.png") no-repeat center center fixed;
+  background-size: cover;
+  */
 }
+
 body a {
   text-decoration: none;
 }
@@ -130,7 +134,7 @@ p{
 
 /* texto menor que subtítulo (tipo "clique aqui") */
 .subsubtitle{
-  font-size: 1.2em;
+  font-size: 1.1em;
 }
 
 .img-small{
@@ -231,7 +235,7 @@ p{
   background-color: var(--white);
   border-radius: 6px;
   padding: 0.8rem;
-  font-size: 0.95em;
+  font-size: 1em;
   color: var(--black);
   box-shadow: 0 5px 25px rgba(0,0,0,0.08);
   text-align: center;
