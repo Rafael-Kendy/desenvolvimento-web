@@ -54,7 +54,7 @@ const topicos_cards=[
 function Topicos() {
   return (
     <div>
-      <Header activePage="topicos" />
+      <Header activePage="topics" />
       <main className="center">
         <div className="general-width hero">
           <h1>Todos os tópicos disponíveis</h1>
