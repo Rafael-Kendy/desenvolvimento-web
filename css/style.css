@@ -9,7 +9,8 @@
   --red: #d85a5a;
   --green: #89cf99;
   --gold: #cd9812;
-  --lightblue: #5780d1
+  --lightblue: #5780d1;
+  --darkblue: #0e3b9a;
 }
 /*Fontes/estilos-----------------------------------*/
 .dark {
@@ -68,9 +69,6 @@
 .justify{
   text-align: justify;
 }
-.justify-left{
-  justify-content: left;
-}
 .general-width{
   padding: 0.5rem;
   max-width: 1200px;
@@ -93,15 +91,17 @@ body {
   margin: 0;
   padding: 0;
   line-height: 1.4;
+  
 }
 body a {
   text-decoration: none;
 }
 body a:hover {
-  color: var(--red);
+  color: var(--a);
 }
+
 input:hover{
-  background-color: var(--green);
+  background-color: var(--gray); /* Alterado de --green para --gray */
 }
 
 h1 {
@@ -173,6 +173,66 @@ p{
   padding: 8% 3% 8% 3%;
   border-radius: 5px;
   width: 220px;
+}
+
+/* opções p/ cards maiores */
+.cards-large {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* display de 2 colunas */
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+.card-large {
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.card-large figure {
+  margin: 0 0 1rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.card-large img {
+  width: 80px;
+  height: auto;
+}
+
+.card-large h3 {
+  margin-top: 0.5rem;
+  font-size: 1.4em;
+}
+
+.card-large p {
+  margin-top: 0.5rem;
+  color: var(--darkgray);
+  font-size: 1.1em;
+}
+
+.mini-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* duas colunas */
+  gap: 0.8rem; /* espaço entre mini-cards */
+  margin-top: 1rem;
+}
+
+.mini-card {
+  background-color: var(--white);
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 0.95em;
+  color: var(--black);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.mini-card:hover {
+  transform: scale(1.1);
+  background-color: var(--white);
 }
 
 .img-smaller{
@@ -515,6 +575,7 @@ p{
   gap: 20px;
   padding: 20px 0;
   box-sizing: border-box; 
+
 }
 #registro h1{
   margin-bottom: 0;
@@ -533,7 +594,7 @@ p{
   margin-bottom: 3%;
 }
 #registro button:hover{
-  background-color: var(--red);
+  background-color: var(--darkblue); 
 }
 .login-container {
   background-color: var(--white);
@@ -545,6 +606,7 @@ p{
   width: 100%;
   text-align: center;
   color: var(--black);
+  min-height: 480px;
 }
 /* deixa o texto do campo(digite sua...) mais a esq  */
 .input-group {
@@ -568,7 +630,7 @@ p{
   background-color: var(--lightgray);
 }
 .input-group input:hover{
-  background-color: var(--green);
+  background-color: var(--gray); 
 }
 .btn-social {
     display: inline-block;  /* para o link se comportar como botão */
@@ -579,21 +641,22 @@ p{
     cursor: pointer;
     color: var(--white);
     font-weight: bold;
+    transition: background-color 0.3s ease; /* transição suave */
 }
 /* Gmail */
 .btn-social.gmail {
-    background-color: #DB4437; /* vermelho Gmail */
+    background-color: #DB4437; /* vermelho gmail */
 }
 .btn-social.gmail:hover {
-    background-color: var(--gray); /* vermelho mais escuro */
+    background-color: #c23321; 
 }
 
 /* Facebook */
 .btn-social.facebook {
-    background-color: #1877F2; /* azul Facebook */
+    background-color: #1877F2; /* azul facebook */
 }
 .btn-social.facebook:hover {
-    background-color: var(--gray); /* azul mais escuro */
+    background-color: #166fe5; 
 }
 
 
@@ -921,7 +984,9 @@ footer li{
     margin-top: 8px;
 }
 
+
 /*CONFIGURACOES===========================================================================================================================*/
+
 
 .settings-container {
     background-color: var(--white);
