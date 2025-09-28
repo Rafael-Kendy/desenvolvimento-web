@@ -16,6 +16,7 @@ const topicos_cards=[
         alt: "Livros empilhados",
         title: "Internet",
         text: "Conceitos de navegação e sites",
+        link:"/internet",
         subtopics: [
             { img: zaupa, alt: "Tutorial", title: "O que é a Internet", text: "Funcionamento básico da internet" },
             { img: zaupa, alt: "Navegadores", title: "Navegadores", text: "Navegando pelo mundo digital" },
@@ -28,6 +29,7 @@ const topicos_cards=[
         alt: "Computador",
         title: "Computadores",
         text: "Como computadores funcionam",
+        link:"/computadores",
         subtopics: [
             { img: zaupa, alt: "PC", title: "Desligar, hibernar, reiniciar", text: "Como desligar o computador corretamente" },
             { img: zaupa, alt: "SO", title: "Sistema operacional", text: "Windows, Linux, MAC?" },
@@ -40,6 +42,7 @@ const topicos_cards=[
         alt: "Telefone",
         title: "Mensagens",
         text: "Enviar mensagens e realizar chamadas de vídeo",
+        link:"/mensagens",
          subtopics: [
             { img: zaupa, alt: "Chat", title: "Mensagens", text: "Conversas de texto" },
             { img: zaupa, alt: "Voz", title: "Chamadas por voz", text: "Os novos telefones" },
