@@ -3,6 +3,8 @@
 ## Instruções de instalação e execução
 
 
+
+
 ## Estrutura do projeto
 
 Este projeto foi desenvolvido como uma plataforma de alfabetização digital, com foco em acessibilidade, colaboração e aprendizado aberto. A ideia é oferecer um ambiente simples e intuitivo, onde qualquer pessoa possa aprender a usar computadores e a internet por meio de textos, imagens, vídeos e exercícios práticos.
@@ -16,6 +18,12 @@ Nosso GitHub possui três branches no momento.
 
 O projeto foi desenvolvido seguindo uma certa identidade visual, com a intenção de facilitar a sua navegação, o rascunho inicial dessa identidade é visto na imagem abaixo.
 ![rascunho](web.png)
+
+A divisão de tarefas entre os 3 membros da equipe foi feita de maneira em que todos tivessem um número equivalente de páginas a desenvolver.
+- Hugo Massaro: telas de criação de conta, login, perfil e configurações.
+- Rafael Kendy: telas inicial, sobre, equipe e diretrizes. Componentes do cabeçalho e rodapé.
+- Rafael Zaupa: telas com todos os tópicos, a individual de cada tópico e todas as lições desses tópicos.
+Embora essa divisão de tarefas tenha sido feita, ela serviu apenas como um guia geral, não significando que cada membro trabalhou apenas em suas páginas. Durante o desenvolvimento do projeto tentamos estar sempre em comunicação, atualizando uns aos outros em que partes estávamos trabalhando e se ajudando conforme necessário.
 
 
 ## Explicação de cada página e suas funcionalidades
