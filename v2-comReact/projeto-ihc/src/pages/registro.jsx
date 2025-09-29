@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom';//importa diretamente da biblioteca de roteamento
-import { useEffect } from "react";
+import { Link } from 'react-router-dom';//importa diretamente da biblioteca de roteamento para permitir a navegação entre páginas sem recarregar o site
+import { useEffect } from "react";//hook pra manipular o nome do documento
 
 function Registro() {//componente, ela retorna um bloco de jsx
 
     useEffect(() => {
         document.title = "ChaveDigital - Criar conta";
-    }, []);
+    }, []);//[] vazio garante q o efeito seja executado so uma vez
 
   const handleSubmit = (event) => {//agora usa funções, no caso handlesubmit, pra lidar com o evento de envio de formulario
     event.preventDefault();
@@ -18,6 +18,7 @@ function Registro() {//componente, ela retorna um bloco de jsx
   return (//return define oq vai renderizar na tela
     <div id="registro">
       <main>
+        {/*Login*/}
         <div className="login-container">{/*usa class name inves de de class */}
           <form onSubmit={handleSubmit}>{/* anexa a função handle submit ao evento onsubmit */}
             <h1 className="gold">Criar Conta</h1>
@@ -55,6 +56,7 @@ function Registro() {//componente, ela retorna um bloco de jsx
             <button type="submit">Criar Conta</button>
             <p>ou acesse usando</p>
 
+            {/*botoes sociais*/}
             <div className="botoes-sociais">
               <a href="https://mail.google.com" className="btn-social gmail">Gmail</a>
               <a href="https://www.facebook.com" className="btn-social facebook">Facebook</a>
@@ -67,4 +69,4 @@ function Registro() {//componente, ela retorna um bloco de jsx
   );
 }
 
-export default Registro;
+export default Registro;{/*exporta o registro para q possa ser usado em outras aplicações*/}
