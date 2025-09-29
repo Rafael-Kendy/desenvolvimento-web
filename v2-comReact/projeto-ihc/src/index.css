@@ -536,22 +536,6 @@ header button{
   background-color: #166fe5;
 }
 
-/*Login=========================================================================================*/
-
-
-.login-container {
-  background-color: var(--white);
-  padding: 2% 3%;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
-  margin: 0 auto;
-  width: 100%;
-  text-align: center;
-  color: var(--black);
-  min-height: 480px;
-}
-
 
 /*Perfil=========================================================================================*/
 
@@ -563,7 +547,7 @@ header button{
     width: 90%;
 }
 
-/* Container principal com informações do usuário */
+
 .profile-container {
   background-color: var(--white);
   padding: 25px 30px;
@@ -572,7 +556,7 @@ header button{
   display: flex;
   align-items: flex-start;
   gap: 25px;
-  width: 100%; /* Ajustado para preencher o wrapper */
+  width: 100%; 
   text-align: left;
   box-sizing: border-box;
 }
@@ -629,13 +613,13 @@ header button{
     margin-bottom: 10px;
 }
 
-/* Container de progresso */
+
 .progress-container {
     background-color: var(--white);
     padding: 25px 30px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%; /* Ajustado para preencher o wrapper */
+    width: 100%; 
     box-sizing: border-box;
 }
 
@@ -703,7 +687,7 @@ header button{
     padding: 25px 30px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%; /* Ajustado para preencher o wrapper */
+    width: 100%; 
     box-sizing: border-box;
 }
 
@@ -777,3 +761,71 @@ header button{
     margin-top: 8px;
 }
 
+/*Configuracoes=================================================================*/
+
+.settings-container {
+    background-color: var(--white);
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 700px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+
+.settings-container h1 {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--lightgray);
+}
+
+
+.settings-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 10px;
+    border-bottom: 1px solid var(--lightgray);
+    text-decoration: none;
+    color: var(--black);
+    transition: background-color 0.2s ease;
+}
+
+.settings-option:hover {
+    background-color: var(--lightgray);
+}
+
+
+.settings-list .settings-option:last-child {
+    border-bottom: none;
+}
+
+
+.option-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.option-title {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.option-description {
+    font-size: 0.9em;
+    color: var(--darkgray);
+    margin-top: 4px;
+}
+
+
+.option-arrow {
+    font-size: 1.5em;
+    color: var(--gray);
+}
+
+
+.danger-option .option-title {
+    color: var(--red);
+}
