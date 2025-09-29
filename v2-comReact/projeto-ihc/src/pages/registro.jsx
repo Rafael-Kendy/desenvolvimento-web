@@ -1,72 +1,114 @@
-import { Link } from 'react-router-dom';//importa diretamente da biblioteca de roteamento para permitir a navegação entre páginas sem recarregar o site
+import { Link } from 'react-router-dom';
+import Header from '../components/header'; 
+import Footer from '../components/footer';
+import profileImage from '../components/assets/img/sexy.png';
 import { useEffect } from "react";//hook pra manipular o nome do documento
 
-function Registro() {//componente, ela retorna um bloco de jsx
-
+function Perfil() {
     useEffect(() => {
-        document.title = "ChaveDigital - Criar conta";
-    }, []);//[] vazio garante q o efeito seja executado so uma vez
+        document.title = "ChaveDigital - Perfil";
+    }, []);
 
-  const handleSubmit = (event) => {//agora usa funções, no caso handlesubmit, pra lidar com o evento de envio de formulario
-    event.preventDefault();
-    //futuramente, colocar a logica de envio do formulario, pra um servidor, backend, etc
-    console.log("Registro enviado.");
-    
-  };
+  return (
+    <>
+      <Header activePage="perfil"/>{/*pra destacar o link */}
+      
+      <main id="registro">
+        
+        {/*seção principal do perfil, com informações do usuario*/}
+        <div className="profile-container">
 
-  //o codigo parece com html mas é jsx, o navegador n entende jsx, etnao usa uma ferramenta pra pra converter pra javascript
-  return (//return define oq vai renderizar na tela
-    <div id="registro">
-      <main>
-        {/*Login*/}
-        <div className="login-container">{/*usa class name inves de de class */}
-          <form onSubmit={handleSubmit}>{/* anexa a função handle submit ao evento onsubmit */}
-            <h1 className="gold">Criar Conta</h1>
+          <div className="profile-header">
 
-            <p className="subtitle">
-              ou entre com uma <Link to="/login" className="blue">conta existente</Link>
-            </p> {/*o link faz uma navegação para a rota sem recarregar a pagina, deixando mais fluido */}
-
-            <br />
-
-            <div className="input-group">
-              <label htmlFor="name">Nome</label>{/*para associar uma label a um input usa htmlFor inves de so for */}
-              <input type="text" id="name" name="name" placeholder="Digite seu nome" required />
+            <div className="profile-pic">
+              <img src={profileImage} alt="Foto do Perfil" />
             </div>
 
-            <div className="input-group">
-              <label htmlFor="email">Email</label>
-              <input type="email" id="email" name="email" placeholder="Digite seu email" required />
+            <div className="profile-info">
+
+              <div className="username-section">
+                <h1 className="gold">Nome Do Usuario</h1>
+                <Link to="/configuracoes" className="settings-icon">&#9881;</Link>{/*engrangem linka com o conf*/}
+              </div>
+
+              <p className="dark-gray">emaildousuario@exemplo.com</p>
             </div>
 
-            <div className="input-group">
-              <label htmlFor="password">Senha</label>
-              <input type="password" id="password" name="password" placeholder="Digite sua senha" required />
-            </div>
+          </div>
 
-            <div className="input-group">
-              <label htmlFor="confirm-password">Confirme a Senha</label>
-              <input type="password" id="confirm-password" name="confirm-password" placeholder="Digite novamente sua senha" required />
-            </div>
+          {/*descrição do perfil/biografia */}
+          <div className="profile-description">
+            <h2>Descrição do Perfil</h2>
 
-            <p>
-              <Link to="/diretrizes" className="blue">Termos de uso</Link>
+            <p className="justify">
+              RANDANDANDAN
             </p>
 
-            <button type="submit">Criar Conta</button>
-            <p>ou acesse usando</p>
+          </div>
 
-            {/*botoes sociais*/}
-            <div className="botoes-sociais">
-              <a href="https://mail.google.com" className="btn-social gmail">Gmail</a>
-              <a href="https://www.facebook.com" className="btn-social facebook">Facebook</a>
+        </div>
+
+        {/*progresso do usuario*/}
+        <div className="progress-container">
+
+          <h2>Progresso</h2>
+
+          <div className="topics-list">
+
+            <div className="topic-item">
+
+              <div className="topic-info">
+                <div className="topic-icon">
+                  {/* <img src={webIcon} alt="icone" /> */}
+                </div>
+                <span className="topic-name blue bold">Tópico</span>
+              </div>
+
+              <div className="topic-progress">
+                <span className="progress-percentage bold">25%</span>
+                <span className="progress-details dark-gray">5 de 20 lições feitas</span>
+              </div>
+
             </div>
 
-          </form>
+          </div>
+
         </div>
-      </main>
-    </div>
+        
+        {/*postagens do usuario*/}
+        <div className="posts-container">
+          <h2>Postagens</h2>
+
+          <div className="posts-list">
+
+              <div className="post-item">
+
+                  <div className="post-content">
+                      <p className="post-topic dark-gray">Tópico</p>
+                      <h3 className="post-title blue bold">Exemplo</h3>
+                      <p className="post-date medium-gray">27 de setembro de 2025</p>
+                  </div>
+
+                  <div className="post-sidebar">{/*barra lateral q divide o perfil*/}
+
+                      <div className="post-image-placeholder"><span>Imagem</span></div>
+                      <div className="post-stats dark-gray">
+                          <span>&#128077; 15 Likes</span>
+                          <span>&#128172; 3 Comentários</span>
+                      </div>
+                  </div>
+
+              </div>
+
+          </div>
+
+        </div>
+
+      </main> 
+      
+      <Footer activePage="perfil"/>
+    </>
   );
 }
 
-export default Registro;{/*exporta o registro para q possa ser usado em outras aplicações*/}
+export default Perfil;
