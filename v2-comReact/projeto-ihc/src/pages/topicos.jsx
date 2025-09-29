@@ -7,6 +7,7 @@ import zap from "../components/assets/img/phone-call.png";
 import zaupa from "../components/assets/img/zaupa.png";
 import TopicCard from "../components/topic-card";
 import MiniCard from "../components/mini-card";
+import { useEffect } from "react";
 
 // Array de tópicos para renderizar dinamicamente
 
@@ -16,7 +17,7 @@ const topicos_cards=[
         alt: "Livros empilhados",
         title: "Internet",
         text: "Conceitos de navegação e sites",
-        link:"/internet",
+        link:"/lista_topicos/internet",
         subtopics: [
             { img: zaupa, alt: "Tutorial", title: "O que é a Internet", text: "Funcionamento básico da internet" },
             { img: zaupa, alt: "Navegadores", title: "Navegadores", text: "Navegando pelo mundo digital" },
@@ -29,7 +30,7 @@ const topicos_cards=[
         alt: "Computador",
         title: "Computadores",
         text: "Como computadores funcionam",
-        link:"/computadores",
+        link:"/lista_topicos/computadores",
         subtopics: [
             { img: zaupa, alt: "PC", title: "Desligar, hibernar, reiniciar", text: "Como desligar o computador corretamente" },
             { img: zaupa, alt: "SO", title: "Sistema operacional", text: "Windows, Linux, MAC?" },
@@ -42,7 +43,7 @@ const topicos_cards=[
         alt: "Telefone",
         title: "Mensagens",
         text: "Enviar mensagens e realizar chamadas de vídeo",
-        link:"/mensagens",
+        link:"/lista_topicos/mensagens",
          subtopics: [
             { img: zaupa, alt: "Chat", title: "Mensagens", text: "Conversas de texto" },
             { img: zaupa, alt: "Voz", title: "Chamadas por voz", text: "Os novos telefones" },
@@ -52,6 +53,7 @@ const topicos_cards=[
 ];
 
 function Topicos() {
+  useEffect(() => {document.title = "ChaveDigital - Todos os tópicos";}, []);
   return (
     <div>
       <Header activePage="topics" />
@@ -73,6 +75,7 @@ function Topicos() {
                 title={item.title}
                 text={item.text}
                 subtopics={item.subtopics}
+                link={item.link}
               />
             ))}
           </div>

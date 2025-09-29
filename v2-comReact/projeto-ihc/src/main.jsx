@@ -10,6 +10,9 @@ import Registro from './pages/registro.jsx'
 import Equipe from './pages/equipe.jsx'
 import Topicos from './pages/topicos.jsx'
 import Login from './pages/Login.jsx';
+import Internet from './pages/lista_topicos/internet.jsx'
+import Computadores from './pages/lista_topicos/computadores.jsx'
+import Mensagens from './pages/lista_topicos/mensagens.jsx'
 
 const router = createBrowserRouter([
   {path:"/", element:<App/>},
@@ -19,6 +22,9 @@ const router = createBrowserRouter([
   {path:"/equipe", element:<Equipe/>},
   {path:"/topicos",element:<Topicos/>},
   {path: "/login", element: <Login /> },
+  {path:"/lista_topicos/internet", element:<Internet/>},
+  {path:"/lista_topicos/computadores", element:<Computadores/>},// TODO -- escalabilidade com useParams
+  {path:"/lista_topicos/mensagens", element:<Mensagens/>},
 ]);
 
 createRoot(document.getElementById('root')).render(
