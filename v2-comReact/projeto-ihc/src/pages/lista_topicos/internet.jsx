@@ -5,14 +5,14 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import internetIcon from "../../components/assets/img/internet.png";
 
-
-function LessonSection({ title, items }) { // recebe o titulo e os itens
+// componente react que representa uma seção de lição com título e itens
+function LessonSection({ title, items }) { // usa "destructuring" para pegar as propriedades
     const navigate = useNavigate();
     const [checked, setChecked] = useState({});
     // sectionKey p/ manter o estado da checkbox?
-    // com 
+    // com storage
     const toggleCheckbox = (index) => {setChecked((prev) => ({ ...prev, [index]: !prev[index] }));
-    };
+    };  // para tornar independentes as checkboxes
 
     return (
         <section className="lesson-box">
@@ -46,7 +46,7 @@ function LessonSection({ title, items }) { // recebe o titulo e os itens
 
 export default function Internet() {
     useEffect(() => {document.title = "ChaveDigital - Internet";}, []);
-    const sections = [
+    const sections = [ // array de seções pra renderizar mais dinamicamente
         {
         title: "O que é a internet",
         items: [
@@ -85,9 +85,9 @@ export default function Internet() {
         <Header activePage="topicos" />
         <main className="center general-width">
             <section className="lesson-title general-width">
-            <figure className="lesson-logo">
-                <img src={internetIcon} alt="icone-internet" />
-            </figure>
+                <figure className="lesson-logo">
+                    <img src={internetIcon} alt="icone-internet" />
+                </figure>
             <div className="lesson-text">
                 <h1 className="gold">Internet</h1>
                 <p className="subtitle">Aprenda o que é internet e como navegar.</p>
@@ -100,21 +100,22 @@ export default function Internet() {
             </div>
             </section>
 
-            {sections.map((section, idx) => (
-                <LessonSection 
+            {sections.map((section, idx) => ( // método do js pra percorrer o array
+                <LessonSection                // executando (section,idx) => ( ... ) para cada seção
                     key={idx} 
                     title={section.title}
                     items={section.items} 
-                />
+                />                            // o react renderiza um LessonSection p cada
             ))}
 
             <section className="lesson-box">
             <ul className="lesson-list">
                 <li>
-                <label onClick={() => (window.location.href = "/lista_topicos/computadores")}>
-                    <span>
-                    <span className="blue">Próxima etapa</span>
-                    </span>
+                    {/* label clicavel */}
+                    <label onClick={() => (window.location.href = "/lista_topicos/computadores")}>
+                        <span>
+                            <span className="blue">Próxima etapa</span>
+                        </span>
                 </label>
                 </li>
             </ul>

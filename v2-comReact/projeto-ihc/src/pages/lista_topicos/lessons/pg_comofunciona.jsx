@@ -4,6 +4,7 @@ import webs from "../../../components/assets/img/internet.png";
 import zaupa from "../../../components/assets/img/zaupa.png";
 import { useEffect } from "react";
 
+//pagina de licao
 export default function PgComoFunciona() {
   useEffect(() => {document.title = "ChaveDigital - Como funciona";}, []);
   const nextTopics = [

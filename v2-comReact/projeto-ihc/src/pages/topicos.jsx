@@ -75,7 +75,7 @@ function Topicos() {
                 title={item.title}
                 text={item.text}
                 subtopics={item.subtopics}
-                link={item.link}
+                link={item.link} // para linkar as páginas
               />
             ))}
           </div>

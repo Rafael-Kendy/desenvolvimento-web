@@ -5,7 +5,8 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import pc from "../../components/assets/img/computer-desktop.png";
 
-function LessonSection({ title, items }) { //titulo e itens
+// componente react que representa uma seção de lição com título e itens
+function LessonSection({ title, items }) { // usa "destructuring" para pegar as propriedades
   const navigate = useNavigate();
   const [checked, setChecked] = useState({});
 
@@ -45,7 +46,7 @@ function LessonSection({ title, items }) { //titulo e itens
 
 export default function Computadores() {
     useEffect(() => {document.title = "ChaveDigital - Computadores";}, []);
-  const sections = [
+  const sections = [  // array de seções pra renderizar mais dinamicamente
     {
       title: "Desligar, hibernar, reiniciar",
       items: [
@@ -99,13 +100,16 @@ export default function Computadores() {
           </div>
         </section>
 
-        {sections.map((section, idx) => (
-          <LessonSection key={idx} title={section.title} items={section.items} />
+        {sections.map((section, idx) => ( // método do js pra percorrer o array
+          <LessonSection key={idx}        // executando (section,idx) => ( ... ) para cada seção
+          title={section.title}
+          items={section.items} />        // o react renderiza um LessonSection p cada
         ))}
 
         <section className="lesson-box">
           <ul className="lesson-list">
             <li>
+              {/* label clicavel */}
               <label onClick={() => (window.location.href = "/lista_topicos/mensagens")}>
                 <span>
                   <span className="blue">Próxima etapa</span>
