@@ -22,7 +22,7 @@ Você precisa ter instalado no seu computador node.js e npm.
 
 Navegue para o branch React, usando "git checkout react" e a partir da pasta baixada, vá para o diretório "cd v2-comReact/projeto-ihc/".
 
-Execute o comando "npm install" para baixar as dependências do projeto e então "npm run dev", isso abrirá um servidor onde você poderá acessar o projeto. Normalmente ele usa o endereço "http://localhost:5174/".
+Execute o comando "npm install" para baixar as dependências do projeto e então "npm run dev", isso abrirá um servidor onde você poderá acessar o projeto. Normalmente ele usa o endereço "http://localhost:5173/".
 
 
 
