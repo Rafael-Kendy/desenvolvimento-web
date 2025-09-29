@@ -20,22 +20,22 @@ function LessonSection({ title, items }) { //titulo e itens
         {items.map((item, index) => (
           <li key={index}>
             <label
-              onClick={() => navigate(item.href)}
-              className="cursor-pointer flex items-center gap-2"
-            >
-              <span>
-                <strong>{index + 1}.</strong>{" "}
-                <span className="blue">{item.label}</span>
-              </span>
-              <input
-                type="checkbox"
-                checked={checked[index] || false}
-                onChange={(e) => {
-                  e.stopPropagation(); // não dispara o navigate ao clicar na checkbox
-                  toggleCheckbox(index);
+                className="lesson-item"
+                onClick={(e) => {if (e.target.tagName.toLowerCase() === "input") { // se clicar na caixa não ativa o navigate
+                    return; 
+                }
+                navigate(item.href); // caso contrario, navega normal
                 }}
-              />
-            </label>
+            >
+            <span>
+                <strong>{index + 1}.</strong> <span className="blue">{item.label}</span>
+            </span>
+                <input
+                    type="checkbox"
+                    checked={checked[index] || false}
+                    onChange={() => toggleCheckbox(index)}
+                    />
+                </label>
           </li>
         ))}
       </ul>

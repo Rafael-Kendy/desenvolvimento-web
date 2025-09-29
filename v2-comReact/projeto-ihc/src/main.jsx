@@ -15,6 +15,10 @@ import Computadores from './pages/lista_topicos/computadores.jsx'
 import Mensagens from './pages/lista_topicos/mensagens.jsx'
 import Perfil from './pages/perfil.jsx'
 import Configuracoes from './pages/configuracoes.jsx'
+import PgRede from "./pages/lista_topicos/lessons/pg_rede.jsx";
+import PgComoFunciona from "./pages/lista_topicos/lessons/pg_comofunciona.jsx";
+import PgParaQueServe from "./pages/lista_topicos/lessons/pg_paraqueserve.jsx";
+
 
 const router = createBrowserRouter([
   {path:"/", element:<App/>},
@@ -29,6 +33,10 @@ const router = createBrowserRouter([
   {path:"/lista_topicos/internet", element:<Internet/>},
   {path:"/lista_topicos/computadores", element:<Computadores/>},// TODO -- escalabilidade com useParams
   {path:"/lista_topicos/mensagens", element:<Mensagens/>},
+  { path:"/lista_topicos/lessons/pg_rede", element: <PgRede /> },
+  { path:"/lista_topicos/lessons/pg_comofunciona", element: <PgComoFunciona /> },
+  { path:"/lista_topicos/lessons/pg_paraqueserve", element: <PgParaQueServe /> },
+  
 ]);
 
 createRoot(document.getElementById('root')).render(
