@@ -1,10 +1,11 @@
-// src/pages/lessons/internet/pg_rede.jsx
 import Header from "../../../components/header";
 import Footer from "../../../components/footer";
 import webs from "../../../components/assets/img/internet.png";
 import zaupa from "../../../components/assets/img/zaupa.png";
+import { useEffect } from "react";
 
 export default function PgComoFunciona() {
+  useEffect(() => {document.title = "ChaveDigital - Como funciona";}, []);
   const nextTopics = [
     { label: "Para que serve", href: "/lista_topicos/lessons/pg_paraqueserve" },
   ];

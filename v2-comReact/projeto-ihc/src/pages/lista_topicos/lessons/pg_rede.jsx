@@ -1,13 +1,14 @@
-// src/pages/lessons/internet/pg_rede.jsx
+import { useEffect } from "react";
 import Header from "../../../components/header";
 import Footer from "../../../components/footer";
 import webs from "../../../components/assets/img/internet.png";
 import zaupa from "../../../components/assets/img/zaupa.png";
 
 export default function PgRede() {
-  const nextTopics = [
-    { label: "Como funciona", href: "/lista_topicos/lessons/pg_comofunciona" },
-    { label: "Para que serve", href: "/lista_topicos/lessons/pg_paraqueserve" },
+    useEffect(() => {document.title = "ChaveDigital - A rede";}, []);
+    const nextTopics = [
+        { label: "Como funciona", href: "/lista_topicos/lessons/pg_comofunciona" },
+        { label: "Para que serve", href: "/lista_topicos/lessons/pg_paraqueserve" },
   ];
 
   return (
@@ -19,7 +20,7 @@ export default function PgRede() {
         <section className="lesson-content">
           <div className="lesson-header">
             <img src={webs} alt="Ícone da Internet" />
-            <h1 className="gold">A Rede</h1>
+            <h1 className="gold">A rede</h1>
           </div>
 
           <div className="lesson-step">

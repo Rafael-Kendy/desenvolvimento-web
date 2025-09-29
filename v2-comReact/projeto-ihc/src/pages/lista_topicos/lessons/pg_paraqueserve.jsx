@@ -1,11 +1,12 @@
-// src/pages/lessons/internet/pg_rede.jsx
 import Header from "../../../components/header";
 import Footer from "../../../components/footer";
 import webs from "../../../components/assets/img/internet.png";
 import zaupa from "../../../components/assets/img/zaupa.png";
+import { useEffect } from "react";
 
 export default function PgParaQueServe() {
-  const nextTopics = [
+    useEffect(() => {document.title = "ChaveDigital - Para que serve";}, []);
+    const nextTopics = [
     { label: "Fim do subtópico! Clique aqui para voltar.", href: "/lista_topicos/internet" },
   ];
 

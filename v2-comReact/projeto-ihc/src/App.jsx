@@ -4,10 +4,12 @@ import ComoFunc from './components/como-funciona';
 import AlgunsTop from './components/alguns-topicos'
 import CardGrande from './components/card-grande'
 import Footer from './components/footer'
+import { useEffect } from "react";
 
 import person from "./components/assets/img/pexels-by-andrea_piacquadio.jpg";
 
 function App() {
+  useEffect(() => {document.title = "ChaveDigital - Início";}, []);
   const content={
     title: "Inicie seu aprendizado hoje",
     text: [
