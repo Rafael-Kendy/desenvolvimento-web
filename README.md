@@ -2,6 +2,28 @@
 
 ## Instruções de instalação e execução
 
+### Baixando o projeto  
+
+Antes de acessar o projeto, é primeiro necessário baixar os arquivos, para isso você pode clicar no botão "Code" e então em "Download ZIP", ou então usando o terminal, executar o comando "git clone https://github.com/Rafael-Kendy/desenvolvimento-web.git". Caso tenha baixado o ZIP, extraia os arquivos para um pasta.
+
+Abra o terminal dentro da pasta que você baixou, "cd {CAMINHO DA PASTA}". 
+
+### Executando o HTML
+
+Navegue para o branch HTML, "git checkout html", em caso de dúvida use o comando "git branch -r" para mostrar o nome de todos os branches.
+
+Você pode abrir cada página separadamente usando "start {NOME DA PÁGINA}" no Windows ou "xdg-open {NOME DA PÁGINA}", usar "ls" na pasta do projeto irá listar todos os arquivos.
+
+Caso você tenha python instalado em seu computador, o comando "python3 -m http.server" irá criar um servidor simples que pode ser acessado em seu navegador usando o link "http://localhost:8000". Se você possui a IDE VSCode, todo esse processo pode ser feito via o terminal dentro da IDE, além disso com a extensão Live Server, você pode clicar com o botão direito no arquivo "index.html" e em "Abrir com Live Server" para abrir o projeto automáticamente no seu navegador.
+
+### Executando o React
+
+Você precisa ter instalado no seu computador node.js e npm.
+
+Navegue para o branch React, usando "git checkout react" e a partir da pasta baixada, vá para o diretório "cd v2-comReact/projeto-ihc/".
+
+Execute o comando "npm install" para baixar as dependências do projeto e então "npm run dev", isso abrirá um servidor onde você poderá acessar o projeto. Normalmente ele usa o endereço "http://localhost:5174/".
+
 
 
 
@@ -23,6 +45,7 @@ A divisão de tarefas entre os 3 membros da equipe foi feita de maneira em que t
 - Hugo Massaro: telas de criação de conta, login, perfil e configurações.
 - Rafael Kendy: telas inicial, sobre, equipe e diretrizes. Componentes do cabeçalho e rodapé.
 - Rafael Zaupa: telas com todos os tópicos, a individual de cada tópico e todas as lições desses tópicos.
+
 Embora essa divisão de tarefas tenha sido feita, ela serviu apenas como um guia geral, não significando que cada membro trabalhou apenas em suas páginas. Durante o desenvolvimento do projeto tentamos estar sempre em comunicação, atualizando uns aos outros em que partes estávamos trabalhando e se ajudando conforme necessário.
 
 
