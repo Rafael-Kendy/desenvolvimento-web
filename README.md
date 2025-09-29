@@ -84,3 +84,19 @@ Dentro de ../topics. Onde onde estão reunidos as páginas do fluxo de navegaç�
 
 Dentro de ../topics/internet, uma das lições propriamente ditas. São compostas por imagens, passo-a-passo e vídeo quando disponível, bem como as próximas lições ou próximo tópico, em ordem. A página referente a cada uma das lições pode ser encontrada na pasta de seu respectivo tópico, como em ../topics/computadores e ../topics/mensagens.
 
+### registro.html 
+
+Destinada a novos usuários, essa página permite a criação de uma nova conta na plataforma. O formulário solicita informações como nome, e-mail e uma senha com confirmação. Para garantir a transparência há um link para os "termos de uso" da nossa plataforma. Também são oferecidas opções de cadastro rápido utilizando contas do Gmail ou Facebook.
+
+### login.html 
+
+Página de autenticação para usuários teoricamente já registrados. Nela o usuário pode inserir seu e-mail e senha para acessar sua conta. A Também são oferecidas opções de cadastro rápido utilizando contas do Gmail ou Facebook e um link para a página de criação de conta, caso o visitante ainda não seja um membro. Após a autenticação bem-sucedida, o usuário é redirecionado para a sua página de perfil.
+
+### perfil.html 
+
+Após o login o usuário é direcionado para esta página que serve como seu painel pessoal. Nela são exibidas as informações principais do usuário, como foto, nome, e-mail e uma biografia. A página é dividida em seções que mostram o progresso do usuário nos tópicos de estudo, detalhando a porcentagem concluída e o número de lições feitas. Há também uma área dedicada às postagens do usuário exibindo suas contribuições recentes. Um ícone de engrenagem permite o acesso direto a página de configurações.
+
+### configuracoes.html 
+
+Nesta seção o usuário pode gerenciar e personalizar sua conta. As opções disponíveis incluem a alteração de informações como nome de usuário, foto de perfil e a descrição da biografia. Além disso a página oferece funcionalidades  como a opção de resetar progressão, que apaga todo o progresso nos tópicos, e a de deletar conta, que remove permanentemente todos os dados do usuário da plataforma.
+
