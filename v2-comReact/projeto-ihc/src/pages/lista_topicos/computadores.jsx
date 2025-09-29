@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
-import internetIcon from "../../components/assets/img/internet.png";
+import pc from "../../components/assets/img/computer-desktop.png";
 
 function LessonSection({ title, items }) { //titulo e itens
   const navigate = useNavigate();
@@ -85,7 +85,7 @@ export default function Computadores() {
       <main className="center general-width">
         <section className="lesson-title general-width">
           <figure className="lesson-logo">
-            <img src={internetIcon} alt="icone-internet" />
+            <img src={pc} alt="icone-computador" />
           </figure>
           <div className="lesson-text">
             <h1 className="gold">Computadores</h1>

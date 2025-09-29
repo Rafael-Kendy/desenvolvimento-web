@@ -13,6 +13,8 @@ import Login from './pages/Login.jsx';
 import Internet from './pages/lista_topicos/internet.jsx'
 import Computadores from './pages/lista_topicos/computadores.jsx'
 import Mensagens from './pages/lista_topicos/mensagens.jsx'
+import Perfil from './pages/perfil.jsx'
+import Configuracoes from './pages/configuracoes.jsx'
 
 const router = createBrowserRouter([
   {path:"/", element:<App/>},
@@ -21,9 +23,9 @@ const router = createBrowserRouter([
   {path:"/registro", element:<Registro/>},
   {path:"/equipe", element:<Equipe/>},
   {path:"/topicos",element:<Topicos/>},
-  {path: "/login", element: <Login /> },
-  {path: "/perfil", element: <Perfil /> },
-  {path: "/configuracoes", element: <Configuracoes /> },
+  {path:"/login", element:<Login /> },
+  {path:"/perfil", element:<Perfil /> },
+  {path:"/configuracoes", element:<Configuracoes /> },
   {path:"/lista_topicos/internet", element:<Internet/>},
   {path:"/lista_topicos/computadores", element:<Computadores/>},// TODO -- escalabilidade com useParams
   {path:"/lista_topicos/mensagens", element:<Mensagens/>},

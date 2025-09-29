@@ -8,7 +8,6 @@ import zap from "../components/assets/img/phone-call.png";
 import zaupa from "../components/assets/img/zaupa.png";
 import TopicCard from "../components/topic-card";
 import MiniCard from "../components/mini-card";
-import { useEffect } from "react";
 
 // Array de tópicos para renderizar dinamicamente
 
