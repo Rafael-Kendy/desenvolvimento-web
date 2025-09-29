@@ -10,7 +10,8 @@ import Registro from './pages/registro.jsx'
 import Equipe from './pages/equipe.jsx'
 import Topicos from './pages/topicos.jsx'
 import Login from './pages/login.jsx';
-import Profile from './pages/perfil.jsx'
+import Perfil from './pages/perfil.jsx'
+import Configuracoes from './pages/configuracoes.jsx'
 
 const router = createBrowserRouter([
   {path:"/", element:<App/>},
@@ -20,7 +21,8 @@ const router = createBrowserRouter([
   {path:"/equipe", element:<Equipe/>},
   {path:"/topicos",element:<Topicos/>},
   {path: "/login", element: <Login /> },
-  {path: "/perfil", element: <Profile /> },
+  {path: "/perfil", element: <Perfil /> },
+  {path: "/configuracoes", element: <Configuracoes /> },
 ]);
 
 createRoot(document.getElementById('root')).render(
