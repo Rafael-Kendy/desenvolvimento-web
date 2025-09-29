@@ -624,6 +624,7 @@ p{
 }
 #registro button:hover{
   background-color: var(--darkblue); 
+  color: var(--red);  
 }
 .login-container {
   background-color: var(--white);
