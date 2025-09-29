@@ -22,6 +22,8 @@ const router = createBrowserRouter([
   {path:"/equipe", element:<Equipe/>},
   {path:"/topicos",element:<Topicos/>},
   {path: "/login", element: <Login /> },
+  {path: "/perfil", element: <Perfil /> },
+  {path: "/configuracoes", element: <Configuracoes /> },
   {path:"/lista_topicos/internet", element:<Internet/>},
   {path:"/lista_topicos/computadores", element:<Computadores/>},// TODO -- escalabilidade com useParams
   {path:"/lista_topicos/mensagens", element:<Mensagens/>},

@@ -1,9 +1,14 @@
+import { useEffect } from "react";
 import Header from "../components/header";
 import Footer from '../components/footer'
 import TextoGeral from '../components/texto-geral'
 import CardGrande from '../components/card-grande'
 
 function Sobre(){
+    useEffect(() => {
+        document.title = "ChaveDigital - Sobre";
+    }, []);
+
     const texts=[
         {
         index: 0,

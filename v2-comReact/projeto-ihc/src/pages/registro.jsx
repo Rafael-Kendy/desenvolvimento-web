@@ -1,6 +1,11 @@
+import { useEffect } from "react";
 import { Link } from 'react-router-dom';//importa diretamente da biblioteca de roteamento
 
 function Registro() {//componente, ela retorna um bloco de jsx
+    useEffect(() => {
+        document.title = "ChaveDigital - Criar conta";
+    }, []);
+
   const handleSubmit = (event) => {//agora usa funções, no caso handlesubmit, pra lidar com o evento de envio de formulario
     event.preventDefault();
     //futuramente, colocar a logica de envio do formulario, pra um servidor, backend, etc

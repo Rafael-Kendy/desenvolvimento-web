@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Header from "../components/header";
 import Footer from '../components/footer'
 import TextoGeral from '../components/texto-geral'
@@ -8,6 +9,10 @@ import kendy from "../components/assets/img/kendy.png";
 import zaupa from "../components/assets/img/zaupa.png";
 
 function Equipe(){
+    useEffect(() => {
+        document.title = "ChaveDigital - Equipe";
+    }, []);
+
     const texts=[
         {
         index: 0,
