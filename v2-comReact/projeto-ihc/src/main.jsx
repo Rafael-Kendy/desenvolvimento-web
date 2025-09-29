@@ -9,8 +9,8 @@ import Sobre from './pages/sobre.jsx'
 import Registro from './pages/registro.jsx'
 import Equipe from './pages/equipe.jsx'
 import Topicos from './pages/topicos.jsx'
-import Login from './pages/Login.jsx';
-import Profile from './pages/Perfil.jsx'
+import Login from './pages/login.jsx';
+import Profile from './pages/perfil.jsx'
 
 const router = createBrowserRouter([
   {path:"/", element:<App/>},
