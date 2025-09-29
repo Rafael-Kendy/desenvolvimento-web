@@ -1,7 +1,8 @@
-import { useEffect } from "react";
 import { Link } from 'react-router-dom';//importa diretamente da biblioteca de roteamento
+import { useEffect } from "react";
 
 function Registro() {//componente, ela retorna um bloco de jsx
+
     useEffect(() => {
         document.title = "ChaveDigital - Criar conta";
     }, []);
@@ -14,7 +15,7 @@ function Registro() {//componente, ela retorna um bloco de jsx
   };
 
   //o codigo parece com html mas é jsx, o navegador n entende jsx, etnao usa uma ferramenta pra pra converter pra javascript
-  return (
+  return (//return define oq vai renderizar na tela
     <div id="registro">
       <main>
         <div className="login-container">{/*usa class name inves de de class */}
