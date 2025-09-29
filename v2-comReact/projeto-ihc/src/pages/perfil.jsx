@@ -1,7 +1,12 @@
+import { useEffect } from "react";
 import { Link } from 'react-router-dom';
 
 
 function Perfil() {
+    useEffect(() => {
+        document.title = "ChaveDigital - Perfil";
+    }, []);
+
   return (
     <div id="registro"> 
       <div className="profile-page-wrapper"> 

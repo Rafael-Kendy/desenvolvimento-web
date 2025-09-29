@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/header";
 import Footer from '../components/footer'
@@ -52,6 +53,10 @@ const topicos_cards=[
 ];
 
 function Topicos() {
+    useEffect(() => {
+        document.title = "ChaveDigital - Tópicos";
+    }, []);
+
   return (
     <div>
       <Header activePage="topics" />

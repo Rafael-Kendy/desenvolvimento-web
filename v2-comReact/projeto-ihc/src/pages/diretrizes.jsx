@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Header from "../components/header";
 import Footer from '../components/footer'
 import TextoGeral from '../components/texto-geral'
@@ -6,6 +7,11 @@ import Documento from '../components/documento'
 import diretrizesPDF from "../components/assets/diretrizes.pdf";
 
 function Diretrizes(){
+    useEffect(() => {
+        document.title = "ChaveDigital - Diretrizes";
+    }, []);
+
+
     const texts=[
         {
         index: 0,
