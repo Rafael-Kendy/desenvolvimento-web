@@ -1,33 +1,38 @@
 # Plataforma de aprendizado digital - Chave Digital
 
-## Instruções de instalação e execução
+## Entrega 2 - APIs
 
-### Baixando o projeto  
 
-Antes de acessar o projeto, é primeiro necessário baixar os arquivos, para isso você pode clicar no botão "Code" e então em "Download ZIP", ou então usando o terminal, executar o comando "git clone https://github.com/Rafael-Kendy/desenvolvimento-web.git". Caso tenha baixado o ZIP, extraia os arquivos para um pasta.
+## Entrega 1 - Front End
 
-Abra o terminal dentro da pasta que você baixou, "cd {CAMINHO DA PASTA}". 
+### Instruções de instalação e execução
 
-### Executando o HTML
+#### Baixando o projeto  
 
-Navegue para o branch HTML, "git checkout html", em caso de dúvida use o comando "git branch -r" para mostrar o nome de todos os branches.
+Antes de acessar o projeto, é primeiro necessário baixar os arquivos, para isso você pode clicar no botão "Code" e então em "Download ZIP", ou então usando o terminal, executar o comando `git clone https://github.com/Rafael-Kendy/desenvolvimento-web.git`. Caso tenha baixado o ZIP, extraia os arquivos para um pasta.
 
-Você pode abrir cada página separadamente usando "start {NOME DA PÁGINA}" no Windows ou "xdg-open {NOME DA PÁGINA}", usar "ls" na pasta do projeto irá listar todos os arquivos.
+Abra o terminal dentro da pasta que você baixou, `cd {CAMINHO DA PASTA}`. 
 
-Caso você tenha python instalado em seu computador, o comando "python3 -m http.server" irá criar um servidor simples que pode ser acessado em seu navegador usando o link "http://localhost:8000". Se você possui a IDE VSCode, todo esse processo pode ser feito via o terminal dentro da IDE, além disso com a extensão Live Server, você pode clicar com o botão direito no arquivo "index.html" e em "Abrir com Live Server" para abrir o projeto automáticamente no seu navegador.
+#### Executando o HTML
 
-### Executando o React
+Navegue para o branch HTML, `git checkout html`, em caso de dúvida use o comando `git branch -r` para mostrar o nome de todos os branches.
+
+Você pode abrir cada página separadamente usando `start {NOME DA PÁGINA}` no Windows ou `xdg-open {NOME DA PÁGINA}`, usar `ls` na pasta do projeto irá listar todos os arquivos.
+
+Caso você tenha python instalado em seu computador, o comando `python3 -m http.server` irá criar um servidor simples que pode ser acessado em seu navegador usando o link "http://localhost:8000". Se você possui a IDE VSCode, todo esse processo pode ser feito via o terminal dentro da IDE, além disso com a extensão Live Server, você pode clicar com o botão direito no arquivo "index.html" e em "Abrir com Live Server" para abrir o projeto automáticamente no seu navegador.
+
+#### Executando o React
 
 Você precisa ter instalado no seu computador node.js e npm.
 
-Navegue para o branch React, usando "git checkout react" e a partir da pasta baixada, vá para o diretório "cd v2-comReact/projeto-ihc/".
+Navegue para o branch React, usando `git checkout react` e a partir da pasta baixada, vá para o diretório `cd v2-comReact/projeto-ihc/`.
 
-Execute o comando "npm install" para baixar as dependências do projeto e então "npm run dev", isso abrirá um servidor onde você poderá acessar o projeto. Normalmente ele usa o endereço "http://localhost:5173/".
-
-
+Execute o comando `npm install` para baixar as dependências do projeto e então `npm run dev`, isso abrirá um servidor onde você poderá acessar o projeto. Normalmente ele usa o endereço "http://localhost:5173/".
 
 
-## Estrutura do projeto
+
+
+### Estrutura do projeto
 
 Este projeto foi desenvolvido como uma plataforma de alfabetização digital, com foco em acessibilidade, colaboração e aprendizado aberto. A ideia é oferecer um ambiente simples e intuitivo, onde qualquer pessoa possa aprender a usar computadores e a internet por meio de textos, imagens, vídeos e exercícios práticos.
 
@@ -49,54 +54,54 @@ A divisão de tarefas entre os 3 membros da equipe foi feita de maneira em que t
 Embora essa divisão de tarefas tenha sido feita, ela serviu apenas como um guia geral, não significando que cada membro trabalhou apenas em suas páginas. Durante o desenvolvimento do projeto tentamos estar sempre em comunicação, atualizando uns aos outros em que partes estávamos trabalhando e se ajudando conforme necessário.
 
 
-## Explicação de cada página e suas funcionalidades
+### Explicação de cada página e suas funcionalidades
 
-### index.html - Página inicial
+#### index.html - Página inicial
 
 Primeiro contato do usuário com a plataforma, possui uma breve introdução de como ela funciona e alguns dos tópicos de estudo. Através dela também é possível criar uma conta e clicando no logo do site existe um popup para ajuda básica quanto aos componentes interativos.
 
-### sobre.html - Sobre a Chave Digital
+#### sobre.html - Sobre a Chave Digital
 
 Explicação mais detalhada sobre nossos objetivos e como o projeto funciona. Também contém as referências usadas na criação do site e uma área para que o usuário colabore com o projeto.
 
 
-### diretrizes.html - Nossas diretrizes
+#### diretrizes.html - Nossas diretrizes
 
 Contém o enunciado referente a primeira entrega do projeto.
 
 
-### equipe.html - Nossa equipe
+#### equipe.html - Nossa equipe
 
 Breve introdução da nossa equipe que fez o desenvolvimento do site.
 
 
-### topicos_todos.html - Todos os tópicos
+#### topicos_todos.html - Todos os tópicos
 
 Porção do site onde ficarão em disposição os assuntos, mostrando alguns dos tópicos cobertos dentro de cada tema.
 
 
-### internet.html, computadores.html, mensagens.html - Tópicos individuais
+#### internet.html, computadores.html, mensagens.html - Tópicos individuais
 
 Dentro de ../topics. Onde onde estão reunidos as páginas do fluxo de navegação do site a partir da escolha do tópico que o usuário deseja estudar. Aqui estão os arquivos .html referentes a cada um dos tópicos disponíveis. Os tópicos foram escolhidos para demonstração, e não serão limitados a estes.
 
 
-### pg_rede.html - Lição
+#### pg_rede.html - Lição
 
 Dentro de ../topics/internet, uma das lições propriamente ditas. São compostas por imagens, passo-a-passo e vídeo quando disponível, bem como as próximas lições ou próximo tópico, em ordem. A página referente a cada uma das lições pode ser encontrada na pasta de seu respectivo tópico, como em ../topics/computadores e ../topics/mensagens.
 
-### registro.html 
+#### registro.html 
 
 Destinada a novos usuários, essa página permite a criação de uma nova conta na plataforma. O formulário solicita informações como nome, e-mail e uma senha com confirmação. Para garantir a transparência há um link para os "termos de uso" da nossa plataforma. Também são oferecidas opções de cadastro rápido utilizando contas do Gmail ou Facebook.
 
-### login.html 
+#### login.html 
 
 Página de autenticação para usuários teoricamente já registrados. Nela o usuário pode inserir seu e-mail e senha para acessar sua conta. A Também são oferecidas opções de cadastro rápido utilizando contas do Gmail ou Facebook e um link para a página de criação de conta, caso o visitante ainda não seja um membro. Após a autenticação bem-sucedida, o usuário é redirecionado para a sua página de perfil.
 
-### perfil.html 
+#### perfil.html 
 
 Após o login o usuário é direcionado para esta página que serve como seu painel pessoal. Nela são exibidas as informações principais do usuário, como foto, nome, e-mail e uma biografia. A página é dividida em seções que mostram o progresso do usuário nos tópicos de estudo, detalhando a porcentagem concluída e o número de lições feitas. Há também uma área dedicada às postagens do usuário exibindo suas contribuições recentes. Um ícone de engrenagem permite o acesso direto a página de configurações.
 
-### configuracoes.html 
+#### configuracoes.html 
 
 Nesta seção o usuário pode gerenciar e personalizar sua conta. As opções disponíveis incluem a alteração de informações como nome de usuário, foto de perfil e a descrição da biografia. Além disso a página oferece funcionalidades  como a opção de resetar progressão, que apaga todo o progresso nos tópicos, e a de deletar conta, que remove permanentemente todos os dados do usuário da plataforma.
 
