@@ -7,3 +7,5 @@
 
 'pip freeze > requirements.txt' pra salvar tds os pacotes como requeridos
 'pip install -r requirements.txt' pra instalar oq tava no txt
+
+'uvicorn api.main:app --reload' pra rodar o back
