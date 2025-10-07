@@ -1,0 +1,9 @@
+'env\Scripts\activate.bat' no windows
+'source env/bin/activate' no linux
+'deactivate' pra sair
+
+'pip list' mostra os pacotes do ambiente
+'pip install PACOTE' pra instalar pacotes
+
+'pip freeze > requirements.txt' pra salvar tds os pacotes como requeridos
+'pip install -r requirements.txt' pra instalar oq tava no txt
