@@ -1,6 +1,7 @@
 import booksImg from "./assets/img/books.png";
 import studyImg from "./assets/img/study.png";
 import chatImg from "./assets/img/chat.png";
+import MediumCards from "./medium-cards.jsx"
 
 const cards=[
     {
@@ -31,15 +32,7 @@ function ComoFunc(){
                 <p>Nossa plataforma ajuda você a aprender a usar o computador e a internet de forma simples e acessível. As lições trazem textos, imagens, vídeos e exercícios práticos. Todo o conteúdo é gratuito e colaborativo, sempre em constante evolução.</p>
 
                 <div className="cards">
-                    {cards.map((card)=>(
-                        <div key={card.title} className="card bg-lightgray">
-                            <figure>
-                                <img src={card.img} alt="{card.alt}" className="img-small"/>
-                            </figure>
-                            <h3>{card.title}</h3>
-                            <p>{card.text}</p>
-                        </div>
-                    ))}
+                    <MediumCards content={cards} />
                 </div>
             </div>
         </comofunc>

@@ -18,6 +18,7 @@ import Configuracoes from './pages/configuracoes.jsx'
 import PgRede from "./pages/lista_topicos/lessons/pg_rede.jsx";
 import PgComoFunciona from "./pages/lista_topicos/lessons/pg_comofunciona.jsx";
 import PgParaQueServe from "./pages/lista_topicos/lessons/pg_paraqueserve.jsx";
+import Comunidade from './pages/comunidade.jsx'
 
 
 const router = createBrowserRouter([
@@ -36,7 +37,7 @@ const router = createBrowserRouter([
   { path:"/lista_topicos/lessons/pg_rede", element: <PgRede /> },
   { path:"/lista_topicos/lessons/pg_comofunciona", element: <PgComoFunciona /> },
   { path:"/lista_topicos/lessons/pg_paraqueserve", element: <PgParaQueServe /> },
-  
+  { path:"/comunidade", element: <Comunidade /> },
 ]);
 
 createRoot(document.getElementById('root')).render(

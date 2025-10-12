@@ -8,6 +8,9 @@ import { useEffect } from "react";
 
 import person from "./components/assets/img/pexels-by-andrea_piacquadio.jpg";
 
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 function App() {
   useEffect(() => {document.title = "ChaveDigital - Início";}, []);
   const content={
