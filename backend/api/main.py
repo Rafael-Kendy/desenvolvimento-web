@@ -1,8 +1,8 @@
 import uvicorn #pra rodar, uvicorn api.main:app --reload
-from fastapi import FastAPI, UploadFile, Form
+from fastapi import FastAPI, UploadFile, Form, File
 from fastapi.middleware.cors import CORSMiddleware #liga front e back
 from pydantic import BaseModel #pros tipos das coisas
-from typing import List
+from typing import List, Optional
 
 app = FastAPI()
 
@@ -33,10 +33,10 @@ class Question(BaseModel):
 #cria a nova duvida, retorna ela e sucesso de der certo
 @app.post("/comunidade")
 async def setQuestion(
-    nane: str=Form(...),
+    name: str=Form(...),
     email: str=Form(...),
     question: str=Form(...),
-    image: UploadFile | None=None
+    image: UploadFile | None = File(None)
 ):
     image_url = None
     if image:
@@ -49,12 +49,12 @@ async def setQuestion(
         image_url = image_url
     )
     questions.append(new_question)
-    return {"message": "Question added!", "question": new_question}
+    return {"message": "Questão adicionada", "question": new_question}
 
 #pega as questoes
 @app.get("/comunidade", response_model=List[Question])
 async def getQuestions():
-    return questionsc
+    return questions
 
 
 
