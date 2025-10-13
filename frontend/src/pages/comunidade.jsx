@@ -1,9 +1,10 @@
 import { useEffect } from "react";
+import { useState } from "react";
 import Header from "../components/header";
 import Footer from '../components/footer'
 import DisplayImage from "../components/image";
-import Card from "../components/card";
 import CardCarousel from "../components/card-carousel";
+import SimpleForm from "../components/simple-form";
 
 import placeHolder from "../components/assets/img/image.png";
 
@@ -11,26 +12,26 @@ const cards=[
     {
         src: placeHolder,
         alt: "Place Holder",
-        title: "Nome 1",
-        text: "Aprenda os conceitos básicos com explicações simples em texto, imagem e vídeo."
+        title: "Facebook",
+        text: "Solicitações de amizade, postagens, mensagens e tudo para você."
     },
     {
         src: placeHolder,
         alt: "Place Holder",
-        title: "Nome 2",
-        text: "Aprenda os conceitos básicos com explicações simples em texto, imagem e vídeo."
+        title: "Whatsapp",
+        text: "Mande mensagens e participe de grupos com seus amigos."
     },
     {
         src: placeHolder,
         alt: "Place Holder",
-        title: "Nome 3",
-        text: "Aprenda os conceitos básicos com explicações simples em texto, imagem e vídeo."
+        title: "Email",
+        text: "Aprenda a escrever emails usando qualquer gerenciador."
     },
     {
         src: placeHolder,
         alt: "Place Holder",
-        title: "Nome 4",
-        text: "Aprenda os conceitos básicos com explicações simples em texto, imagem e vídeo."
+        title: "Arquivos",
+        text: "Tire suas dúvidas sobre como guardar arquivos no computador."
     }
 ];
 
@@ -39,17 +40,32 @@ function Comunidade(){
         document.title = "ChaveDigital - Comunidade";
     }, []);
 
+  const [posts, setPosts] = useState([]);
+
+    const handleFormSubmit = (data) => {
+        const newPost = {
+        id: Date.now(),
+        name: data.name,
+        text: data.text,
+        image: data.image ? URL.createObjectURL(data.image) : null,
+        };
+        setPosts([newPost, ...posts]);
+    };
+
     return (
         <comunidade>
             <Header activePage="community"/>
 
             <main>
                 <div className="component general-width">
-                    <h2 className="gold">Comunidades recomendadas</h2>
+                    <h1 className="center">Comunidades</h1>
+                    <h2 className="gold">Grupos recomendados</h2>
                     <CardCarousel cards={cards}/>
+
                     <br/>
-                    <h2 className="gold">Dúvidas</h2>
                     
+                    <h2 className="gold">Dúvidas</h2>
+                    <SimpleForm onSubmit={handleFormSubmit} />
                 </div>
             </main>
 

@@ -10,7 +10,7 @@ function CardCarousel({cards}) {
     centerPadding: "60px",
     slidesToShow: 3,
     autoplay: true,
-    autoplaySpeed: 2000,
+    autoplaySpeed: 3000,
     speed: 500,
     pauseOnHover: true,
     cssEase: "linear",
