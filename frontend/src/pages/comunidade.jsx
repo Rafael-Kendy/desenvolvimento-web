@@ -5,6 +5,7 @@ import Footer from '../components/footer'
 import DisplayImage from "../components/image";
 import CardCarousel from "../components/card-carousel";
 import QuestionForm from "../components/question-form";
+import api from "../components/api";
 
 import placeHolder from "../components/assets/img/image.png";
 
@@ -40,16 +41,30 @@ function Comunidade(){
         document.title = "ChaveDigital - Comunidade";
     }, []);
 
-  const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState([]);
 
-    const handleFormSubmit = (data) => {
-        const newPost = {
-        id: Date.now(),
-        name: data.name,
-        text: data.text,
-        image: data.image ? URL.createObjectURL(data.image) : null,
-        };
-        setPosts([newPost, ...posts]);
+    const handleFormSubmit = async (data) => {
+    try {
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("email", data.email);
+        formData.append("question", data.question);
+
+        if (data.image) {
+        formData.append("image", data.image);
+        }
+
+        // Send to FastAPI
+        const response = await api.post("/comunidade", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        // Add the returned post to your local state
+        setPosts([response.data.question, ...posts]);
+    } catch (error) {
+        console.error("Error posting question:", error);
+        alert("Erro ao enviar sua dúvida. Verifique o console para mais detalhes.");
+    }
     };
 
     return (
