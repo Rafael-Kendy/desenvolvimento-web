@@ -1,15 +1,20 @@
-function LabelField({name, label, field, type="text", size, value, onChange, required=false}){
+function LabelField({icon, name, label, type="text", size, value, onChange, required=false, placeholder}){
     return(
-        <label>
+        <div className="form-field">
+            <label>
+                <i className={icon}></i>
+                <span className="bold">  {label}:</span>
 
-        {label}:
-        {type==="area" ? (
-            <textarea name={name} value={value} onChange={onChange} required={required} rows={size || 4}/>
-        ):(
-            <input name={name} type={type} value={type==="file" ? undefined:value} onChange={onChange} required={required} rows={size || 4}/>
-        )}
+                <br/>
 
-        </label>
+                {type==="area" ? (
+                    <textarea name={name} value={value} onChange={onChange} required={required} rows={size || 4} placeholder={placeholder}/>
+                ):(
+                    <input name={name} type={type} value={type==="file" ? undefined:value} onChange={onChange} required={required} placeholder={placeholder}/>
+                )}
+
+            </label>
+        </div>
     )
 }
 

@@ -1,15 +1,8 @@
-import uvicorn #pra rodar
-from fastapi import FastAPI
+import uvicorn #pra rodar, uvicorn api.main:app --reload
+from fastapi import FastAPI, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware #liga front e back
 from pydantic import BaseModel #pros tipos das coisas
 from typing import List
-
-#Kendy: algumas coisas enquanto to aprendendo, vou deixar q talvez seja util dps
-#   retirado de https://www.youtube.com/watch?v=aSdVU9-SxH4
-class Fruit(BaseModel):
-    name: str
-class Fruits(BaseModel):
-    frutas: List[Fruit]
 
 app = FastAPI()
 
@@ -27,17 +20,43 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#db em memoria, so pra testar
-memory_db={"frutas":[]}
+questions = [] #guardando as questoes na memoria msm por enquanto
+class Question(BaseModel):
+    id: int
+    name: str
+    email: str
+    question: str
+    image_url: str | None=None
 
-@app.get("/fruits", response_model=Fruits) #response_model é o tipo q vai retornar
-def getFruits():
-    return Fruits(frutas=memory_db["frutas"])
 
-@app.post("/fruits", response_model=Fruit)
-def addFruit(fruta: Fruit):
-    memory_db["frutas"].append(fruta)
-    return fruta
+
+#cria a nova duvida, retorna ela e sucesso de der certo
+@app.post("/comunidade")
+async def setQuestion(
+    nane: str=Form(...),
+    email: str=Form(...),
+    question: str=Form(...),
+    image: UploadFile | None=None
+):
+    image_url = None
+    if image:
+        image_url = f"/fake/path/{image.filename}"
+    new_question = Question(
+        id = len(questions)+1,
+        name = name,
+        email = email,
+        question = question,
+        image_url = image_url
+    )
+    questions.append(new_question)
+    return {"message": "Question added!", "question": new_question}
+
+#pega as questoes
+@app.get("/comunidade", response_model=List[Question])
+async def getQuestions():
+    return questionsc
+
+
 
 if __name__=="__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

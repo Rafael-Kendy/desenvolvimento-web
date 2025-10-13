@@ -4,7 +4,7 @@ import Header from "../components/header";
 import Footer from '../components/footer'
 import DisplayImage from "../components/image";
 import CardCarousel from "../components/card-carousel";
-import SimpleForm from "../components/simple-form";
+import QuestionForm from "../components/question-form";
 
 import placeHolder from "../components/assets/img/image.png";
 
@@ -63,9 +63,16 @@ function Comunidade(){
                     <CardCarousel cards={cards}/>
 
                     <br/>
+                    <hr className="light"/>
                     
-                    <h2 className="gold">Dúvidas</h2>
-                    <SimpleForm onSubmit={handleFormSubmit} />
+                    <h2 className="center">Dúvidas</h2>
+
+                    <h3 className="gold">Tirar dúvida</h3>
+                    <QuestionForm onSubmit={handleFormSubmit} />
+
+                    <br/>
+
+                    <h3 className="gold">Dúvidas postadas</h3>
                 </div>
             </main>
 
