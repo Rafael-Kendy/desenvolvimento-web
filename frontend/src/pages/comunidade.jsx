@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Header from "../components/header";
 import Footer from '../components/footer'
-import DisplayImage from "../components/image";
 import CardCarousel from "../components/card-carousel";
 import QuestionForm from "../components/question-form";
 import api from "../components/api";
+import Post from "../components/posts";
 
 import placeHolder from "../components/assets/img/image.png";
 
@@ -33,6 +33,19 @@ const cards=[
         alt: "Place Holder",
         title: "Arquivos",
         text: "Tire suas dúvidas sobre como guardar arquivos no computador."
+    }
+];
+
+const post=[
+    {
+        src: placeHolder,
+        alt: "Place Holder",
+        community: "Dúvidas gerais",
+        author: "Administração",
+        date: "18/10/2025",
+        icon: "fa-solid fa-circle-question",
+        title: "Como postar uma dúvida",
+        text: "Apenas preencha o formulário acima e clique no botão 'Postar dúvida' e ele aparecerá aqui em baixo para ser respondida!"
     }
 ];
 
@@ -88,6 +101,7 @@ function Comunidade(){
                     <br/>
 
                     <h3 className="gold">Dúvidas postadas</h3>
+                    <Post content={post}/>
                 </div>
             </main>
 

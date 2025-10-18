@@ -241,6 +241,22 @@ button:hover {
   background-color: var(--red);
 }
 
+.post{
+  margin: 1rem 0rem;
+  padding: 0.8rem;
+  display: flex;
+  gap: 1.5rem;
+}
+.post h2{
+  padding-top: 0.5rem;
+}
+.small-font{
+  font-size: 1rem;
+}
+.smaller-font{
+  font-size: 0.8rem;
+}
+
 
 
 
