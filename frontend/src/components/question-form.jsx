@@ -4,22 +4,25 @@ import LabelField from "./label-field";
 function QuestionForm({ onSubmit }) {
   const [formData, setFormData] = useState({
     name: "",
-    text: "",
+    email: "",
+    title: "",
+    question: "",
     image: null,
   });
 
+  //cuida das mudancas no input do form
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+    const {name, value, files} = e.target; //pega o nome do campo, valor e arquivo se tiver, e.target seria o campo em si
     setFormData({
       ...formData,
-      [name]: files ? files[0] : value,
+      [name]: files? files[0] : value, //ve se e arquivo ou texto
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit?.(formData); // callback to parent
-    setFormData({ name: "", text: "", image: null }); // reset
+  const handleSubmit=(e) => {
+    e.preventDefault(); //pro navegador nao carregar
+    onSubmit?.(formData); //chama a funcao onSubmit do parente, se existir, e manda o form
+    setFormData({ name: "", email: "", title: "", question: "", image: null }); //reseta os campos
   };
 
   return (
@@ -55,6 +58,17 @@ function QuestionForm({ onSubmit }) {
           onChange={handleChange}
         />
       </div>
+
+        <LabelField 
+          icon="fa-solid fa-ad"
+          label="Título"
+          name="title"
+          type="text"
+          value={formData.title}
+          onChange={handleChange}
+          required
+          placeholder="Digite um título que resuma sua dúvida"
+        />
 
       <LabelField 
         icon="fa-solid fa-circle-question"

@@ -36,7 +36,7 @@ const cards=[
     }
 ];
 
-const post=[
+const default_post=[
     {
         src: placeHolder,
         alt: "Place Holder",
@@ -49,36 +49,74 @@ const post=[
     }
 ];
 
+
+
 function Comunidade(){
+    //roda isso qnd a pagina carrega
     useEffect(() => {
-        document.title = "ChaveDigital - Comunidade";
+        document.title = "ChaveDigital - Comunidade"; //nome da tab
+        const fetchPosts = async()=>{ //pega os post via o get
+            try{
+                const response = await api.get("/comunidade");
+                setPosts(response.data);
+            }catch(error){
+                console.error("Erro ao carregar questões:", error);
+            }
+        };
+        fetchPosts();
     }, []);
 
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState([]); //onde fica as questoes na pagina
 
-    const handleFormSubmit = async (data) => {
-    try {
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("email", data.email);
-        formData.append("question", data.question);
+    const handleFormSubmit = async(data)=>{ //func chamada ao clicar no botao de submeter
+        try{
+            const formData = new FormData(); //cria um novo objeto a partir do form
+            formData.append("name", data.name); //e vai adicionado as coisas dos campos nele
+            formData.append("email", data.email);
+            formData.append("title", data.title);
+            formData.append("question", data.question);
+            if(data.image){ formData.append("image", data.image); }
 
-        if (data.image) {
-        formData.append("image", data.image);
+            const response = await api.post("/comunidade", formData,{ //manda uma requisicao de post
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            setPosts([response.data.question, ...posts]); //se der certo, adiciona a questao
+        }catch(error){
+            console.error("Erro ao postar questão:", error);
+            alert("Erro ao enviar sua dúvida. Verifique o console para mais detalhes.");
         }
+    };
 
-        // Send to FastAPI
-        const response = await api.post("/comunidade", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+    const handleDelete = async(id, email)=>{ //func pra deletar questão
+    try{
+        await api.delete(`/comunidade/${id}`, { //mandando a request
+            data: { email }, //manda o email junto
         });
-
-        // Add the returned post to your local state
-        setPosts([response.data.question, ...posts]);
-    } catch (error) {
-        console.error("Error posting question:", error);
-        alert("Erro ao enviar sua dúvida. Verifique o console para mais detalhes.");
+        setPosts(posts.filter((post) => post.id !== id)); //se der certo, ja remove ele
+    }catch(error){
+        if (error.response?.status === 403) {
+        alert("Email incorreto! Você não pode deletar esta dúvida.");
+        } else {
+        console.error("Error deleting question:", error);
+        alert("Erro ao excluir a dúvida.");
+        }
     }
     };
+
+    const mapped_posts = [ //mapea as questao da api
+        ...default_post,
+        ...posts.map((q) => ({
+        src: q.image_url || placeHolder,
+        alt: "Imagem da dúvida",
+        community: "Dúvidas gerais",
+        author: q.name,
+        date: "Hoje",
+        icon: "fa-solid fa-circle-question",
+        title: q.title,
+        text: q.question,
+        })),
+    ];
+
 
     return (
         <comunidade>
@@ -101,7 +139,7 @@ function Comunidade(){
                     <br/>
 
                     <h3 className="gold">Dúvidas postadas</h3>
-                    <Post content={post}/>
+                    <Post content={mapped_posts} onDelete={handleDelete}/>
                 </div>
             </main>
 
