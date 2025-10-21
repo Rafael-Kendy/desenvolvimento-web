@@ -5,6 +5,11 @@ from pydantic import BaseModel #pros tipos das coisas
 from typing import List, Optional
 from fastapi import HTTPException #pra codigo de erros
 
+#pip install passlib[bcrypt]
+#pip install 'pydantic[email]'
+from pydantic import BaseModel, EmailStr #EmailStr faz uma validação básica de email
+from passlib.context import CryptContext #pra criptografar senhas
+
 app = FastAPI() #objeto base pra cuidar dos endpoint
 
 origins = [
@@ -21,6 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 questions = [] #guardando as questoes na memoria msm por enquanto, reseta com o server
 class Question(BaseModel): #estrutura das questoes
     id: int
@@ -30,6 +36,20 @@ class Question(BaseModel): #estrutura das questoes
     question: str
     image_url: str | None=None
 
+#users
+users = []  #guardando na memoria por enquanto
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")#configuração pro hashing de senha
+class User(BaseModel): #estrutura do user
+    id: int
+    name: str
+    email: EmailStr
+    hashed_password: str
+
+class UserCreate(BaseModel): #estrutura dos dados que vão chegar no front
+    name: str
+    email: EmailStr
+    password: str
+#users
 
 
 #cria a nova duvida, retorna sucesso de der certo
@@ -76,6 +96,29 @@ async def deleteQuestion(question_id: int, email: str = Body(..., embed=True)):
             return {"message": f"Questão {question_id} deletada com sucesso"}
     raise HTTPException(status_code=404, detail="Questão não encontrada")
 
+
+#endpoint registro
+@app.post("/registro", response_model=User)
+async def register_user(user_data: UserCreate):
+    for u in users: #verifica se o email existe
+        if u.email == user_data.email:
+            raise HTTPException(status_code=400, detail="Esse email já existe!!!")
+
+    hashed_password = pwd_context.hash(user_data.password)#criptografa a senha
+
+    new_user = User( #cria um novo usuário
+        id=len(users) + 1,
+        name=user_data.name,
+        email=user_data.email,
+        hashed_password=hashed_password
+    )
+
+    users.append(new_user)#salva o usuario na lista
+    
+    print("Usuários cadastrados: ", users) #pra manter o controle
+    
+    return new_user
+#endpoint registro
 
 #rodar o server
 if __name__=="__main__":
