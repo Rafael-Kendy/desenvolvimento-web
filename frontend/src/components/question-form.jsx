@@ -82,7 +82,7 @@ function QuestionForm({ onSubmit }) {
         placeholder="Digite sua dúvida para que alguém possa responder"
       />
 
-      <button type="submit">Postar dúvida</button>
+      <button type="submit" className="bold">Postar dúvida</button>
     </form>
   );
 }

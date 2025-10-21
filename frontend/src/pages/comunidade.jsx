@@ -90,6 +90,7 @@ function Comunidade(){
     const handleDelete = async(id, email)=>{ //func pra deletar questão
     try{
         await api.delete(`/comunidade/${id}`, { //mandando a request
+            headers: { "Content-Type": "application/json" },
             data: { email }, //manda o email junto
         });
         setPosts(posts.filter((post) => post.id !== id)); //se der certo, ja remove ele
@@ -106,6 +107,7 @@ function Comunidade(){
     const mapped_posts = [ //mapea as questao da api
         ...default_post,
         ...posts.map((q) => ({
+        id: q.id,
         src: q.image_url || placeHolder,
         alt: "Imagem da dúvida",
         community: "Dúvidas gerais",

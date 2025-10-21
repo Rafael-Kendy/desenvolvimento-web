@@ -1,5 +1,6 @@
 import DisplayImage from "../components/image";
 import { useState } from "react";
+import LabelField from "./label-field";
 
 function Post({content, onDelete}){
     const [showModal, setShowModal] = useState(false);
@@ -50,39 +51,45 @@ function Post({content, onDelete}){
                 </div>
             ))}
 
-            {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-                    <h3 className="text-lg font-bold mb-2 text-center">
-                    Confirme sua identidade
-                    </h3>
-                    <p className="text-sm mb-3 text-gray-600 text-center">
-                    Insira o email usado ao criar esta dúvida para deletá-la.
-                    </p>
-                    <input
-                    type="email"
-                    placeholder="seuemail@exemplo.com"
+            <>
+                <div className="modal" role="dialog" aria-modal="true">
+                <div className="modal-header">
+                    <div className="gold bold sans-serif">Confirmar exclusão</div>
+                    <button
+                    onClick={closeModal}
+                    className="close bold"
+                    aria-label="Fechar modal"
+                    >
+                    &times;
+                    </button>
+                </div>
+                <div className="modal-text justify">
+                    <p>Insira o email usado ao criar esta dúvida para deletá-la:</p>
+
+                    <LabelField 
+                    icon="fa-solid fa-envelope"
+                    label="E-mail"
+                    name="email"
+                    type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border w-full p-2 rounded mb-4"
+                    required
+                    placeholder="seuemail@exemplo.com"
                     />
-                    <div className="flex justify-between">
-                    <button
-                        onClick={confirmDelete}
-                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                    >
-                        Deletar
-                    </button>
-                    <button
-                        onClick={closeModal}
-                        className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-                    >
-                        Cancelar
-                    </button>
+
+                    <div className="modal-buttons">
+                        <button onClick={confirmDelete} className="bold">
+                            Deletar
+                        </button>
+                        <button onClick={closeModal} className="bold">
+                            Cancelar
+                        </button>
                     </div>
                 </div>
                 </div>
+                <div id="overlay" onClick={closeModal}></div>
+            </>
             )}
         </div>
     )
