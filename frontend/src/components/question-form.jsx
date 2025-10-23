@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from 'react';
 import LabelField from "./label-field";
 
-function QuestionForm({ onSubmit }) {
+function QuestionForm({ onSubmit, initialData }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -9,6 +9,18 @@ function QuestionForm({ onSubmit }) {
     question: "",
     image: null,
   });
+
+  useEffect(() => {
+    if(initialData){ //caso de edicao, ja recebe a questao e joga nos campos
+      setFormData({
+        name: initialData.name || "",
+        email: initialData.email || "",
+        title: initialData.title || "",
+        question: initialData.question || "",
+        image: null,
+      });
+    }
+  }, [initialData]);
 
   //cuida das mudancas no input do form
   const handleChange = (e) => {

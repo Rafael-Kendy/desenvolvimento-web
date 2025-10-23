@@ -1,25 +1,27 @@
 import DisplayImage from "../components/image";
 import { useState } from "react";
 import LabelField from "./label-field";
+import Modal from "./modal";
 
-function Post({content, onDelete}){
-    const [showModal, setShowModal] = useState(false);
+function Post({content, onDelete, onEdit}){
+    const [modalType, setModalType] = useState(null); //delete ou edit
     const [selectedId, setSelectedId] = useState(null);
     const [email, setEmail] = useState("");
 
-    const openModal = (id) => {
+    const openModal=(type, id) => {
+        setModalType(type);
         setSelectedId(id);
         setEmail("");
-        setShowModal(true);
     };
 
-    const closeModal = () => {
-        setShowModal(false);
+    const closeModal=() => {
+        setModalType(null);
         setSelectedId(null);
     };
 
-    const confirmDelete = () => {
-        onDelete(selectedId, email);
+    const confirmAction=() => {
+        if(modalType==="delete") onDelete(selectedId, email);
+        if(modalType==="edit") onEdit(selectedId, email);
         closeModal();
     };
 
@@ -38,8 +40,8 @@ function Post({content, onDelete}){
                                 <span className="dark-gray smaller-font">Postado por {post.author} - {post.date}</span>
                             </p>
                             <div className="blue">
-                                <i class="fa-solid fa-pen-to-square"></i>&nbsp;&nbsp;
-                                <i className="fa-solid fa-trash" onClick={() => openModal(post.id)} ></i>&nbsp;&nbsp;
+                                <i class="fa-solid fa-pen-to-square" onClick={() => openModal("edit", post.id)}></i>&nbsp;&nbsp;
+                                <i className="fa-solid fa-trash" onClick={() => openModal("delete", post.id)} ></i>&nbsp;&nbsp;
                                 <i class="fa-solid fa-bars"></i>
                             </div>
                         </div>
@@ -51,23 +53,18 @@ function Post({content, onDelete}){
                 </div>
             ))}
 
-            {showModal && (
-            <>
-                <div className="modal" role="dialog" aria-modal="true">
-                <div className="modal-header">
-                    <div className="gold bold sans-serif">Confirmar exclusão</div>
-                    <button
-                    onClick={closeModal}
-                    className="close bold"
-                    aria-label="Fechar modal"
-                    >
-                    &times;
-                    </button>
-                </div>
-                <div className="modal-text justify">
-                    <p>Insira o email usado ao criar esta dúvida para deletá-la:</p>
+            {modalType && (
+                <Modal
+                    title={modalType==="delete" ? "Confirmar exclusão" : "Confirmar edição"}
+                    onClose={closeModal}
+                    primaryAction={confirmAction}
+                    primaryLabel={modalType==="delete" ? "Deletar" : "Editar"}
+                >
+                <p>
+                    {modalType==="delete" ? "Insira o email usado ao criar esta dúvida para deletá-la:" : "Insira o email usado ao criar esta dúvida para editá-la:"}
+                </p>
 
-                    <LabelField 
+                <LabelField
                     icon="fa-solid fa-envelope"
                     label="E-mail"
                     name="email"
@@ -76,23 +73,11 @@ function Post({content, onDelete}){
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="seuemail@exemplo.com"
-                    />
-
-                    <div className="modal-buttons">
-                        <button onClick={confirmDelete} className="bold">
-                            Deletar
-                        </button>
-                        <button onClick={closeModal} className="bold">
-                            Cancelar
-                        </button>
-                    </div>
-                </div>
-                </div>
-                <div id="overlay" onClick={closeModal}></div>
-            </>
+                />
+                </Modal>
             )}
         </div>
-    )
+    );
 }
 
 export default Post

@@ -68,40 +68,70 @@ function Comunidade(){
 
     const [posts, setPosts] = useState([]); //onde fica as questoes na pagina
 
+
     const handleFormSubmit = async(data)=>{ //func chamada ao clicar no botao de submeter
         try{
-            const formData = new FormData(); //cria um novo objeto a partir do form
-            formData.append("name", data.name); //e vai adicionado as coisas dos campos nele
-            formData.append("email", data.email);
-            formData.append("title", data.title);
-            formData.append("question", data.question);
-            if(data.image){ formData.append("image", data.image); }
+            //caso esteja vindo de uma edicao, ele so atualiza a questao
+            if(editingPost){ 
+                const response = await api.put(`/comunidade/${editingPost.id}`, {
+                    email: data.email,
+                    name: data.name,
+                    title: data.title,
+                    question: data.question,
+                });
+                setPosts(
+                    posts.map((p)=>(p.id===editingPost.id ? response.data.question : p))
+                );
+                setEditingPost(null); //limpa a edicao
+                //alert("Dúvida atualizada com sucesso!");
+            //caso de realmente estar fazendo uma duvida nova
+            }else{
+                const formData = new FormData(); //cria um novo objeto a partir do form
+                formData.append("name", data.name); //e vai adicionado as coisas dos campos nele
+                formData.append("email", data.email);
+                formData.append("title", data.title);
+                formData.append("question", data.question);
+                if(data.image){ formData.append("image", data.image); }
 
-            const response = await api.post("/comunidade", formData,{ //manda uma requisicao de post
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            setPosts([response.data.question, ...posts]); //se der certo, adiciona a questao
+                const response = await api.post("/comunidade", formData,{ //manda uma requisicao de post
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+                setPosts([response.data.question, ...posts]); //se der certo, adiciona a questao
+                //alert("Dúvida criada com sucesso!");
+            }
         }catch(error){
             console.error("Erro ao postar questão:", error);
             alert("Erro ao enviar sua dúvida. Verifique o console para mais detalhes.");
         }
     };
 
+
+
     const handleDelete = async(id, email)=>{ //func pra deletar questão
-    try{
-        await api.delete(`/comunidade/${id}`, { //mandando a request
-            headers: { "Content-Type": "application/json" },
-            data: { email }, //manda o email junto
-        });
-        setPosts(posts.filter((post) => post.id !== id)); //se der certo, ja remove ele
-    }catch(error){
-        if (error.response?.status === 403) {
-        alert("Email incorreto! Você não pode deletar esta dúvida.");
-        } else {
-        console.error("Error deleting question:", error);
-        alert("Erro ao excluir a dúvida.");
+        try{
+            await api.delete(`/comunidade/${id}`, { //mandando a request
+                headers: { "Content-Type": "application/json" },
+                data: { email }, //manda o email junto
+            });
+            setPosts(posts.filter((post) => post.id !== id)); //se der certo, ja remove ele
+        }catch(error){
+            if (error.response?.status === 403) {
+                alert("Email incorreto! Você não pode deletar esta dúvida.");
+            } else {
+                console.error("Error deleting question:", error);
+                alert("Erro ao excluir a dúvida.");
+            }
         }
-    }
+    };
+
+    const [editingPost, setEditingPost] = useState(null); // holds post being edited
+    const handleEdit = (id, email)=>{
+        const postToEdit=posts.find((p) => p.id === id); //manda o id pra ver se acha
+        if(!postToEdit) return alert("Post não encontrado.");
+        //caso do email tiver errado
+        if(postToEdit.email !== email) return alert("Email incorreto! Você não pode editar esta dúvida.");
+
+        setEditingPost(postToEdit); //se tiver td certo, manda pro form
     };
 
     const mapped_posts = [ //mapea as questao da api
@@ -136,12 +166,12 @@ function Comunidade(){
                     <h2 className="center">Dúvidas</h2>
 
                     <h3 className="gold">Tirar dúvida</h3>
-                    <QuestionForm onSubmit={handleFormSubmit} />
+                    <QuestionForm onSubmit={handleFormSubmit} initialData={editingPost} />
 
                     <br/>
 
                     <h3 className="gold">Dúvidas postadas</h3>
-                    <Post content={mapped_posts} onDelete={handleDelete}/>
+                    <Post content={mapped_posts} onDelete={handleDelete} onEdit={handleEdit}/>
                 </div>
             </main>
 

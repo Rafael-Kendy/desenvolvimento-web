@@ -52,6 +52,9 @@ class UserCreate(BaseModel): #estrutura dos dados que vão chegar no front
 #users
 
 
+
+#questoes --------------------------------------------------------------------------------------------
+
 #cria a nova duvida, retorna sucesso de der certo
 @app.post("/comunidade")
 async def setQuestion( #acessa os dados do formulario
@@ -76,12 +79,10 @@ async def setQuestion( #acessa os dados do formulario
     return {"message": "Questão adicionada", "question": new_question}
 
 
-
 #pega todas as questoes
 @app.get("/comunidade", response_model=List[Question])
 async def getQuestions():
     return questions
-
 
 
 #deleta 1 questao, se confirmar o email
@@ -96,6 +97,29 @@ async def deleteQuestion(question_id: int, email: str = Body(..., embed=True)):
             return {"message": f"Questão {question_id} deletada com sucesso"}
     raise HTTPException(status_code=404, detail="Questão não encontrada")
 
+
+#edita a questao, segue a msm logica do email do delete
+@app.put("/comunidade/{question_id}")
+async def updateQuestion(question_id: int, email:str = Body(..., embed=True), name:str|None = Body(None), title:str|None = Body(None), question:str|None = Body(None)):
+    global questions
+    for q in questions: #percorre as questoes
+        if q.id == question_id: #acha o id
+            if q.email != email: #email errado
+                raise HTTPException(status_code=403, detail="Email incorreto. Você não pode editar esta dúvida.")
+            
+            #email certo, att os dados
+            if name is not None:
+                q.name = name
+            if title is not None:
+                q.title = title
+            if question is not None:
+                q.question = question
+
+            return {"message": f"Questão {question_id} atualizada com sucesso", "question": q}
+    raise HTTPException(status_code=404, detail="Questão não encontrada")
+
+
+#registro/usuarios -----------------------------------------------------------------------------------
 
 #endpoint registro
 @app.post("/registro", response_model=User)
