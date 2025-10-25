@@ -31,15 +31,19 @@ function Registro() {//componente, ela retorna um bloco de jsx
         }
 
         //onde tenta enviar pro backend
-        try {
-            const response = await api.post("/registro", {//await pausa a funçaõ aqui e o api.post terminar
-            //envia um POST pro endpoint /registro na main.py 
+        try {//api.post envia o objeto JSON pro backend no endpoint /registro na main.py
+            const response = await api.post("/registro", {//await pausa a funçaõ aqui e espera o api.post terminar, espera o new_user vir e armazena no response
+            //response eh oq recebe de volta do backend
+            
 
-                //corpo da requisição, JSON usando os valores de estado
+                //o que eh enviado pro backend
+                //corpo da requisição, objeto JSON usando os valores de estado
                 name: name,
                 email: email,
                 password: password
             });
+            
+            //await terminou
 
             //se deu bom
             console.log("Registro enviado com sucesso:", response.data);
@@ -67,7 +71,7 @@ function Registro() {//componente, ela retorna um bloco de jsx
             <h1 className="gold">Criar Conta</h1> {/*quando o botão submit for clicado handleSubmit será chamada*/}
 
             <p className="subtitle"> {/**/}
-              ou entre com uma <Link to="/login" className="blue">conta existente</Link>{/*link criaum link de navegação sem recarregar a pág*/}
+              ou entre com uma <Link to="/login" className="blue">conta existente</Link>{/*link cria um link de navegação sem recarregar a pág*/}
             </p> {/*o link faz uma navegação para a rota sem recarregar a pagina, deixando mais fluido */}
 
             <br />
@@ -89,7 +93,7 @@ function Registro() {//componente, ela retorna um bloco de jsx
             <div className="input-group">
               <label htmlFor="email">Email</label>
               <input type="email" id="email" name="email" placeholder="Digite seu email" required 
-              value={email}//rola a msm coisa explica pro name
+              value={email}//rola a msm coisa explicada pro name
               onChange={(e) => setEmail(e.target.value)}
               />
             </div>
@@ -97,7 +101,7 @@ function Registro() {//componente, ela retorna um bloco de jsx
             <div className="input-group">
               <label htmlFor="password">Senha</label>
               <input type="password" id="password" name="password" placeholder="Digite sua senha" required 
-              value={password}//rola a msm coisa explica pro name
+              value={password}//rola a msm coisa explicada pro name
               onChange={(e) => setPassword(e.target.value)}
               />
             </div>
@@ -105,7 +109,7 @@ function Registro() {//componente, ela retorna um bloco de jsx
             <div className="input-group">
               <label htmlFor="confirm-password">Confirme a Senha</label>
               <input type="password" id="confirm-password" name="confirm-password" placeholder="Digite novamente sua senha" required 
-              value={confirmPassword}//rola a msm coisa explica pro name
+              value={confirmPassword}//rola a msm coisa explicada pro name
               onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
