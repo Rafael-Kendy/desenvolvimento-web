@@ -10,6 +10,13 @@ from fastapi import HTTPException #pra codigo de erros
 from pydantic import BaseModel, EmailStr #EmailStr faz uma validação básica de email
 from passlib.context import CryptContext #pra criptografar senhas
 
+#pip install "python-jose[cryptography]"
+from typing import Annotated
+from datetime import datetime, timedelta, timezone
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt #jose kkkkkk JSON object signing and encryption
+
 app = FastAPI() #objeto base pra cuidar dos endpoint
 
 origins = [
@@ -40,6 +47,7 @@ class Question(BaseModel): #estrutura das questoes
 users = []  #guardando na memoria por enquanto
 #configura o passlib, diz p ele q quero usar o bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")#configuração pro hashing de senha
+
 class User(BaseModel): #estrutura do user sque é salva
     id: int
     name: str
@@ -50,6 +58,35 @@ class UserCreate(BaseModel): #estrutura dos dados que vão chegar do front
     name: str
     email: EmailStr
     password: str 
+
+#login
+#config do JWT (JSON web token)
+SECRET_KEY = "FACA_O_L_IMEDIATAMENTE" #pode ser qualquer string longa e aleatória
+ALGORITHM = "HS256" #algoritmo de assinatura
+ACCESS_TOKEN_EXPIRE_MINUTES = 30 #tempo de validade do token
+
+#funçao pra buscar o usuario na lista de usuario
+def get_user(email: str):
+    for u in users:
+        if u.email == email:
+            return u
+    return None
+
+#p/criar novo token de acesso
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+
+    #define o tempo de exibiçaõ do token 
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+
+    #assina o token com o secret_ket e algorithm
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+#login
 #users
 
 
@@ -145,6 +182,41 @@ async def register_user(user_data: UserCreate): #a API automaticamente pega o JS
     
     return new_user#retonra o usuario criado
 #endpoint registro
+
+#login -----------------------------------------------------------------------------------
+
+#endpoint login
+#chamado qnd o usuario clica em entrar  
+@app.post("/token")
+async def login_for_access_token(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]#o OAuth2PasswordRequestForm força o login a usar dados de formulário
+):
+    #encontra o usuario
+    user = get_user(form_data.username)#email vem do form.data_username
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email ou senha incorretos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    #verifica a senha
+    if not pwd_context.verify(form_data.password, user.hashed_password):#o pwd_context.verify compara a senha que o usuário digitou
+        raise HTTPException(#se der ruim, erro 401 nao autorizado
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email ou senha incorretos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
+    #se deu bom, cria um token pro usuario
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        #sub de subject é o nome padrão para guardar a identidade do usuário (o email)
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    #retorna o token pro frontend
+    return {"access_token": access_token, "token_type": "bearer"}
+#endpoint login
 
 #rodar o server
 if __name__=="__main__":
