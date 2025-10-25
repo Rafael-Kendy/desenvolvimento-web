@@ -38,17 +38,18 @@ class Question(BaseModel): #estrutura das questoes
 
 #users
 users = []  #guardando na memoria por enquanto
+#configura o passlib, diz p ele q quero usar o bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")#configuração pro hashing de senha
-class User(BaseModel): #estrutura do user
+class User(BaseModel): #estrutura do user sque é salva
     id: int
     name: str
-    email: EmailStr
+    email: EmailStr #faz validação automatica de email
     hashed_password: str
 
-class UserCreate(BaseModel): #estrutura dos dados que vão chegar no front
+class UserCreate(BaseModel): #estrutura dos dados que vão chegar do front
     name: str
     email: EmailStr
-    password: str
+    password: str 
 #users
 
 
@@ -122,11 +123,12 @@ async def updateQuestion(question_id: int, email:str = Body(..., embed=True), na
 #registro/usuarios -----------------------------------------------------------------------------------
 
 #endpoint registro
-@app.post("/registro", response_model=User)
-async def register_user(user_data: UserCreate):
+@app.post("/registro", response_model=User)#response model define o formato, no caso User
+async def register_user(user_data: UserCreate): #a API automaticamente pega o JSON do frontend, valida com o userCreate e joga, como um objeto, pro user_data
+    
     for u in users: #verifica se o email existe
-        if u.email == user_data.email:
-            raise HTTPException(status_code=400, detail="Esse email já existe!!!")
+        if u.email == user_data.email:#se existe, cria o erro 400, q o front vai capturar 
+            raise HTTPException(status_code=400, detail="Esse email já existe!")
 
     hashed_password = pwd_context.hash(user_data.password)#criptografa a senha
 
@@ -134,14 +136,14 @@ async def register_user(user_data: UserCreate):
         id=len(users) + 1,
         name=user_data.name,
         email=user_data.email,
-        hashed_password=hashed_password
+        hashed_password=hashed_password #salva a versao criptografada
     )
 
     users.append(new_user)#salva o usuario na lista
     
-    print("Usuários cadastrados: ", users) #pra manter o controle
+    print("Usuários cadastrados: ", users) #pra manter o controle e ver no terminal
     
-    return new_user
+    return new_user#retonra o usuario criado
 #endpoint registro
 
 #rodar o server
