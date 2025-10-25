@@ -180,19 +180,21 @@ async def register_user(user_data: UserCreate): #a API automaticamente pega o JS
     
     print("Usuários cadastrados: ", users) #pra manter o controle e ver no terminal
     
-    return new_user#retonra o usuario criado
+    return new_user#retonra o usuario criado, envia la pro frontend em registro.jsx
 #endpoint registro
 
 #login -----------------------------------------------------------------------------------
 
 #endpoint login
 #chamado qnd o usuario clica em entrar  
-@app.post("/token")
+@app.post("/token")#fastAPI ve a req POST em /token
 async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]#o OAuth2PasswordRequestForm força o login a usar dados de formulário
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]#o OAuth2PasswordRequestForm é um modelo especial do fastAPI e força o login a usar dados de formulário,
+    #automaticamente pega os dados enviados pelo login e coloca no form_data
 ):
     #encontra o usuario
-    user = get_user(form_data.username)#email vem do form.data_username
+    user = get_user(form_data.username)#email vem do form.data_username 
+    #pega os dados da lista de usuario feita no endpoint do /registro, ele procura na lista users por alguem com tal email
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
