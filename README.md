@@ -4,9 +4,11 @@
 
 ### Instruções de instalação e execução
 
+A totalidade dessa entrega está na branch main deste repositório.
+
 Antes de acessar o projeto, é primeiro necessário baixar os arquivos, para isso você pode clicar no botão "Code" e então em "Download ZIP", ou então usando o terminal, executar o comando `git clone https://github.com/Rafael-Kendy/desenvolvimento-web.git`. Caso tenha baixado o ZIP, extraia os arquivos para um pasta.
 
-Abra o terminal dentro da pasta que você baixou, `cd {CAMINHO DA PASTA}`. 
+Abra o terminal dentro da pasta que você baixou, `cd {CAMINHO DA PASTA}`.
 
 #### Executando o backend
 
