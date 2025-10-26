@@ -5,21 +5,21 @@ import Modal from "./modal";
 
 function Post({content, onDelete, onEdit}){
     const [modalType, setModalType] = useState(null); //delete ou edit
-    const [selectedId, setSelectedId] = useState(null);
-    const [email, setEmail] = useState("");
+    const [selectedId, setSelectedId] = useState(null); //id do post a ser mexido
+    const [email, setEmail] = useState(""); //email pra confirmacao
 
-    const openModal=(type, id) => {
+    const openModal=(type, id) => { //abre o modal, chamada qnd clica em algm icone
         setModalType(type);
         setSelectedId(id);
         setEmail("");
     };
 
-    const closeModal=() => {
+    const closeModal=() => { //fecha o modal
         setModalType(null);
         setSelectedId(null);
     };
 
-    const confirmAction=() => {
+    const confirmAction=() => { //quando clica no confirmar da modal, chama a funcao dependendo do seu tipo
         if(modalType==="delete") onDelete(selectedId, email);
         if(modalType==="edit") onEdit(selectedId, email);
         closeModal();

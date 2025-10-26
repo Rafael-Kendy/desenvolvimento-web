@@ -12,12 +12,13 @@ function QuestionForm({ onSubmit, initialData }) {
     image: null,
   });
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [searchResult, setSearchResult] = useState("");
+  const [modalOpen, setModalOpen] = useState(false); //abre o modal
+  const [searchResult, setSearchResult] = useState(""); //qnd for pra pesquisa da net
+  const [source, setSource] = useState(""); //fonte da pesquisa, qual das 2 api ta usando
 
 
 
-  //pra pegar dados de edicao caso seja
+  //pra pegar dados de edicao caso seja, 
   useEffect(() => {
     if(initialData){ //caso de edicao, ja recebe a questao e joga nos campos
       setFormData({
@@ -28,15 +29,15 @@ function QuestionForm({ onSubmit, initialData }) {
         image: null,
       });
     }
-  }, [initialData]);
+  }, [initialData]); //roda sempre que initialData muda
 
 
-  //cuida das mudancas no input do form
+  //cuida das mudancas no input do form, sempre q algum campo muda
   const handleChange = (e) => {
     const {name, value, files} = e.target; //pega o nome do campo, valor e arquivo se tiver, e.target seria o campo em si
     setFormData({
-      ...formData,
-      [name]: files? files[0] : value, //ve se e arquivo ou texto
+      ...formData, //mantem o restante que tava escrito
+      [name]: files? files[0] : value, //atualiza so o campo que mudou
     });
   };
 
@@ -51,11 +52,12 @@ function QuestionForm({ onSubmit, initialData }) {
 
   //pras API do duckduckgo e da wikipedia
   const handleSearch=async() => {
-    if(!formData.title.trim()){
+    if(!formData.title.trim()){ //a busca e feita usando o titulo da duvida, entao tem q ter algo nele pra usar
       alert("A funcionalidade de busca usa o título da dúvida, por favor digite um título antes de pesquisar.");
       return;
     }
 
+    //codifica o titulo pra usar certo (tipo espaco virar %20, da pra ver isso nas url de pesquisa do google)
     const query = encodeURIComponent(formData.title);
 
     try{
@@ -63,33 +65,37 @@ function QuestionForm({ onSubmit, initialData }) {
       const searchRes = await fetch(
         `https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=${query}&format=json&origin=*`
       );
-      const searchData = await searchRes.json();
+      const searchData = await searchRes.json(); //pega o resultado via json
 
-      if (searchData.query.search.length > 0) {
-        const firstTitle = searchData.query.search[0].title; // pega o título mais relevante
-        const summaryRes = await fetch(
+      if(searchData.query.search.length > 0){ //se retornou algo, pega a primeira pagina como resposta
+        const firstTitle = searchData.query.search[0].title;
+        const summaryRes = await fetch( //outra request pra pegar o resumo dessa pagina
           `https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(firstTitle)}`
         );
-        const summaryData = await summaryRes.json();
-
-        if (summaryData.extract) {
+        const summaryData = await summaryRes.json(); //converte
+      
+        if(summaryData.extract){ //se tiver alguma coisa, mostra no modal 
           setSearchResult(summaryData.extract);
+          setSource("Wikipedia");
           setModalOpen(true);
           return;
         }
       }
 
-      ////se nao der na wikipedia, tenta pelo duckduckgo
-      const ddgRes = await fetch(`https://api.duckduckgo.com/?q=${query}&format=json`);
+      //se nao der na wikipedia, tenta pelo duckduckgo
+      const ddgRes = await fetch(`https://api.duckduckgo.com/?q=${query}&format=json`); //faz a request
       const ddgData = await ddgRes.json();
 
+      //extrai a resposta, prioridade pelo resumo, topicos relacionados, definicao e entao uma mensagem padrao
       const answer =
         ddgData.AbstractText ||
         (ddgData.RelatedTopics?.[0]?.Text ?? "") ||
         ddgData.Definition ||
         "Não foi possível encontrar uma explicação sobre o título inserido.";
 
+      //abre o modal
       setSearchResult(answer);
+      setSource("DuckDuckGo");
       setModalOpen(true);
     } catch (error) {
       console.error("Erro ao buscar informações:", error);
@@ -158,7 +164,7 @@ function QuestionForm({ onSubmit, initialData }) {
 
         <div>
           <button type="submit" className="bold">Postar dúvida</button>&nbsp;&nbsp;&nbsp;&nbsp;
-          <button type="button" className="bold" onClick={handleSearch}>Pesquisar na internet</button>
+          <button type="button" className="bold" onClick={handleSearch}><i class="fa-solid fa-globe"/> Pesquisar na internet</button>
         </div>
       </form>
 
@@ -168,7 +174,8 @@ function QuestionForm({ onSubmit, initialData }) {
           onClose={() => setModalOpen(false)}
           primaryAction={() => setModalOpen(false)}
           primaryLabel="Fechar"
-          secondaryLabel=""
+          secondaryLabel="null"
+          source={source}
         >
           <p>{searchResult}</p>
         </Modal>

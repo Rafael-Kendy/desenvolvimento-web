@@ -124,7 +124,7 @@ function Comunidade(){
         }
     };
 
-    const [editingPost, setEditingPost] = useState(null); // holds post being edited
+    const [editingPost, setEditingPost] = useState(null); //segura os posts que estiver editando
     const handleEdit = (id, email)=>{
         const postToEdit=posts.find((p) => p.id === id); //manda o id pra ver se acha
         if(!postToEdit) return alert("Post não encontrado.");
@@ -134,7 +134,7 @@ function Comunidade(){
         setEditingPost(postToEdit); //se tiver td certo, manda pro form
     };
 
-    const mapped_posts = [ //mapea as questao da api
+    const mapped_posts = [ //mapea as questoes pela api
         ...default_post,
         ...posts.map((q) => ({
         id: q.id,
