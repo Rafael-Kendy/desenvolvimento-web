@@ -54,10 +54,22 @@ class User(BaseModel): #estrutura do user sque é salva
     email: EmailStr #faz validação automatica de email
     hashed_password: str
 
+
 class UserCreate(BaseModel): #estrutura dos dados que vão chegar do front
     name: str
     email: EmailStr
     password: str 
+
+#perfil
+class UserPublic(BaseModel): #estrutura dos dados que vao ser enviado ao front
+    id: int
+    name: str
+    email: EmailStr
+    #nao tem a senha hashed pq n faz sentido enviar ela pro frotnend
+
+#dependencia de segurança, quando usar o OAuth2 a fastAPI procura por um cabeçalho Authorization: Bearer <token> na requisição
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")#tokenUrl informa que o endpoint de login é o /token
+#perfil
 
 #login
 #config do JWT (JSON web token)
@@ -87,8 +99,40 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 #login
-#users
 
+#perfil
+async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)]):# o depends() faz a fastAPI pegar o token do cabeçalho e mandar ele p/ variavel token
+    #token: Annotated pega o token do cabeçalho Authorization, abre ele, acha o email "sub", usa o email pra achar o user na lista de users,
+    #endpoint ent retorna os dados em return current_user la em baixo~
+    #response_model=UserPublic filtra para id, name, email
+    
+    #erro padrao
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Não foi possível validar as credenciais",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        #tenta decodificar o token usando a senha secreta
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+        #pega o email de dentro do token, q foi salvado como sub no endpoint /token
+        email: str = payload.get("sub")
+        
+        if email is None:
+            raise credentials_exception#se nao houver sub no token
+    except JWTError:
+        #se o token for inválido ou expirado msotra o erro
+        raise credentials_exception
+    
+    #se o token for valido, busca o usuário na lista users
+    user = get_user(email=email)
+    if user is None:
+        #se o usuário não existir mostra o erro
+        raise credentials_exception
+    return user
+#perfil
 
 
 #questoes --------------------------------------------------------------------------------------------
@@ -219,6 +263,22 @@ async def login_for_access_token(
     #retorna o token pro frontend
     return {"access_token": access_token, "token_type": "bearer"}
 #endpoint login
+
+#perfil -----------------------------------------------------------------------------------
+
+#endpoint perfil GET
+@app.get("/users/me", response_model=UserPublic)
+async def read_users_me(
+
+    #depend() faz com que antes de executar rode o get_current_active q funciona como um guarda costas
+    current_user: Annotated[User, Depends(get_current_active_user)]
+    #se falhar retorna o erro 401
+    #se der certo retorna o user e coloca ele no current_user
+):
+    #mesmo q retorne o current_user completo pro front ele n vai retornar a senha
+    return current_user
+#endpoint perfil GET
+
 
 #rodar o server
 if __name__=="__main__":
