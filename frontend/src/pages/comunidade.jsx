@@ -55,15 +55,15 @@ function Comunidade(){
     //roda isso qnd a pagina carrega
     useEffect(() => {
         document.title = "ChaveDigital - Comunidade"; //nome da tab
-        const fetchPosts = async()=>{ //pega os post via o get
+        const fetchPosts = async()=>{ //funcao para pegar as duvidas do backend
             try{
-                const response = await api.get("/comunidade");
-                setPosts(response.data);
+                const response = await api.get("/comunidade"); //chama a funcao do get
+                setPosts(response.data); //guarda as duvidas no estado post
             }catch(error){
                 console.error("Erro ao carregar questões:", error);
             }
         };
-        fetchPosts();
+        fetchPosts(); //executa a funcao quando o componente e montado
     }, []);
 
     const [posts, setPosts] = useState([]); //onde fica as questoes na pagina
@@ -81,7 +81,7 @@ function Comunidade(){
                 });
                 setPosts(
                     posts.map((p)=>(p.id===editingPost.id ? response.data.question : p))
-                );
+                ); //substitui a questao atualizada na lista
                 setEditingPost(null); //limpa a edicao
                 //alert("Dúvida atualizada com sucesso!");
             //caso de realmente estar fazendo uma duvida nova
@@ -96,7 +96,7 @@ function Comunidade(){
                 const response = await api.post("/comunidade", formData,{ //manda uma requisicao de post
                     headers: { "Content-Type": "multipart/form-data" },
                 });
-                setPosts([response.data.question, ...posts]); //se der certo, adiciona a questao
+                setPosts([response.data.question, ...posts]); //se der certo, adiciona a questao no topo da lista
                 //alert("Dúvida criada com sucesso!");
             }
         }catch(error){
@@ -138,11 +138,11 @@ function Comunidade(){
         ...default_post,
         ...posts.map((q) => ({
         id: q.id,
-        src: q.image_url || placeHolder,
+        src: q.image_url || placeHolder, //imagem real ou o placeholder
         alt: "Imagem da dúvida",
         community: "Dúvidas gerais",
         author: q.name,
-        date: "Hoje",
+        date: "Hoje", //valor estatico por enquanto
         icon: "fa-solid fa-circle-question",
         title: q.title,
         text: q.question,
