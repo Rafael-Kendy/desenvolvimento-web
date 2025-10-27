@@ -280,6 +280,27 @@ async def read_users_me(
 #endpoint perfil GET
 
 
+#Configurações -----------------------------------------------------------------------------------
+
+#endpoint config DELETE
+@app.delete("/users/me")
+async def delete_user_me(
+    #usa o get_current_active_user p/ pegar o token do cabeçalho da requisiçãoe encontrar o usuario na lista users e colocar no current_user
+    current_user: Annotated[User, Depends(get_current_active_user)] #se o token for inválido, ele já falha aqui
+):
+    #se o token for válido, current_user tem o usuário e pode ser remmovido 
+    try:
+        users.remove(current_user)#remove itens da lista de usuarios q eh criada pelo endpoint /registro
+        print("Usuário deletado:", current_user)
+        return {"Usuário deletado com sucesso"}
+    except ValueError:
+        #se current_user n estiver na lista users
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")#checagem dupla,eh oq o get_current_active_user já checa,
+#endpoint config DELETE
+
+
+
+
 #rodar o server
 if __name__=="__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
