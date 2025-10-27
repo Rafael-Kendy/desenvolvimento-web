@@ -94,7 +94,32 @@ Outra mudança que ocorre com usuários logados é que os campos "Nome" e "Email
 
 
 
-### Página de comunidade - Rafael Kendy
+
+### Página de - Seu nome
+
+
+#### FastAPI
+
+##### Post
+
+##### Get
+
+##### Delete
+
+##### Put
+
+
+#### API externa
+
+
+#### Autenticação/autorização
+
+
+
+
+
+### Página de - Seu nome
+
 
 
 #### FastAPI
