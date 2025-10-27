@@ -43,6 +43,7 @@ class Question(BaseModel): #estrutura das questoes
     question: str
     image_url: str | None=None
 
+
 #users
 users = []  #guardando na memoria por enquanto
 #configura o passlib, diz p ele q quero usar o bcrypt
@@ -53,6 +54,7 @@ class User(BaseModel): #estrutura do user sque é salva
     name: str
     email: EmailStr #faz validação automatica de email
     hashed_password: str
+    description: str | None = None #p/ descrição no perfil
 
 
 class UserCreate(BaseModel): #estrutura dos dados que vão chegar do front
@@ -66,10 +68,18 @@ class UserPublic(BaseModel): #estrutura dos dados que vao ser enviado ao front
     name: str
     email: EmailStr
     #nao tem a senha hashed pq n faz sentido enviar ela pro frotnend
+    description: str | None = None
 
 #dependencia de segurança, quando usar o OAuth2 a fastAPI procura por um cabeçalho Authorization: Bearer <token> na requisição
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")#tokenUrl informa que o endpoint de login é o /token
 #perfil
+
+#descriçaõ
+class UserUpdate(BaseModel):#forma como espera receber os dados do front
+    #o frontend não precisa enviar os dois campos ele pode enviar só o nom ou so a descrição ou os dois
+    name: str | None = None
+    description: str | None = None
+#descrição
 
 #login
 #config do JWT (JSON web token)
@@ -133,7 +143,6 @@ async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)])
         raise credentials_exception
     return user
 #perfil
-
 
 #questoes --------------------------------------------------------------------------------------------
 
@@ -217,7 +226,8 @@ async def register_user(user_data: UserCreate): #a API automaticamente pega o JS
         id=len(users) + 1,
         name=user_data.name,
         email=user_data.email,
-        hashed_password=hashed_password #salva a versao criptografada
+        hashed_password=hashed_password, #salva a versao criptografada
+        description="AAAAAAAA"
     )
 
     users.append(new_user)#salva o usuario na lista
@@ -279,8 +289,7 @@ async def read_users_me(
     return current_user
 #endpoint perfil GET
 
-
-#Configurações -----------------------------------------------------------------------------------
+#configurações -----------------------------------------------------------------------------------
 
 #endpoint config DELETE
 @app.delete("/users/me")
@@ -298,7 +307,30 @@ async def delete_user_me(
         raise HTTPException(status_code=404, detail="Usuário não encontrado")#checagem dupla,eh oq o get_current_active_user já checa,
 #endpoint config DELETE
 
+#descrição perfil -----------------------------------------------------------------------------------
 
+#endpoint perfil UPDATE
+@app.put("/users/me", response_model=UserPublic)
+async def update_user_me(
+    # pega os dados a serem atualizados do corpo da requisição, fastAPI valida se o JSON enviado bate com o modelo UserUpdate
+    user_update: UserUpdate,
+    
+    #usa o get_current_active_user para pegar o token do cabeçalho e validar ele, alem de dar o objeto user
+    current_user: Annotated[User, Depends(get_current_active_user)]#o usuário só pode editar a si mesmo
+):
+    #atualiza os campos se o frontend enviou um name q nao eh nulo
+    if user_update.name is not None:
+        current_user.name = user_update.name#atualiza o nome
+    
+    #atualiza os campos se o frontend enviou uma descrição q nao eh nula
+    if user_update.description is not None:
+        current_user.description = user_update.description#atualiza a descrição
+        
+    print("Usuário atualizado:", current_user) 
+    
+    #retorna o usuário com os dados atualizados, o response_model=UserPublic garante que a senha hash não vaze
+    return current_user
+#endpoint perfil PUT
 
 
 #rodar o server
