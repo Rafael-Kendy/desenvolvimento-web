@@ -121,7 +121,7 @@ function Perfil() {
           <div className="profile-description">
             <h2>Descrição do Perfil</h2>
             <p className="justify">
-              RANDANDANDAN 
+              {user.description || "..."}{/*p/ aparecer oq o usuario modificou da descriçaõ*/}
             </p>
           </div>
 
