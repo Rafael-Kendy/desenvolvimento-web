@@ -16,6 +16,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt #jose kkkkkk JSON object signing and encryption
+import hashlib #p/ usar o gravatar
 
 app = FastAPI() #objeto base pra cuidar dos endpoint
 
@@ -69,6 +70,7 @@ class UserPublic(BaseModel): #estrutura dos dados que vao ser enviado ao front
     email: EmailStr
     #nao tem a senha hashed pq n faz sentido enviar ela pro frotnend
     description: str | None = None
+    avatar_url: str
 
 #dependencia de segurança, quando usar o OAuth2 a fastAPI procura por um cabeçalho Authorization: Bearer <token> na requisição
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")#tokenUrl informa que o endpoint de login é o /token
@@ -285,8 +287,25 @@ async def read_users_me(
     #se falhar retorna o erro 401
     #se der certo retorna o user e coloca ele no current_user
 ):
-    #mesmo q retorne o current_user completo pro front ele n vai retornar a senha
-    return current_user
+    
+    #pega o email do usuario e formata com letras minusculas e sem espaço
+    email_address = current_user.email.lower().strip()
+    
+    # cria o hash MD5 do email, requisito do gravatar
+    md5_hash = hashlib.md5(email_address.encode('utf-8')).hexdigest()
+    
+    #url da API do gravatar, nao eh chamada com um api.get
+    avatar_url = f"https://www.gravatar.com/avatar/{md5_hash}?d=identicon"#md5 eh o identificador do usuario
+    # ?d=identicon eh pra ver se o usuario ja tem foto, se n tiver o gravatar ira gerar um icone geometrico como foto
+    
+    #
+    return UserPublic(
+        id=current_user.id,
+        name=current_user.name,
+        email=current_user.email,
+        description=current_user.description,
+        avatar_url=avatar_url #envia a URL para o frontend, perfil.jsx recebe em response.data.avatar_url
+    )
 #endpoint perfil GET
 
 #configurações -----------------------------------------------------------------------------------
