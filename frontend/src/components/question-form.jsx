@@ -15,6 +15,7 @@ function QuestionForm({ onSubmit, initialData }) {
   const [modalOpen, setModalOpen] = useState(false); //abre o modal
   const [searchResult, setSearchResult] = useState(""); //qnd for pra pesquisa da net
   const [source, setSource] = useState(""); //fonte da pesquisa, qual das 2 api ta usando
+  const [user, setUser] = useState(null); //pra quando o user ta logado
 
 
 
@@ -32,6 +33,37 @@ function QuestionForm({ onSubmit, initialData }) {
   }, [initialData]); //roda sempre que initialData muda
 
 
+//roda quando carrega a pagina
+  useEffect(() => {
+    const fetchUser=async() => {
+      const token = localStorage.getItem("token"); //verifica se tem token
+      if(!token)return; //se nao tiver token, nao deve estar logado
+
+      try{
+        const res = await fetch("http://localhost:8000/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        }); //manda o token pra validar
+
+        if(res.ok){ //se tiver tudo certo, pega o nome e email pra preencher o form
+          const userData = await res.json();
+          setUser(userData);
+          setFormData((prev) => ({
+            ...prev,
+            name: userData.name,
+            email: userData.email,
+          }));
+        }else{
+          console.warn("Usuário não autenticado ou token expirado.");
+        }
+      }catch(err){
+        console.error("Erro ao buscar dados do usuário:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+
   //cuida das mudancas no input do form, sempre q algum campo muda
   const handleChange = (e) => {
     const {name, value, files} = e.target; //pega o nome do campo, valor e arquivo se tiver, e.target seria o campo em si
@@ -44,9 +76,27 @@ function QuestionForm({ onSubmit, initialData }) {
 
   //quando submete o formulário
   const handleSubmit=(e) => {
-    e.preventDefault(); //pro navegador nao carregar
-    onSubmit?.(formData); //chama a funcao onSubmit do parente, se existir, e manda o form
-    setFormData({ name: "", email: "", title: "", question: "", image: null }); //reseta os campos
+    e.preventDefault();
+    onSubmit?.(formData);
+    //se tiver logado, pega o email o nome
+    if(user){
+      setFormData({
+        name: user.name,
+        email: user.email,
+        title: "",
+        question: "",
+        image: null,
+      });
+    }else{
+      //se nao, reseta tds os campos do form
+      setFormData({
+        name: "",
+        email: "",
+        title: "",
+        question: "",
+        image: null,
+      });
+    }
   };
 
 
@@ -164,7 +214,7 @@ function QuestionForm({ onSubmit, initialData }) {
 
         <div>
           <button type="submit" className="bold">Postar dúvida</button>&nbsp;&nbsp;&nbsp;&nbsp;
-          <button type="button" className="bold" onClick={handleSearch}><i class="fa-solid fa-globe"/> Pesquisar na internet</button>
+          <button type="button" className="bold" onClick={handleSearch}><i className="fa-solid fa-globe"/> Pesquisar na internet</button>
         </div>
       </form>
 

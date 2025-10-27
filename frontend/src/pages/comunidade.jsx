@@ -142,6 +142,7 @@ function Comunidade(){
         alt: "Imagem da dúvida",
         community: "Dúvidas gerais",
         author: q.name,
+        email: q.email,
         date: "Hoje", //valor estatico por enquanto
         icon: "fa-solid fa-circle-question",
         title: q.title,
