@@ -56,6 +56,7 @@ class User(BaseModel): #estrutura do user sque é salva
     email: EmailStr #faz validação automatica de email
     hashed_password: str
     description: str | None = None #p/ descrição no perfil
+    is_premium: bool = False
 
 
 class UserCreate(BaseModel): #estrutura dos dados que vão chegar do front
@@ -89,12 +90,12 @@ class Course(BaseModel): # modelo do curso
     title: str
     description: str | None = None
     content: str | None = None #campos opcionais!
-    
+    is_free: bool = True
 #curso
 
 #criar curso
 class CourseCreate(BaseModel): # modelo para criar um curso, a nível de teste se não forem tirados do banco de dados
-    nome: str
+    nome: str                  # no contexto da entrega 2, os cursos estão declarados lá embaixo, em courses = [...].
     descricao: str | None = None
     imagem: str | None = None
 #criar curso
@@ -245,7 +246,8 @@ async def register_user(user_data: UserCreate): #a API automaticamente pega o JS
         name=user_data.name,
         email=user_data.email,
         hashed_password=hashed_password, #salva a versao criptografada
-        description="AAAAAAAA"
+        description="AAAAAAAA",
+        is_premium=False
     )
 
     users.append(new_user)#salva o usuario na lista
@@ -378,7 +380,8 @@ courses = [
         content="""
                     1. E tudo mais
                     2. e coisa
-                    3. e tal"""
+                    3. e tal""",
+        is_free=True
     ),
     Course(
         id=2,
@@ -388,7 +391,8 @@ courses = [
                 1. hee hee
                 2. hoo hoo
                 3. haa haa
-                4. hii hii"""
+                4. hii hii""",
+        is_free=True
     ),
     Course(
         id=3,
@@ -396,7 +400,8 @@ courses = [
         description="",
         content="""Conversando com alguém longe de você. 
                 - uhuhu
-                - blabla."""
+                - blabla.""",
+        is_free=False               # TESTE DE CURSO PREMIUM! PRA DAR ERRO 403 NA PARTE DOS CURSOS
     )
 ]
 
@@ -410,12 +415,37 @@ async def listar_cursos(current_user: Annotated[User, Depends(get_current_active
 @app.get("/cursos/{course_id}", response_model=Course)
 async def get_one_course(course_id: int, current_user: Annotated[User, Depends(get_current_active_user)]):
   
-    # procura o curso pelo id na lista courses
+    # procura o curso pelo id em courses
+    found_course = None
     for course in courses:
         if course.id == course_id:
-            return course
-    # caso o curso nao seja encontrado em courses, levanta 404
-    raise HTTPException(status_code=404, detail="Curso não encontrado")
+            found_course = course
+            break
+
+    # curso não encontrado em courses -> levanta 404
+    if not found_course:
+        raise HTTPException(status_code=404, detail="Curso não encontrado")
+
+    # a parte daqui é de autorização.
+    # pra fazer a implementação de ambos, foi criado um tipo de conta "premium"
+    # se o curso for de graça, logados acessam.
+    # se não estiver logado, nem entra (pelo current_user: annotated bla bla bla)
+    # se o curso for premium, os de graça não acessam (MARX, 1867)
+    
+    # 1: se o curso for free, acessa
+    if found_course.is_free:
+        return found_course
+        
+    # 2: Se o curso NÃO for free, verifica se é user premium
+    if not current_user.is_premium:
+        # se realmente não for premium, levanta um 403
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Esse curso requer assinatura premium!"
+        )
+    
+    # se o usuário for premium E o curso não for gratuito, permite
+    return found_course
 #endpoint cursos especificos GET
 
 
