@@ -83,6 +83,22 @@ class UserUpdate(BaseModel):#forma como espera receber os dados do front
     description: str | None = None
 #descrição
 
+#curso
+class Course(BaseModel): # modelo do curso
+    id: int
+    title: str
+    description: str | None = None
+    content: str | None = None #campos opcionais!
+    
+#curso
+
+#criar curso
+class CourseCreate(BaseModel): # modelo para criar um curso, a nível de teste se não forem tirados do banco de dados
+    nome: str
+    descricao: str | None = None
+    imagem: str | None = None
+#criar curso
+
 #login
 #config do JWT (JSON web token)
 SECRET_KEY = "FACA_O_L_IMEDIATAMENTE" #pode ser qualquer string longa e aleatória
@@ -350,6 +366,57 @@ async def update_user_me(
     #retorna o usuário com os dados atualizados, o response_model=UserPublic garante que a senha hash não vaze
     return current_user
 #endpoint perfil PUT
+
+#cursos -----------------------------------------------------------------------------------
+
+#cursos na memória, igual users e questions. No futuro, virão do banco de dados, mas como ele NÃO EXISTE, estão hardcoded aqui.
+courses = [
+    Course(
+        id=1,
+        title="Internet",
+        description="O que você precisa saber para navegar na internet.",
+        content="""
+                    1. E tudo mais
+                    2. e coisa
+                    3. e tal"""
+    ),
+    Course(
+        id=2,
+        title="Computadores",
+        description="Aprenda a usar um computador.",
+        content="""Este é o curso de computadores. 
+                1. hee hee
+                2. hoo hoo
+                3. haa haa
+                4. hii hii"""
+    ),
+    Course(
+        id=3,
+        title="Chamadas",
+        description="",
+        content="""Conversando com alguém longe de você. 
+                - uhuhu
+                - blabla."""
+    )
+]
+
+#endpoint cursos GET
+@app.get("/cursos", response_model=list[Course])
+async def listar_cursos(current_user: Annotated[User, Depends(get_current_active_user)]): #só usuarios logados podem ver os cursos!
+    return courses
+#endpoint cursos GET
+
+#endpoint cursos especificos GET
+@app.get("/cursos/{course_id}", response_model=Course)
+async def get_one_course(course_id: int, current_user: Annotated[User, Depends(get_current_active_user)]):
+  
+    # procura o curso pelo id na lista courses
+    for course in courses:
+        if course.id == course_id:
+            return course
+    # caso o curso nao seja encontrado em courses, levanta 404
+    raise HTTPException(status_code=404, detail="Curso não encontrado")
+#endpoint cursos especificos GET
 
 
 #rodar o server
