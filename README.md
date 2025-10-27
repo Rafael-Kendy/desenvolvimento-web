@@ -24,11 +24,16 @@ Navegue para o diretório frontend e execute o comando `npm install` para baixar
 
 Para o site funcionar em sua totalidade, o front e backend precisam estar ativos ao mesmo tempo.
 
+
+
+
+
 ### Página de comunidade - Rafael Kendy
 
 Essa página serviria para exibir todas as comunidades presentes dentro da plataforma, dentro de cada comunidade o usuário poderia ver dúvidas e discussões referentes a um tópico em específico.
 
 Para simplificar a execução do projeto, essa página mostra um carrosel de imagens que seriam referentes às comunidades criadas, abaixo desse elemento está a seção de dúvidas, que é onde escolhemos para ser uma das integrações com a FastAPI, através do seu endpoint, `/comunidade`.
+
 
 #### FastAPI
 
@@ -58,6 +63,7 @@ Similar ao `delete`, antes de chamar a função `put` em si, o usuário precisa 
 
 Quando o usuário clica no botão para postar a dúvida, a função na página de Comunidade reconhece que esse clique veio de uma edição, então chama o método `put` para atualizar a questão, isso também é feito pelo ID dela.
 
+
 #### API externa
 
 A API externa também foi implementada na página Comunidade, no componente `question-form.jsx`. Foram usadas 2 APIs para busca, a API DuckDuckGo e a pertencente ao Wikipedia.
@@ -75,3 +81,34 @@ No caso da API do Wikipedia, primeiramente é feito uma busca no site usando `ht
 DuckDuckGo é um site de pesquisas, similar ao Google, essa API deveria retornar dados como resumo, tópicos relacionados e definições. As requisições são feitas via o link `https://api.duckduckgo.com/?q=${query}&format=json`.
 
 Como dito anteriormente, encontramos alguns problemas com o uso dessa API, na maioria dos casos ela não retornava nenhum dado, conseguimos respostas apenas para questões "diretas" e em inglês, como por exemplo ao perguntar "What is HTML". Por causa disso, decidimos mantem ela como opção de fallback, sendo a API do Wikipedia a principal.
+
+
+#### Autenticação/autorização
+
+Como o desenvolvimento do site foi feito em paralelo entre os integrantes, foi decidido adicionar um pouco de isolamento da página de comunidade quanto a autenticação e autorização, para facilitar testes e não ficar com o desenvolvimento em espera. 
+
+Isto é, as dúvidas foram feitas de tal maneira que qualquer usuário, logado ou não possa edita-las, mesmo isso sendo um grande risco de segurança em um sistema real. Para adicionar um nível de segurança o usuário precisa digitar o email usado na criação da dúvida para liberar a ação. Caso o usuário esteja logado, o sistema autentifica seu token e faz uma comparação entre seu email e o de criação da dúvida, caso sejam o mesmo a janela modal pede apenas um clique de confirmação, caso contrário ainda é preciso digitar o email para comparação, isso vale para edição e exclusão.
+
+Outra mudança que ocorre com usuários logados é que os campos "Nome" e "Email" no formulário de dúvidas é preenchido automaticamente.
+
+
+
+
+### Página de comunidade - Rafael Kendy
+
+
+#### FastAPI
+
+##### Post
+
+##### Get
+
+##### Delete
+
+##### Put
+
+
+#### API externa
+
+
+#### Autenticação/autorização
