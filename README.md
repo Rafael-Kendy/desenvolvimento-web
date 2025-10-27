@@ -92,10 +92,10 @@ Isto é, as dúvidas foram feitas de tal maneira que qualquer usuário, logado o
 Outra mudança que ocorre com usuários logados é que os campos "Nome" e "Email" no formulário de dúvidas é preenchido automaticamente.
 
 
+***
 
 
-
-### Página de Usuário- Hugo Antonio Massaro
+### Página de Usuário - Hugo Antonio Massaro
 
 Essa seção é responsável pelo gerenciamento dos usuários, abrangendo sua criação como um todo: registro, login, vizualização do perfil, atualização dos dados e exclusão da conta. As páginas desenvolvidas foram registro.jsx, login.jsx, perfil.jsx e configuracoes.jsx, que foram integradas com endpoints na fastAPI. 
 
@@ -145,7 +145,7 @@ Autenticação: o usuário insere email e senha, o frontend login.jsx envia um P
 Autorização: pra qualquer ação protegida, como ver perfil, atualizar, deletar, o frontend primeiro lê o token do local storage. A requisiçaõ para a API é feita enviando esse token no cabeçalho Authorization: Beares <token>. Na main.py todos os endpoints protegidos usam a dependência Depends(get_current_active_user), essa função captura o token, decodifica com jose.jwt.decode, extrai o email do campo sub e busca o usuário correspondente. Se o token for invalido, expirado, ou o usuário nao existir, a dependência automaticamente bloqueia a requisição e retorna um erro 401. O frontend detecta o erro, limpa o token inválido e redireciona para a página de login, protegendo as páginas.
 
 
-
+***
 
 
 ### Página de - Seu nome
