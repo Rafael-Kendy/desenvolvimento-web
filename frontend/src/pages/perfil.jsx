@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/header'; 
 import Footer from '../components/footer';
-import profileImage from '../components/assets/img/sexy.png';
+//import profileImage from '../components/assets/img/sexy.png';
 import { useEffect, useState } from "react";//hook pra manipular o nome do documento
 import api from '../components/api';
 
@@ -104,7 +104,7 @@ function Perfil() {
 
           <div className="profile-header">
             <div className="profile-pic">
-              <img src={profileImage} alt="Foto do Perfil" />
+              <img src={user.avatar_url} alt="Foto do Perfil" />{/*p/ usar o gravatar, main.py com a url joga pro response.data que joga pro setUser(response.data), que joga pro user.avatar_url*/}
             </div>
             <div className="profile-info">
               <div className="username-section">
