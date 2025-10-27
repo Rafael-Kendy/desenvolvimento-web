@@ -3,7 +3,9 @@
 ## Entrega 2 - APIs
 
 Link para o drive com os vídeos e slides em PDF: https://drive.google.com/drive/u/1/folders/1plhqkK0ybvU141FTmoKz5iFKDRcI79YZ
+
 Link para o canva: https://www.canva.com/design/DAG260DxQh8/JWE_WQh98XpdgZL7znvIWA/edit?utm_content=DAG260DxQh8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
 Os vídeos e slides também estão presentes nessa branch, dentro da pasta 'arquivos-entrega2'.
 
 ### Instruções de instalação e execução
