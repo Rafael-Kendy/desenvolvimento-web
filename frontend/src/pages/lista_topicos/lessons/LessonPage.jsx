@@ -139,12 +139,38 @@ export default function LessonPage() {
                     {/* FIXME: A lista de próximos tópicos ainda está estática */}
                     <div className="lesson-next">
                         <h2>Próximos tópicos</h2>
-                        <ul className="list-disc list-inside">
-                             {/* Idealmente, a API enviaria os próximos hrefs */}
-                            <li><a href="#" className="blue">Próxima Lição (FIXME)</a></li>
-                        </ul>
+                        {/* Verificamos se lessonContent.next_lessons existe E se tem pelo menos 1 item.
+                          O 'lessonContent' é o estado que você já busca no seu useEffect.
+                        */}
+                        {lessonContent.next_lessons && lessonContent.next_lessons.length > 0 ? (
+                            // Se sim, criamos a lista
+                            <ul className="list-disc list-inside">
+                                {/* .map() pra criar um <li> para cada item que o backend enviou*/}
+                                {lessonContent.next_lessons.map((nextLesson) => (
+                                    <li key={nextLesson.id}>
+                                        <a
+                                            href={`/licoes/${nextLesson.id}`}
+                                            onClick={(e) => {
+                                                // previne que a pagina seja completamente regarregada
+                                                e.preventDefault(); 
+                                                // usa o navigate do react-router para ir pra próxima lição
+                                                navigate(`/licoes/${nextLesson.id}`);
+                                            }}
+                                            className="blue"
+                                        >
+                                            {nextLesson.title} {/* título pela API */}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            // se não, fala que concluiu
+                            <p style={{margin: '15px 0'}}>
+                                Você concluiu este módulo!
+                            </p>
+                        )}
                          {/* botão p voltar pra a lista de lições do curso */}
-                         <button onClick={() => navigate(-1)} style={{marginTop: '20px', width: '100%'}}>Voltar para o Curso</button>
+                         <button onClick={() => navigate('/cursos/1')} style={{marginTop: '20px', width: '100%'}}>Voltar para o Curso</button>
                     </div>
                 </aside>
             </main>

@@ -128,15 +128,18 @@ class Step(BaseModel):
     text: str
     # por enquanto só texto, mas uma ideia: image_url: Optional[str] = None
 
+class NextLessonInfo(BaseModel):
+    id: int
+    title: str # título da próxima lição
+
 class LessonContent(BaseModel):# o conteúdo da lição
     lesson_id: int
     title: str 
     # todo: icon_url?
     steps: List[Step] # lista de passos (Step criado acima)
     video_url: Optional[str] = None # link pro video se tiver algum na lição
-    # todo: 'next_lesson_id' ou 'next_lesson_href'?
+    next_lessons: List[NextLessonInfo] = [] # lista com as próximas lições
 #classes para o conteúdo das lições
-
 
 #login
 #config do JWT (JSON web token)
@@ -409,6 +412,45 @@ async def update_user_me(
 
 #cursos -----------------------------------------------------------------------------------
 
+# função pra ajudar a achar "próxima lição"
+def find_next_lessons_in_course(current_lesson_id: int) -> List[NextLessonInfo]:
+    found_course = None
+    
+    # acha a qual curso a lição atual pertence
+    for course in courses:
+        for section in course.sections:
+            for lesson in section.items:
+                if lesson.id == current_lesson_id:
+                    found_course = course
+                    break
+            if found_course: break
+        if found_course: break
+    
+    # se a lição não foi encontrada em nenhum curso
+    if not found_course:
+        return [] 
+
+    # cria uma lista "plana" de todas as lições APENAS desse curso
+    course_lessons_flat: List[Lesson] = []
+    for section in found_course.sections:
+        course_lessons_flat.extend(section.items) # .items é List[Lesson]
+
+    # acha a próxima lição na lista
+    for i, lesson in enumerate(course_lessons_flat):
+        if lesson.id == current_lesson_id:
+            # achamos a lição atual em 'i'
+            if i + 1 < len(course_lessons_flat):
+                # se existe uma próxima lição -> (índice i+1)
+                next_lesson = course_lessons_flat[i + 1]
+                
+                # retorna a próxima lição no formato que o frontend quer
+                return [NextLessonInfo(id=next_lesson.id, title=next_lesson.label)] 
+            else:
+                # se for a última lição do curso
+                return [] 
+    
+    return [] # n achou a lição na lista (vai que)
+
 #cursos na memória, igual users e questions. No futuro, virão do banco de dados, mas como ele NÃO EXISTE, estão hardcoded aqui.
 courses = [
     Course(
@@ -484,6 +526,7 @@ async def get_one_course(course_id: int, current_user: Annotated[User, Depends(g
 
     return found_course
 #endpoint cursos especificos GET
+
 
 #endpoint de checkbox GET
 @app.get("/progresso/curso/{course_id}", response_model=List[int])
@@ -576,8 +619,6 @@ lesson_contents: Dict[int, LessonContent] = {
     301: LessonContent(lesson_id=301, title="Chamada de Vídeo", steps=[Step(text="placeholder")], video_url="/videos/chamada.mp4"),
 }
 
-print("\n--- DEFININDO ENDPOINT GET /licoes/{lesson_id} ORIGINAL ---\n")
-
 @app.get("/licoes/{lesson_id}", response_model=LessonContent)
 async def get_lesson_content(lesson_id: int,current_user: Annotated[User, Depends(get_current_active_user)]):
 
@@ -588,6 +629,13 @@ async def get_lesson_content(lesson_id: int,current_user: Annotated[User, Depend
     
     if lesson_id == 301 and not current_user.is_premium: # estatico por enquanto, 
         raise HTTPException(status_code=403, detail="Esta lição é premium.")
+
+    #acha a próxima lição dinamicamente
+    next_lessons_list = find_next_lessons_in_course(lesson_id)
+
+    # add a lista ao objeto de conteúdo antes de retornar
+    # aparentemente Pydantic V2 permite essa atribuição direta? sei lá
+    content.next_lessons = next_lessons_list
 
     return content
     
