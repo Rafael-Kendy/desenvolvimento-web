@@ -542,6 +542,25 @@ header button{
   margin-bottom: 0.4rem;
 }
 
+.hero-lesson {
+  display: flex;
+  /* de 'center' para 'flex-start' p alinhar pelo topo */
+  align-items: flex-start; 
+  margin-top: 30px;
+  text-align: left;
+}
+
+.lesson-icon {
+  margin-right: 25px;
+  flex-shrink: 0; /*p icone n ser esmagado*/
+}
+
+.lesson-icon img {
+  width: 150px;  /* largura fixa */
+  height: 150px; /* altura fixa */
+  object-fit: contain; /* nao distorce a img */
+}
+
 .lesson-text h1 {
   margin-bottom: 0.1rem;
 }

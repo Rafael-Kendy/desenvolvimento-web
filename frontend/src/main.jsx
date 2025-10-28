@@ -31,12 +31,15 @@ const router = createBrowserRouter([
   {path:"/login", element:<Login /> },
   {path:"/perfil", element:<Perfil /> },
   {path:"/configuracoes", element:<Configuracoes /> },
-  {path:"/lista_topicos/internet", element:<Internet/>},
+  {path:"/cursos/:id", element:<Internet/>}, 
+  {path:"/cursos/:id", element:<Computadores/>}, 
+  {path:"/cursos/:id", element:<Mensagens/>}, 
+  /*{path:"/lista_topicos/internet", element:<Internet/>}, ESTÁTICO
   {path:"/lista_topicos/computadores", element:<Computadores/>},// TODO -- escalabilidade com useParams
   {path:"/lista_topicos/mensagens", element:<Mensagens/>},
   { path:"/lista_topicos/lessons/pg_rede", element: <PgRede /> },
   { path:"/lista_topicos/lessons/pg_comofunciona", element: <PgComoFunciona /> },
-  { path:"/lista_topicos/lessons/pg_paraqueserve", element: <PgParaQueServe /> },
+  { path:"/lista_topicos/lessons/pg_paraqueserve", element: <PgParaQueServe /> },*/
   { path:"/comunidade", element: <Comunidade /> },
 ]);
 

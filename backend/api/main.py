@@ -84,21 +84,29 @@ class UserUpdate(BaseModel):#forma como espera receber os dados do front
     description: str | None = None
 #descrição
 
-#curso
+#liçoes
+class Lesson(BaseModel):
+    # define um subtópico (lição)
+    id: int
+    label: str # "tipo 'O que é a internet'"
+    href: str  # por exemplo "/licoes/internet/licao1" (link p pag da lição em si)
+# liçoes
+
+#seçoes
+class Section(BaseModel):
+    # seçao (a lista de assuntos) que contem as liçoes
+    title: str
+    items: List[Lesson]
+#seçoes
+
+#cursos
 class Course(BaseModel): # modelo do curso
     id: int
     title: str
     description: str | None = None
-    content: str | None = None #campos opcionais!
+    sections: List[Section] # lista de seções com os assuntos
     is_free: bool = True
-#curso
-
-#criar curso
-class CourseCreate(BaseModel): # modelo para criar um curso, a nível de teste se não forem tirados do banco de dados
-    nome: str                  # no contexto da entrega 2, os cursos estão declarados lá embaixo, em courses = [...].
-    descricao: str | None = None
-    imagem: str | None = None
-#criar curso
+#cursos
 
 #login
 #config do JWT (JSON web token)
@@ -376,32 +384,41 @@ courses = [
     Course(
         id=1,
         title="Internet",
-        description="O que você precisa saber para navegar na internet.",
-        content="""
-                    1. E tudo mais
-                    2. e coisa
-                    3. e tal""",
-        is_free=True
+        description="Aprenda o que é internet e como navegar.",
+        is_free=True, # Este curso é gratuito
+        sections=[
+            Section(title="Conceitos Básicos", items=[
+                Lesson(id=101, label="O que é a Internet", href="/licoes/internet/licao1"),
+                Lesson(id=102, label="Navegadores", href="/licoes/internet/licao2"),
+                Lesson(id=103, label="Sites e links", href="/licoes/internet/licao3"),
+            ]),
+            Section(title="Segurança", items=[
+                Lesson(id=104, label="Segurança básica", href="/licoes/internet/licao4")
+            ])
+        ]
     ),
     Course(
         id=2,
         title="Computadores",
         description="Aprenda a usar um computador.",
-        content="""Este é o curso de computadores. 
-                1. hee hee
-                2. hoo hoo
-                3. haa haa
-                4. hii hii""",
-        is_free=True
+        is_free=True,
+        sections=[
+            Section(title="Componentes", items=[
+                Lesson(id=201, label="Mouse e Teclado", href="/licoes/computador/licao1"),
+                Lesson(id=202, label="Monitor", href="/licoes/computador/licao2"),
+            ])
+        ]
     ),
     Course(
         id=3,
-        title="Chamadas",
-        description="",
-        content="""Conversando com alguém longe de você. 
-                - uhuhu
-                - blabla.""",
-        is_free=False               # TESTE DE CURSO PREMIUM! PRA DAR ERRO 403 NA PARTE DOS CURSOS
+        title="Chamadas (PREMIUM)",
+        description="Conversando com alguém longe de você.",
+        is_free=False, # CURSO PREMIUM!
+        sections=[
+            Section(title="WhatsApp", items=[
+                Lesson(id=301, label="Chamada de Vídeo", href="/licoes/chamadas/licao1"),
+            ])
+        ]
     )
 ]
 
