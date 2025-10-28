@@ -103,66 +103,66 @@ Outra mudança que ocorre com usuários logados é que os campos "Nome" e "Email
 
 ### Página de Usuário - Hugo Antonio Massaro
 
-Essa seção é responsável pelo gerenciamento dos usuários, abrangendo sua criação como um todo: registro, login, vizualização do perfil, atualização dos dados e exclusão da conta. As páginas desenvolvidas foram registro.jsx, login.jsx, perfil.jsx e configuracoes.jsx, que foram integradas com endpoints na fastAPI. 
+Essa seção é responsável pelo gerenciamento dos usuários, abrangendo sua criação como um todo: registro, login, vizualização do perfil, atualização dos dados e exclusão da conta. As páginas desenvolvidas foram `registro.jsx`, `login.jsx`, `perfil.jsx` e `configuracoes.jsx`, que foram integradas com endpoints na fastAPI. 
 
 
 #### FastAPI
 
-Criou-se 5 endpoints principais na main.py para gerenciar o usuario, cobrindo os endpoints essenciais: POST, GET, DELETE E PUT.
+Criou-se 5 endpoints principais na `main.py` para gerenciar o usuario, cobrindo os endpoints essenciais: `POST, GET, DELETE E PUT`.
 
 ##### Post
 
-/registro: no frontend o componente registro.jsx  usa o hook useState para criar estados controlados como name, email, password. Na submissão, handleSubmit, ele chama a api.post("/registro", ...) enviando um objeto JSON com os dados dos estados, o resultado é recebido na variável response. 
+`/registro`: no frontend o componente `registro.jsx`  usa o hook useState para criar estados controlados como name, email, password. Na submissão, handleSubmit, ele chama a `api.post("/registro", ...)` enviando um objeto JSON com os dados dos estados, o resultado é recebido na variável response. 
 
 No backend a fastAPI recebe o JSON e o valida automaticamente no modelo UserCreate. O endpoint primeiro verifica se o email ja existe na lista users, retornando um erro 400 se for duplicado. A senha é criptografada com hash usando pwd_context.hash(user_data.password). Um objeto user é criado e adicionado a lista com users.append(new_user), e é retornado ao frontend.
 
 
-/token: é um endpoint de autenticação, no frontend o login.jsx também usa useState para os campos email e password. Como o backend espera o formato de formulário, o handleLogin cria um URLSearchParams. O estado email é mapeado para a chave username (params.append('username', email)) para ser compatível com o fluxo do OAuth2.
+`/token`: é um endpoint de autenticação, no frontend o `login.jsx` também usa useState para os campos email e password. Como o backend espera o formato de formulário, o handleLogin cria um URLSearchParams. O estado email é mapeado para a chave username (params.append('username', email)) para ser compatível com o fluxo do OAuth2.
 
-No backend usa a dependência Annotated[OAuth2PasswordRequestForm, Depends()] para receber os dados do formulário na variável form_data. A lógica então chama get_user(form_data.username) para encontrar o usuário na lista users e em seguida, valida a senha com pwd_context.verify(form_data.password, user.hashed_password). Se ambos forem válidos um token JWT é gerado pela função create_access_token, que armazena a identidade do usuário no campo data={"sub": user.email}. O token é retornado ao frontend.
+No backend usa a dependência Annotated[OAuth2PasswordRequestForm, Depends()] para receber os dados do formulário na variável form_data. A lógica então chama get_user(form_data.username) para encontrar o usuário na lista users e em seguida, valida a senha com pwd_context.verify(form_data.password, user.hashed_password). Se ambos forem válidos um token JWT é gerado pela função create_access_token, que armazena a identidade do usuário no campo data={"sub": user.email}, e token é retornado ao frontend.
 
 
 ##### Get
 
-/users/me: é um endpoint de autorização. No frontend perfil.jsx e configuracoes.jsx usam o hook useEffect para chamar api.get("/users/me") na inicialização. A chamada envia o token, lido do localStorage, no cabeçalho headers: { Authorization: \Bearer ${token}` }. Os dados recebidos e filtrados pelo response_model=UserPublic são armazenados no estado setUser(response.data) e usados para preencher o JSX, como o {user.name}.
+`/users/me`: é um endpoint de autorização. No frontend `perfil.jsx` e `configuracoes.jsx` usam o hook useEffect para chamar `api.get("/users/me")` na inicialização. A chamada envia o token, lido do localStorage  no cabeçalho headers: { Authorization: \Bearer ${token}` }. Os dados recebidos e filtrados pelo response_model=UserPublic são armazenados no estado setUser(response.data) e usados para preencher o JSX, como o {user.name}.
 
 No backend o endpoint é protegido pela dependência current_user: Annotated[User, Depends(get_current_active_user)]. Essa dependência get_current_active_user é a função de segurança que valida o token JWT, se a validação for bem sucedida, a função read_users_me recebe o objeto current_user completo
 
 
 ##### Delete
 
-/users/me: outro endpoint de autorização, no frontend A função handleDeleteAccount em configuracoes.jsx é chamada pelo onClick do botão "Deletar Conta". Ela chama api.delete("/users/me"), enviando o token no cabeçalho Authorization. Ao receber a resposta de sucesso o frontend limpa o localStorage.removeItem("token") e redireciona para /login.
+`/users/me`: outro endpoint de autorização, no frontend A função handleDeleteAccount em `configuracoes.jsx` é chamada pelo onClick do botão "Deletar Conta". Ela chama a `api.delete("/users/me")`, enviando o token no cabeçalho Authorization. Ao receber a resposta de sucesso o frontend limpa o localStorage.removeItem("token") e redireciona para `/login`.
 
 No backend também há proteção pela dependência Depends(get_current_active_user). Se o token for válido, o current_user colocado é removido da lista users através do users.remove(current_user).
 
 
 ##### Put
 
-/users/me: mais um endpoint de autorização, no frontend a página configuracoes.jsx primeiro usa useEffect para buscar(GET) os dados e preencher os estados name e description. O handleSubmit então chama api.put("/users/me", ...), enviando os novos dados dos estados (name, description) como corpo e o token como cabeçalho Authorization.
+`/users/me`: mais um endpoint de autorização, no frontend a página configuracoes.jsx primeiro usa useEffect para buscar(GET) os dados e preencher os estados name e description. O handleSubmit então chama `api.put("/users/me", ...)`, enviando os novos dados dos estados (name, description) como corpo e o token como cabeçalho Authorization.
 
 No backend o endpoint usa duas fontes de dados o JSON do corpo, validado no modelo user_update: UserUpdate, e o token do cabeçalho validado pela dependência Depends(get_current_active_user). A lógica de negócios então mistura os dados, aplicando as atualizações de user_update, como user_update.name, ao objeto current_user, como current_user.name = user_update.name. O current_user atualizado é retornado.
 
 
 #### API externa
 
-A integração da API externa foi implementada no backend, dentro do endpoint GET /users/me, para substituir a foto de perfil estática por avatares mais dinâmicos. A API escolhida foi a Gravatar, que é pública e não exige chave de autenticação, ela gera uma imagem de perfil a partir de um hash do email do usuário.
+A integração da API externa foi implementada no backend, dentro do endpoint `GET /users/me`, para substituir a foto de perfil estática por avatares mais dinâmicos. A API escolhida foi a Gravatar, que é pública e não exige chave de autenticação, ela gera uma imagem de perfil a partir de um hash do email do usuário.
 
 Sobre a implementação no backend, inves de uma chamada fetch, a integração consiste em construir uma URL de API. Dentro do read_users_me, o email do usuário (current_user.email) é normalizado (.lower().strip()) e então hasheado usando a biblioteca hashlib (hashlib.md5(email_address.encode('utf-8')).hexdigest()).
 
-O md5_hash é inserido em uma f-string para construir a URL da API: f"https://www.gravatar.com/avatar/{md5_hash}?d=identicon". O parâmetro d=identicon instrui a API externa a gerar um ícone geométrico caso nenhum avatar esteja associado ao email.
+O md5_hash é inserido em uma f-string para construir a URL da API: `"https://www.gravatar.com/avatar/{md5_hash}?d=identicon"`. O parâmetro d=identicon instrui a API externa a gerar um ícone geométrico caso nenhum avatar esteja associado ao email.
 
-Esse avatar é salvo em avatar_url e adicionado ao modelo de resposta UserPublic que é enviado ao frontend. O perfil.jsx recebe este user.avatar_url via setUser(response.data) e o insere diretamente no src da tag <img>.
+Esse avatar é salvo em avatar_url e adicionado ao modelo de resposta UserPublic que é enviado ao frontend. O `perfil.jsx` recebe este user.avatar_url via setUser(response.data) e o insere diretamente no src da tag <img>.
 
 
 #### Autenticação/autorização
 
-Autenticação:  o usuário insere email e senha, o frontend login.jsx envia um POST para /token, o backend verifica as credenciais form_data.username, form_data.password da lista users usando pwd_context.verify. A autenticação é um token JWT, criado com create_access_token, se tudo der certo o backend gera um token JWT e o retorna ao frontend, onde é armazenado em localStorage.setitem("token",..).
+Autenticação:  o usuário insere email e senha, o frontend `login.jsx` envia um `POST` para `/token`, o backend verifica as credenciais form_data.username, form_data.password da lista users usando pwd_context.verify. A autenticação é um token JWT, criado com create_access_token, se tudo der certo o backend gera um token JWT e o retorna ao frontend, onde é armazenado em localStorage.setitem("token",..).
 
-Autorização: no frontend todas as chamadas protegidas em perfil.jsx e configuracoes.jsx leem o token do localStorage e o jogam no cabeçalho headers: { Authorization: \Bearer ${token}` }`. 
+Autorização: no frontend todas as chamadas protegidas em `perfil.jsx` e `configuracoes.jsx` leem o token do localStorage e o jogam no cabeçalho headers: { Authorization: \Bearer ${token}` }`. 
 
 No backend o oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") é definido, a função de segurança get_current_active_user usa Depends(oauth2_scheme) para pegar o token. O get_current_active_user usa jwt.decode(token, SECRET_KEY, ...) para validar a assinatura e a expiração do token. Ele extrai a identidade do usuário do payload.get("sub").
 
-Se a validação do token falhar, o get_current_active_user levanta uma HTTPException 401 Unauthorized, bloqueando o acesso. O frontend perfil.jsx e configuracoes.jsx captura esse erro 401, remove o token inválido (localStorage.removeItem), e redireciona o usuário para o /login completando o fluxo de proteção de rota.
+Se a validação do token falhar, o get_current_active_user levanta uma HTTPException 401 Unauthorized, bloqueando o acesso. O frontend `perfil.jsx` e `configuracoes.jsx` captura esse erro 401, remove o token inválido (localStorage.removeItem), e redireciona o usuário para o `/login` completando o fluxo de proteção de rota.
 
 
 ### Página de - Seu nome
