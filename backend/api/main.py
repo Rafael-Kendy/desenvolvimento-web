@@ -21,8 +21,8 @@ import hashlib #p/ usar o gravatar
 app = FastAPI() #objeto base pra cuidar dos endpoint
 
 origins = [
-    "http://localhost:5173/", #front
-    "http://localhost:8000/" #back
+    "http://localhost:5173", #front
+    "http://localhost:8000" #back
 ]
 
 #vai permitir qlqr URL vindo da origem

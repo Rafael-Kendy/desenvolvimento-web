@@ -90,7 +90,7 @@ function Topicos() {
 
         // 2. verifica se o usuário ta logado
         if (!token) {// se não,
-          setError("Você precisa estar logado para ver os cursos.");
+          setError("Você precisa estar logado para ver os cursos. Redirecionando...");
           setLoading(false);
           // Automaticamente redireciona para a tela de login
           setTimeout(() => navigate("/login"), 5000);
