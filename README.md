@@ -165,22 +165,34 @@ No backend o oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") é definido,
 Se a validação do token falhar, o get_current_active_user levanta uma HTTPException 401 Unauthorized, bloqueando o acesso. O frontend `perfil.jsx` e `configuracoes.jsx` captura esse erro 401, remove o token inválido (localStorage.removeItem), e redireciona o usuário para o `/login` completando o fluxo de proteção de rota.
 
 
-### Página de - Seu nome
+### Páginas de cursos - Rafael Zaupa Watanabe
 
-
+Seção onde encontram-se os tópicos propriamente ditos. Contém uma página com todos os tópicos, que leva a uma lista de checkboxes com os assuntos individuais, onde cada item é uma lição sobre um assunto específico. Nenhuma parte desta porção do fluxo deve ser acessada por usuários que não estejam logados.
 
 #### FastAPI
+Foram criados endpoints para lidar com os cursos dinamicamente, e também para manter o tracking do progresso do usuário, bem como as funções de criar e deletar cursos para ADMINs.
 
 ##### Post
+create_new_course - função reservada para admin. Como os cursos devem ser acessados e lidos a partir de um banco de dados, e atualmente estamos usando da memória, foi considerada redundante a demonstração da criação de um curso novo, já que no momento não existe a opção de se tornar um usuário premium (admin). Porém, inserir http://localhost:5173/admin/criar-curso deve exibir uma tela básica, demonstrando a implementação. Atualmente está desprotegido devido ao fato de que não é acessível pelo fluxo normal do site. Foi criada a página especificamente para conciliar a existência do POST.
 
 ##### Get
+Vários endpoints: acesso à pagina com todos os tópicos (endpoint cursos GET), acesso à página do tópico escolhido (endpoint cursos especificos GET) e acesso à página da lição escolhida (endpoint GET lesson content). Utilizado para a lista de checkbox de forma a manter o progresso do usuário (endpoint de checkbox GET).
 
 ##### Delete
+delete_lesson - função reservada para admin. Como a quantia de cursos não foi prevista para ser dinamicamente alterada com frequência, a parte "D" do CRUD foi implementada de maneira a ser acessível apenas a usuários premium - no momento sinônimos a ADMINs. O que o DELETE dos cursos faz é retirá-lo da lista de cursos, simplesmente.
 
 ##### Put
-
+Utilizado em (endpoint de salvar progresso da checkbox PUT) para que o usuário seja capaz de controlar o estado da checkbox, seja marcando-a ou desmarcando-a, e lembrando da escolha por meio da conta enquanto o backend não sofrer refresh. Assim, ao atualizar a página, a opção marcada continua.
 
 #### API externa
-
+O uso da API externa é realizado para que sejam selecionados dinamicamente os ícones das lições. Ele usa de uma chave de API secreta, que deve ser adquirida da seguinte maneira:
+1. Login em https://unsplash.com/developers.
+2. Your Apps -> New Application
+3. Aceite os termos
+4. Role até a seção "Keys" e obtenha a Access Key.
+   
+Demo limita a 50 requisições por hora.
 
 #### Autenticação/autorização
+Autenticação é utilizada em todo o percurso do usuário pela página de tópicos, cursos e lições. Caso o usuário não esteja logado, ele não tem direito de visualizar nenhum desses conteúdos, sendo "expulso" de volta à tela de login. Ao expirar a sessão do usuário também é disparado como error response, realizando o mesmo tratamento.
+Autorização foi implementada por meio da existência do "usuário premium". A nível lógico, no momento, um usuário premium é sinônimo de um ADMIN, provisoriamente; um dos cursos, o de "Chamadas", é acessível apenas a usuários premium e não pode ser acessado por usuários free. Tentativas de acessar quaisquer cursos via suas respectivas URLs sem ter a devida autorização devem resultar em barramento e o devido tratamento, seja erro 401 ou 403, e redirecionamento como supramencionado.
