@@ -623,23 +623,58 @@ header button{
 
 /* Layout geral da lição */
 .lesson-layout {
-  display: grid;
-  grid-template-columns: 2fr 1fr; /* esquerda maior, direita menor */
-  gap: 2rem;
-  margin-top: 2rem;
+  display: flex;
+  flex-direction: row; /* colunas lado a lado */
+  flex-wrap: wrap;     /* permite quebrar em telas pequenas */
+  gap: 2rem;           /* espaço entre as duas colunas */
+  
+  /* corrigindo conflito com 'lesson-main' */
+  align-items: flex-start !important; 
+  text-align: left;
 }
 
-/* Cabeçalho da lição */
+/* layout principal da lição (conteúdo + barra lateral) */
+.lesson-content {
+  flex: 2; /* ocupa 2/3 do espaço */
+  min-width: 300px;
+  
+  /* força os filhos (.lesson-header e .lesson-step) a empilhar verticalmente */
+  display: flex;
+  flex-direction: column; 
+  gap: 1.5rem; /* adiciona um espaço entre o header e o primeiro step */
+}
+
+/* coluna principal do conteúdo (70%) */
+.lesson-main {
+  flex: 2; /* ocupa 2/3 do espaço */
+  min-width: 300px; /* largura mínima antes de quebrar */
+  display: block !important; /*força os filhos lesson-header e lesson-step a empilhar verticalmente*/
+}
+
+/* barra lateral (30%) */
+.lesson-sidebar {
+  flex: 1; /* ocupa 1/3 do espaço */
+  min-width: 280px;
+}
+
+/* cabeçalho da lição */
 .lesson-header {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  flex-direction: column; /* imagem em cima, título embaixo */
+  align-items: flex-start;
+  background-color: var(--white);
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
 }
 .lesson-header img {
-  width: 50px;
-  height: auto;
+  width: 100%;          /* faz a imagem ocupar 100% da coluna .lesson-main */
+  max-height: 350px;    /* altura máxima para não ficar gigante */
+  object-fit: cover;  /* redimensiona sem distorcer e corta o excesso*/
+  border-radius: 8px;   /* bordas arredondadas */
+  margin-bottom: 1.5rem; /* entre a imagem e o título */
+  background-color: var(--lightgray); /* cor de fundo enqnt a imagem carrega */
 }
+
 .lesson-header h1 {
   font-size: 2rem;
   margin: 0;
@@ -648,18 +683,26 @@ header button{
 /* passos da lição */
 .lesson-step {
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  flex-direction: row; 
+  align-items: center;
+  gap: 1.5rem;
+  background-color: var(--white);
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
 }
+
 .lesson-step img {
   width: 150px;
   height: auto;
-  border-radius: 5px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 0;
+  flex-shrink: 0;
 }
+
 .lesson-step p {
-  flex: 1;
-  text-align: justify;
+  line-height: 1.6;
+  margin-bottom: 0;
 }
 
 /* sidebar das lições */
@@ -668,6 +711,22 @@ header button{
   flex-direction: column;
   gap: 2rem;
 }
+
+.lesson-video,
+.lesson-next {
+  background-color: var(--white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.lesson-video h2,
+.lesson-next h2 {
+  margin-top: 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--lightgray);
+}
+
 .lesson-video video {
   width: 100%;
   border-radius: 5px;

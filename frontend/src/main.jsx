@@ -10,14 +10,12 @@ import Registro from './pages/registro.jsx'
 import Equipe from './pages/equipe.jsx'
 import Topicos from './pages/topicos.jsx'
 import Login from './pages/login.jsx';
-import Internet from './pages/lista_topicos/internet.jsx'
-//import Computadores from './pages/lista_topicos/computadores.jsx'
-//import Mensagens from './pages/lista_topicos/mensagens.jsx'
+import CoursePage from './pages/lista_topicos/CoursePage.jsx'
 import Perfil from './pages/perfil.jsx'
 import Configuracoes from './pages/configuracoes.jsx'
 import Comunidade from './pages/comunidade.jsx'
 import LessonPage from './pages/lista_topicos/lessons/LessonPage.jsx'
-
+import CreateCoursePage from './pages/Admin/CreateCoursePage.jsx';
 
 const router = createBrowserRouter([
   {path:"/", element:<App/>},
@@ -29,9 +27,10 @@ const router = createBrowserRouter([
   {path:"/login", element:<Login /> },
   {path:"/perfil", element:<Perfil /> },
   {path:"/configuracoes", element:<Configuracoes /> },
-  {path:"/cursos/:id", element:<Internet/>}, 
+  {path:"/cursos/:id", element:<CoursePage/>}, 
   {path:"/licoes/:lessonId", element:<LessonPage/>}, 
-  { path:"/comunidade", element: <Comunidade /> },
+  {path:"/comunidade", element: <Comunidade /> },
+  {path: "/admin/criar-curso", element: <CreateCoursePage /> },
 ]);
 
 createRoot(document.getElementById('root')).render(

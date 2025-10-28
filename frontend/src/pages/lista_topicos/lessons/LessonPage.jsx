@@ -18,6 +18,46 @@ export default function LessonPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const handleDeleteLesson = async () => {//DELETE lesson
+        // confirma
+        if (!window.confirm("Tem certeza que deseja deletar esta lição? Esta ação é irreversível.")) {
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+        if (!token) {// se nao tem o token...
+            alert("Você precisa estar logado como admin para fazer isto.");
+            return;
+        }
+
+        try {
+            // chama DELETE com axios
+            await axios.delete(
+                `http://localhost:8000/licoes/${lessonId}`, // Usa o lessonId da página atual
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}` // Envia o token
+                    }
+                }
+            );
+
+            // se funcionar
+            alert("Lição deletada com sucesso.");
+            
+            // navega o usuário de volta uma página no index
+            navigate(-1); 
+
+        } catch (err) {
+            // se der falha:
+            if (err.response && err.response.status === 403) {
+                alert("Acesso negado. Apenas administradores podem deletar lições.");
+            } else {
+                alert("Erro ao deletar a lição.");
+            }
+            console.error(err);
+        }
+    };//funcao DELETE
+
     // useEffect para buscar os dados da API quando a pag carrega
     useEffect(() => {
         const fetchLessonContent = async () => {
@@ -107,8 +147,10 @@ export default function LessonPage() {
                 {/* coluna esquerda - conteúdo tenta ser dinâmico */}
                 <section className="lesson-content">
                     <div className="lesson-header">
-                        {/* todo: usar um ícone dinâmico da API? */}
-                        <img src={webs} alt={`Ícone da lição ${lessonContent.title}`} />
+                        <img
+                            src={lessonContent.header_image_url || webs} // usa a URL da API, ou a imagem estática se precisar
+                            alt={`Ícone da lição ${lessonContent.title}`}
+                         />
                         <h1 className="gold">{lessonContent.title}</h1> {/* título da API */}
                     </div>
 
@@ -136,14 +178,12 @@ export default function LessonPage() {
                         </div>
                     )}
 
-                    {/* FIXME: A lista de próximos tópicos ainda está estática */}
                     <div className="lesson-next">
                         <h2>Próximos tópicos</h2>
-                        {/* Verificamos se lessonContent.next_lessons existe E se tem pelo menos 1 item.
-                          O 'lessonContent' é o estado que você já busca no seu useEffect.
-                        */}
+                        {/* verificamos se lessonContent.next_lessons existe E se tem pelo menos 1 item
+                          o 'lessonContent' é o estado que já busco em useEffect*/}
                         {lessonContent.next_lessons && lessonContent.next_lessons.length > 0 ? (
-                            // Se sim, criamos a lista
+                            // se sim, cria a lista
                             <ul className="list-disc list-inside">
                                 {/* .map() pra criar um <li> para cada item que o backend enviou*/}
                                 {lessonContent.next_lessons.map((nextLesson) => (
@@ -170,7 +210,15 @@ export default function LessonPage() {
                             </p>
                         )}
                          {/* botão p voltar pra a lista de lições do curso */}
-                         <button onClick={() => navigate('/cursos/1')} style={{marginTop: '20px', width: '100%'}}>Voltar para o Curso</button>
+                         {/* TODO: voltar pro curso, não pra lista de tópicos */}
+                         <button onClick={() => navigate('/topicos')} style={{marginTop: '20px', width: '100%'}}>Voltar para os tópicos</button>
+                         {localStorage.getItem("is_premium") === "true" && (
+                         <button onClick={handleDeleteLesson} 
+                             style={{marginTop: '10px', width: '100%', backgroundColor: 'var(--red)', color: 'var(--white)'}}
+                         >
+                             Deletar Lição (Apenas admin)
+                         </button>
+                     )}
                     </div>
                 </aside>
             </main>

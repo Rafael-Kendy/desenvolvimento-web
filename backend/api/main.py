@@ -17,6 +17,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt #jose kkkkkk JSON object signing and encryption
 import hashlib #p/ usar o gravatar
+import httpx # p usar o unsplash
 
 app = FastAPI() #objeto base pra cuidar dos endpoint
 print("\nDebug: Server iniciou\n") # <-- ADICIONE ESTA LINHA
@@ -92,6 +93,13 @@ class Lesson(BaseModel):
     href: str  # por exemplo "/licoes/internet/licao1" (link p pag da lição em si)
 # liçoes
 
+#put curso
+class NewCourse(BaseModel):
+    title: str
+    description: str
+    image: str # ex: "hardware.png"
+#put curso
+
 #seçoes
 class Section(BaseModel):
     # seçao (a lista de assuntos) que contem as liçoes
@@ -106,6 +114,7 @@ class Course(BaseModel): # modelo do curso
     description: str | None = None
     sections: List[Section] # lista de seções com os assuntos
     is_free: bool = True
+    image: str
 #cursos
 
 #classes pras checkbox
@@ -135,7 +144,7 @@ class NextLessonInfo(BaseModel):
 class LessonContent(BaseModel):# o conteúdo da lição
     lesson_id: int
     title: str 
-    # todo: icon_url?
+    header_image_url: Optional[str] = None
     steps: List[Step] # lista de passos (Step criado acima)
     video_url: Optional[str] = None # link pro video se tiver algum na lição
     next_lessons: List[NextLessonInfo] = [] # lista com as próximas lições
@@ -458,6 +467,7 @@ courses = [
         title="Internet",
         description="Aprenda o que é internet e como navegar.",
         is_free=True, # Este curso é gratuito
+        image="internet.png",
         sections=[
             Section(title="Conceitos Básicos", items=[
                 Lesson(id=101, label="O que é a Internet", href="/licoes/101"),
@@ -474,6 +484,7 @@ courses = [
         title="Computadores",
         description="Aprenda a usar um computador.",
         is_free=True,
+        image="computer-desktop.png",
         sections=[
             Section(title="Componentes", items=[
                 Lesson(id=201, label="Mouse e Teclado", href=f"/licoes/{201}"),
@@ -486,6 +497,7 @@ courses = [
         title="Chamadas (PREMIUM)",
         description="Conversando com alguém longe de você.",
         is_free=False, # CURSO PREMIUM!
+        image="phone-call.png",
         sections=[
             Section(title="WhatsApp", items=[
                 Lesson(id=301, label="Chamada de Vídeo", href=f"/licoes/{301}"),
@@ -619,6 +631,7 @@ lesson_contents: Dict[int, LessonContent] = {
     301: LessonContent(lesson_id=301, title="Chamada de Vídeo", steps=[Step(text="placeholder")], video_url="/videos/chamada.mp4"),
 }
 
+#endpoint GET lesson content
 @app.get("/licoes/{lesson_id}", response_model=LessonContent)
 async def get_lesson_content(lesson_id: int,current_user: Annotated[User, Depends(get_current_active_user)]):
 
@@ -630,6 +643,31 @@ async def get_lesson_content(lesson_id: int,current_user: Annotated[User, Depend
     if lesson_id == 301 and not current_user.is_premium: # estatico por enquanto, 
         raise HTTPException(status_code=403, detail="Esta lição é premium.")
 
+    # INTEGRAÇÃO COM API EXTERNA 
+    UNSPLASH_API_KEY = "chave_da_api" # colocando manualmente por enquanto
+    query = content.title # usa o titulo da lição como busca
+
+    try:
+        # 'async with' faz a chamada de forma assíncrona
+        async with httpx.AsyncClient() as client:
+            headers = {"Authorization": f"Client-ID {UNSPLASH_API_KEY}"}
+            params = {"query": query, "per_page": 1, "orientation": "landscape"}
+
+            # chama a API do Unsplash
+            response = await client.get("https://api.unsplash.com/search/photos", headers=headers, params=params)
+            response.raise_for_status() # Lança um erro se a requisição falhar
+
+            data = response.json()
+            if data["results"]:
+                # pega a URL da imagem e a adiciona ao objeto 'content'
+                image_url = data["results"][0]["urls"]["regular"]
+                content.header_image_url = image_url
+    #exceção            
+    except Exception as e:
+        print(f"Erro ao buscar imagem no Unsplash: {e}")
+        content.header_image_url = None # falha mas a lição continua rodando
+    # FIM DA INTEGRAÇÃO C API EXTERNA
+
     #acha a próxima lição dinamicamente
     next_lessons_list = find_next_lessons_in_course(lesson_id)
 
@@ -638,7 +676,79 @@ async def get_lesson_content(lesson_id: int,current_user: Annotated[User, Depend
     content.next_lessons = next_lessons_list
 
     return content
+#endpoint GET lesson content
+
+#endpoint novo curso POST
+@app.post("/cursos", response_model=Course) #axios.post()
+# esse endpoint é parte do trabalho, mas não estamos permitindo usuários premium no momento
+async def create_new_course(
+    new_course: NewCourse,
+    current_user: Annotated[User, Depends(get_current_active_user)]
+):
+    # só usuários "premium" (admin, por enquanto, se precisar) podem criar cursos
+    if not current_user.is_premium:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Apenas administradores podem criar cursos."
+        )
+
+    # achar o maior ID existente e somar 1, já que os cursos existentes estão em lista
+    new_id = max(course.id for course in courses) + 1
     
+    course_obj = Course(# parâmetros para um novo curso
+        id=new_id,
+        title=new_course.title,
+        description=new_course.description,
+        image=new_course.image,
+        sections=[]  # começa sem seções
+    )
+    
+    # salva na "memória" (append em courses)
+    courses.append(course_obj)
+    
+    # retorna o que acabou de criar
+    return course_obj
+#endpoint novo curso POST
+
+#endpoint DELETE curso
+@app.delete("/licoes/{licao_id}", status_code=status.HTTP_200_OK) #axios.delete()
+# esse endpoint é parte do trabalho, mas não estamos permitindo usuários premium no momento
+async def delete_lesson(
+    licao_id: int,
+    current_user: Annotated[User, Depends(get_current_active_user)]
+):
+    # 1. Autenticação (de novo)
+    if not current_user.is_premium:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Apenas administradores podem remover lições."
+        )
+
+    # lógica de remoção:
+    
+    # remover de "conteúdos"
+    if licao_id in lesson_contents:
+        del lesson_contents[licao_id]
+    else:
+        raise HTTPException(status_code=404, detail="Conteúdo da lição não encontrado para deletar.")
+
+    # remover da lista de "Cursos" p/ não aparecer no menu
+    found = False
+    for course in courses:
+        for section in course.sections:
+            for i, lesson in enumerate(section.items):
+                if lesson.id == licao_id:
+                    section.items.pop(i) # remove a lição da lista
+                    found = True
+                    break
+            if found: break
+        if found: break
+
+    if not found:
+        raise HTTPException(status_code=404, detail="Lição não encontrada na estrutura do curso.")
+
+    return {"detail": f"Lição {licao_id} removida com sucesso."}
+#endpoint DELETE cursos
 
 #rodar o server
 if __name__=="__main__":

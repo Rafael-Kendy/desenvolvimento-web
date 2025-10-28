@@ -4,7 +4,17 @@ import axios from "axios";
 
 import Header from "../../components/header";
 import Footer from "../../components/footer";
+
+// todos os icones de curso
 import internetIcon from "../../components/assets/img/internet.png";
+import pc from "../../components/assets/img/computer-desktop.png";
+import zap from "../../components/assets/img/phone-call.png";
+
+const iconMap ={
+    "internet.png": internetIcon,
+    "computer-desktop.png": pc,
+    "phone-call.png": zap,
+}
 
 // recebe 'userProgress' pra ler o progresso do user e 'onProgressChange' pra salvar
 function LessonSection({ title, items, userProgress, onProgressChange }) {
@@ -36,7 +46,7 @@ function LessonSection({ title, items, userProgress, onProgressChange }) {
         // atualiza a UI localmente pra mudar rápido ao invés de esperar a resposta
         setChecked((prev) => ({...prev,[lessonId]: newCheckedState,}));
 
-        // avisa o componente "pai" (Internet) que o progresso mudou
+        // avisa o componente "pai" (CoursePage) que o progresso mudou
         // isto permite que o estado 'userProgress' no pai seja atualizado
         onProgressChange(lessonId, newCheckedState);
 
@@ -107,7 +117,7 @@ function LessonSection({ title, items, userProgress, onProgressChange }) {
 }
 
 
-function Internet() {
+function CoursePage() {
     
     const { id: courseId } = useParams();
     const navigate = useNavigate();
@@ -146,8 +156,9 @@ function Internet() {
                 // salva os dados nos estados separados
                 setCourseData(courseResponse.data); // salva o curso
                 setUserProgress(progressResponse.data); // salva o progresso 
-
+                
                 document.title = `ChaveDigital - ${courseResponse.data.title}`;
+                console.log("imagem da API:", courseResponse.data.image);
 
             } catch (err) {// o catch pros diferentes erros
                 if (err.response) {
@@ -225,7 +236,13 @@ function Internet() {
         <main className="center">
             <section className="general-width hero-lesson">
             <figure className="lesson-icon">
-                <img src={internetIcon} alt="Ícone do curso" />
+                {courseData && ( //só renderiza a img depois que courseData é carregado pela API
+                    <img 
+                        // 'courseData.image' ("internet.png") pra procurar no 'iconMap' o ícone correto certo (internetIcon, nesse caso)
+                        src={iconMap[courseData.image]} 
+                        alt={`Ícone do curso ${courseData.title}`} 
+                    />
+                )}
             </figure>
             <div className="lesson-text">
                 <h1 className="gold">{courseData.title}</h1>
@@ -268,5 +285,5 @@ function Internet() {
     );
 }
 
-export default Internet;
+export default CoursePage;
 
