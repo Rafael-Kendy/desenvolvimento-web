@@ -6,7 +6,7 @@ Link para o drive com os vídeos e slides em PDF: https://drive.google.com/drive
 
 Link para o canva: https://www.canva.com/design/DAG260DxQh8/JWE_WQh98XpdgZL7znvIWA/edit?utm_content=DAG260DxQh8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
-Os vídeos e slides também estão presentes nessa branch, dentro da pasta 'arquivos-entrega2', os códigos para esta entrega estão nas pastas `backend` e `frontend`.
+Os vídeos e slides também estão presentes nessa branch, dentro da pasta 'arquivos-entrega2', os códigos para esta entrega estão nas pastas `backend` e `frontend`, sendo os endpoints no arquivo `backend/api/main.py`.
 
 ### Instruções de instalação e execução
 
