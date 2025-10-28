@@ -6,155 +6,189 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import internetIcon from "../../components/assets/img/internet.png";
 
-// componente react que representa uma seção de lição com título e itens
-function LessonSection({ title, items }) { // usa "destructuring" para pegar as propriedades
+// recebe 'userProgress' pra ler o progresso do user e 'onProgressChange' pra salvar
+function LessonSection({ title, items, userProgress, onProgressChange }) {
     const navigate = useNavigate();
 
-    //ainda ta estatico
+    // o useState é inicializado vazio
     const [checked, setChecked] = useState({});
-    // sectionKey p/ manter o estado da checkbox?
-    // com storage
-    const toggleCheckbox = (lessonId) => { // usa o ID da lição pela API
-      setChecked((prev) => ({ ...prev, [lessonId]: !prev[lessonId] }));
-      
-    //  saveProgress(lessonId, !checked[lessonId]); ?????????
+
+    // esse useEffect "lê" o progresso vindo do userProgress e pré-marca as checkboxes qnd a pagina carrega
+    useEffect(() => {
+        const initialCheckedState = {};
+        if (userProgress && items) {
+            items.forEach(item => {
+                if (userProgress.includes(item.id)) {
+                    initialCheckedState[item.id] = true; // se o ID da lição estiver na lista userProgress marca como true
+                }
+            });
+        }
+        setChecked(initialCheckedState);
+    }, [userProgress, items]); // roda sempre que o progresso (q vem da API) muda
+
+
+    // 'toggleCheckbox', o PUT, chama 'onProgressChange'
+    const toggleCheckbox = async (lessonId) => {
+        
+        const isCurrentlyChecked = checked[lessonId] || false;
+        const newCheckedState = !isCurrentlyChecked;
+
+        // atualiza a UI localmente pra mudar rápido ao invés de esperar a resposta
+        setChecked((prev) => ({...prev,[lessonId]: newCheckedState,}));
+
+        // avisa o componente "pai" (Internet) que o progresso mudou
+        // isto permite que o estado 'userProgress' no pai seja atualizado
+        onProgressChange(lessonId, newCheckedState);
+
+        // salva no backend
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("Não é possível salvar o progresso: Utilizador não logado.");
+                return;
+            }
+
+            await axios.put(
+                `http://localhost:8000/progresso/licao/${lessonId}`,
+                { completado: newCheckedState },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+        } catch (err) {
+            console.error("Falha ao salvar progresso no backend:", err);
+            
+            // reverte a UI se a API não fizer o que deve fazer
+            setChecked((prev) => ({
+                ...prev,
+                [lessonId]: isCurrentlyChecked,
+            }));
+            onProgressChange(lessonId, isCurrentlyChecked); // reverte no "pai" tb
+
+            // lida com falta de permissão ou caso nao esteja logado
+            if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+                alert("A sua sessão expirou ou você não tem permissão. Por favor, faça login novamente.");
+                navigate("/login");
+            } else if (err.response) {
+                alert(`Erro ao salvar: ${err.response.data.detail || 'Erro desconhecido'}`);
+            } else {// outro tipo de erro
+                alert("Erro de rede ao salvar o progresso. Verifique sua conexão.");
+            }
+        }
     };
-    
+
     return (
         <section className="lesson-box">
         <h2>{title}</h2>
             <ul className="lesson-list">
-                {items.map((item, index) => ( // item = {id, label, href}
-                <li key={item.id}> {/* item.id da API como key */}
+                {items.map((item, index) => (
+                <li key={item.id}> {/* usa item.id da API*/}
                     <label
-                    className="lesson-item"
-                    onClick={(e) => {if (e.target.tagName.toLowerCase() === "input") { 
-                        return; 
-                    }
-                    navigate(item.href); // item.href da API
-                    }}
-                >
-                <span>
-                    <strong>{index + 1}.</strong> <span className="blue\">{item.label}</span> {/* item.label da API */}
-                </span>
-                <input
-                    type="checkbox"
-                    checked={checked[item.id] || false} // 'checked' agora é ligado ao ID da lição
-                    onChange={() => toggleCheckbox(item.id)} // ID da lição no toggle
-                />
-                </label>
-            </li>
+                        className="lesson-item"
+                        onClick={(e) => {
+                            if (e.target.tagName.toLowerCase() === "input") { return; }
+                            navigate(item.href);
+                        }}
+                    >
+                        <span>
+                            <strong>{index + 1}.</strong> <span className="blue\">{item.label}</span>
+                        </span>
+                        
+                        <input
+                            type="checkbox"
+                            checked={checked[item.id] || false} // le do estado
+                            onChange={() => toggleCheckbox(item.id)} // chama o PUT
+                        />
+                    </label>
+                </li>
             ))}
         </ul>
         </section>
     );
 }
 
-export default function Internet() {
 
-    // pega o ID do curso pela URL (/cursos/1 -> id = 1)
-    const { id: courseId } = useParams(); // hook pro react router
-
-    // estados para os dados, loading e erro igual ao topicos.jsx anteriormente
-    const [courseData, setCourseData] = useState(null); // armazena o curso com seções
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+function Internet() {
+    
+    const { id: courseId } = useParams();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        // a async p/ buscar os dados, depois executa instantaneamente
-        const fetchCourse = async () => {
-            try {// esse try catch é razoavelmente semelhante ao que está em topicos.jsx, então não vou repetir tudo
-                const token = localStorage.getItem("token");
+    // estados separados para os dados
+    const [courseData, setCourseData] = useState(null); // p os detalhes do curso
+    const [userProgress, setUserProgress] = useState([]); // para os IDs
+    
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-                // PARTE DA AUTENTICAÇÃO!
+    // o 'useEffect' faz 2 chamadas à API
+    useEffect(() => {
+        const fetchCourseData = async () => {
+            try {
+                const token = localStorage.getItem("token");
                 if (!token) {
                     setError("Você precisa estar logado para ver este curso.");
                     setLoading(false);
-                    setTimeout(() => navigate("/login"), 5000); // redireciona p login
+                    setTimeout(() => navigate("/login"), 2000);
                     return;
                 }
-
-                // chamada pra API dar fetch pro curso especifico
-                const response = await axios.get(
-                    `http://localhost:8000/cursos/${courseId}`, // ID da URL...
-                    {
-                        headers: { Authorization: `Bearer ${token}` } // manda o token, igual topicos
-                    }
-                );
                 
-                // deu certo:
-                setCourseData(response.data);
-                // atualiza o título da página c o nome do curso vindo da API
-                document.title = `ChaveDigital - ${response.data.title}`; 
+                // authentication header e tal
+                const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
 
-            } catch (err) {
-                // erros tratados (autenticação e autorização)
+                // usa 'Promise.all' para buscar os dois dados em paralelo
+                const [courseResponse, progressResponse] = await Promise.all([
+                    // 2 calls:
+                    // buscar os detalhes do curso do main.py
+                    axios.get(`http://localhost:8000/cursos/${courseId}`, authHeaders),
+                    // buscar o progresso do endpoint
+                    axios.get(`http://localhost:8000/progresso/curso/${courseId}`, authHeaders)
+                ]);
+                
+                // salva os dados nos estados separados
+                setCourseData(courseResponse.data); // salva o curso
+                setUserProgress(progressResponse.data); // salva o progresso 
+
+                document.title = `ChaveDigital - ${courseResponse.data.title}`;
+
+            } catch (err) {// o catch pros diferentes erros
                 if (err.response) {
                     if (err.response.status === 401) {
-                        // AUTENTICAÇÃO
                         setError("Sua sessão expirou. Por favor, faça login novamente.");
-                        setTimeout(() => navigate("/login"), 5000);
-                    
+                        setTimeout(() => navigate("/login"), 2000);
                     } else if (err.response.status === 403) {
-                        // AUTORIZAÇÃO 
-                        setError("Você não tem permissão para acessar este curso! Requer assinatura premium.");
-                    
+                        setError("Você não tem permissão para acessar este curso. Requer assinatura premium.");
                     } else if (err.response.status === 404) {
                         setError("Curso não encontrado.");
                     } else {
                         setError("Erro ao carregar o curso.");
                     }
                 } else {
-                    setError("Erro de rede ao tentar buscar o curso.");
+                    setError("Erro de rede ou CORS.");
                 }
             } finally {
-                setLoading(false); //loading false
+                setLoading(false);
             }
         };
 
-        fetchCourse();// executa a async
+        fetchCourseData();
 
-    }, [courseId, navigate]); // roda o efeito qnd id do curso na URL muda
-//useEffect 
+    }, [courseId, navigate]);
+    
+    //  essa função atualiza o estado 'userProgress' no "pai"
+    //  quando a 'LessonSection', q é o "filho", chama.
+    const handleProgressChange = (lessonId, isCompleted) => {
+        setUserProgress(prevProgress => {
+            const newProgress = new Set(prevProgress);
+            if (isCompleted) {
+                newProgress.add(lessonId);
+            } else {
+                newProgress.delete(lessonId);
+            }
+            return Array.from(newProgress);
+        });
+    };
 
-/* antigo - estático
-    const sections = [ // array de seções pra renderizar mais dinamicamente
-        {
-        title: "O que é a internet",
-        items: [
-            { label: "A rede", href: "/lista_topicos/lessons/pg_rede" },
-            { label: "Como funciona", href: "/lista_topicos/lessons/pg_comofunciona" },
-            { label: "Para que serve", href: "/lista_topicos/lessons/pg_paraqueserve" },
-            ],
-        },
-        {
-        title: "Navegadores",
-        items: [
-            { label: "O que são navegadores?", href: "/lista_topicos/lessons/" },
-            { label: "Navegadores e motores de busca", href: "/lista_topicos/lessons/" },
-            { label: "Google Chrome e Microsoft Edge", href: "/lista_topicos/lessons/" },
-            ],
-        },
-        {
-        title: "Sites e links",
-        items: [
-            { label: "Páginas da internet", href: "/lista_topicos/lessons/" },
-            { label: "Sites", href: "/lista_topicos/lessons/" },
-            { label: "Links", href: "/lista_topicos/lessons/" },
-            ],
-        },
-        {
-        title: "Segurança digital básica",
-        items: [
-            { label: "Senhas seguras", href: "/lista_topicos/lessons/" },
-            { label: "Links desconhecidos", href: "/lista_topicos/lessons/" },
-            ],
-        },
-    ];
-*/
-// lidando com uns casos possíveis
-    if (loading) { // mesma ideia de topicos.jsx, carregamento provisório
+    // renderização condicional
+    if (loading) { // enquanto estiver carregando, tal qual topicos.jsx
         return (
             <div>
                 <Header activePage="topicos" />
@@ -165,27 +199,26 @@ export default function Internet() {
             </div>
         );
     }
-
+    // no caso de erro, é a mensagem exibida antes da exceção em si
     if (error) {
         return (
             <div>
                 <Header activePage="topicos" />
                 <main className="center general-width hero">
-                    <h1 className="gold">Erro ao carregar</h1>
+                    <h1 className="gold">Erro</h1>
                     <p className="subtitle dark-gray">{error}</p>
-                    <Link to="/topicos" className="blue bold">
-                        Clique aqui para voltar aos tópicos.
-                    </Link>
                 </main>
                 <Footer activePage="topicos" />
             </div>
         );
     }
     
+    // caso nao de erro mas algo de errado (?)
     if (!courseData) {
-        return null; // n tem erro, mas os dados ainda não chegaram
+        return null; 
     }
-    // SUCESSO - renderiza a pag
+
+    // renderiza com sucesso
     return (
         <div>
         <Header activePage="topicos" />
@@ -195,7 +228,6 @@ export default function Internet() {
                 <img src={internetIcon} alt="Ícone do curso" />
             </figure>
             <div className="lesson-text">
-                {/* dados vem da API dinamicamente! */}
                 <h1 className="gold">{courseData.title}</h1>
                 <p className="subtitle">{courseData.description}</p>
                 <p className="subsubtitle dark-gray">
@@ -207,20 +239,22 @@ export default function Internet() {
             </div>
             </section>
 
-            {/* 18. Mapeia as seções vindas da API */}
+            {/*  passa o progresso e a função para a sub-componente */}
             {courseData.sections.map((section, idx) => ( 
                 <LessonSection
-                    key={idx} // key aqui pode ser o índice
-                    title={section.title} // da API
-                    items={section.items}   // da API
+                    key={idx} 
+                    title={section.title}
+                    items={section.items}
+                    userProgress={userProgress} // Passa o progresso
+                    onProgressChange={handleProgressChange} // Passa a função
                 />
             ))}
 
+            {/* botão de voltar aos topico */}
             <section className="lesson-box">
             <ul className="lesson-list">
                 <li>
-                    {/* link estático, sempre volta p mesma dessa parte do fluxo */}
-                    <label onClick={() => navigate("/topicos")}>
+                    <label onClick={() => (window.location.href = "/topicos")}>
                         <span>
                             <span className="blue\">Voltar aos tópicos</span>
                         </span>
@@ -232,53 +266,7 @@ export default function Internet() {
         <Footer activePage="topicos" />
         </div>
     );
-
-    //antigo...
-    /*
-    return (
-        <div>
-        <Header activePage="topicos" />
-        <main className="center general-width">
-            <section className="lesson-title general-width">
-                <figure className="lesson-logo">
-                    <img src={internetIcon} alt="icone-internet" />
-                </figure>
-            <div className="lesson-text">
-                <h1 className="gold">Internet</h1>
-                <p className="subtitle">Aprenda o que é internet e como navegar.</p>
-                <p className="subsubtitle dark-gray">
-                Clique no tópico para ir até a lição. Lugar errado?{" "}
-                <Link to="/topicos" className="blue bold">
-                    Clique aqui para voltar.
-                </Link>
-                </p>
-            </div>
-            </section>
-
-            {sections.map((section, idx) => ( // método do js pra percorrer o array
-                <LessonSection                // executando (section,idx) => ( ... ) para cada seção
-                    key={idx} 
-                    title={section.title}
-                    items={section.items} 
-                />                            // o react renderiza um LessonSection p cada
-            ))}
-
-            <section className="lesson-box">
-            <ul className="lesson-list">
-                <li>
-                    <label onClick={() => (window.location.href = "/lista_topicos/computadores")}>
-                        <span>
-                            <span className="blue">Próxima etapa</span>
-                        </span>
-                </label>
-                </li>
-            </ul>
-            </section>
-        </main>
-        <Footer activePage="topicos" />
-        </div>
-        
-    );*/
-    
-
 }
+
+export default Internet;
+

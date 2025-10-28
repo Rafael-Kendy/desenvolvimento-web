@@ -108,6 +108,20 @@ class Course(BaseModel): # modelo do curso
     is_free: bool = True
 #cursos
 
+#classes pras checkbox
+class ProgressUpdate(BaseModel):
+    #o que o front coloca no PUT
+    completado: bool
+
+class UserProgress(BaseModel):
+    # como será colocado no "bando de dados"
+    user_email: EmailStr
+    lesson_id: int
+#classes pras checkbox
+
+# bando de dados na memória p salvar o progresso
+user_progress = []
+
 #login
 #config do JWT (JSON web token)
 SECRET_KEY = "FACA_O_L_IMEDIATAMENTE" #pode ser qualquer string longa e aleatória
@@ -429,42 +443,91 @@ async def listar_cursos(current_user: Annotated[User, Depends(get_current_active
 #endpoint cursos GET
 
 #endpoint cursos especificos GET
-@app.get("/cursos/{course_id}", response_model=Course)
+@app.get("/cursos/{course_id}", response_model=Course) # 1. MUDANÇA: Revertido para 'Course'
 async def get_one_course(course_id: int, current_user: Annotated[User, Depends(get_current_active_user)]):
   
-    # procura o curso pelo id em courses
+    # verificação de achar ou não achar o curso
     found_course = None
     for course in courses:
         if course.id == course_id:
-            found_course = course
+            found_course = course # pro retorno!
             break
-
-    # curso não encontrado em courses -> levanta 404
     if not found_course:
         raise HTTPException(status_code=404, detail="Curso não encontrado")
-
+    
     # a parte daqui é de autorização.
     # pra fazer a implementação de ambos, foi criado um tipo de conta "premium"
     # se o curso for de graça, logados acessam.
     # se não estiver logado, nem entra (pelo current_user: annotated bla bla bla)
     # se o curso for premium, os de graça não acessam (MARX, 1867)
-    
-    # 1: se o curso for free, acessa
-    if found_course.is_free:
-        return found_course
-        
-    # 2: Se o curso NÃO for free, verifica se é user premium
-    if not current_user.is_premium:
-        # se realmente não for premium, levanta um 403
+    if not found_course.is_free and not current_user.is_premium:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Esse curso requer assinatura premium!"
+            detail="Esse curso requer assinatura premium."
         )
-    
-    # se o usuário for premium E o curso não for gratuito, permite
+
     return found_course
 #endpoint cursos especificos GET
 
+#endpoint de checkbox GET
+@app.get("/progresso/curso/{course_id}", response_model=List[int])
+async def get_progresso_do_curso(
+    course_id: int, # O ID do curso caso precise
+    current_user: Annotated[User, Depends(get_current_active_user)]
+):
+    # retorna uma lista de ID das lições q o user de agora completou
+    
+    completed_lessons_ids = []
+    for progresso in user_progress:
+        if progresso.user_email == current_user.email:
+            # melhorar no futuro: verificar se a lição pertence ao course_id
+            completed_lessons_ids.append(progresso.lesson_id)
+
+    print(f"Enviando progresso para {current_user.email}: {completed_lessons_ids}")
+
+    return completed_lessons_ids
+#endpoint de checkbox GET
+
+#endpoint de salvar progresso da checkbox PUT
+@app.put("/progresso/licao/{lesson_id}")
+async def salvar_progresso( # a async marca ou tira o progresso de uma lição pro user logado
+    lesson_id: int, # id da licao
+    update_data: ProgressUpdate, # { "completado": true/false } do front
+    current_user: Annotated[User, Depends(get_current_active_user)] # ql user ta salvando?
+):
+    # verifica o que o user quer fazer
+    if update_data.completado:
+        # checkbox marcada
+        # ve se ja ta salvo, p nao duplicar
+        ja_existe = False
+        for progresso in user_progress:
+            if progresso.user_email == current_user.email and progresso.lesson_id == lesson_id:
+                ja_existe = True
+                break
+        
+        #se nao existe...
+        if not ja_existe:
+            user_progress.append(UserProgress(user_email=current_user.email,lesson_id=lesson_id))
+            # printnado p ver no console do backend!
+            print(f"Progresso salvo: user {current_user.email} completou lição {lesson_id}")
+            print(f"BD de progresso atual: {user_progress}")
+            
+    else:
+        # checkbox desmarcada
+        # procura o progresso na lista p remover
+        progresso_para_remover = None
+        for progresso in user_progress:
+            if progresso.user_email == current_user.email and progresso.lesson_id == lesson_id:
+                progresso_para_remover = progresso
+                break
+        # SE existe algum progresso p ser removido
+        if progresso_para_remover:
+            user_progress.remove(progresso_para_remover)
+            print(f"Progresso removido: user {current_user.email} desmarcou lição {lesson_id}")
+            print(f"BD de progresso atual: {user_progress}")
+
+    return {"status": "sucesso", "progresso_atual": user_progress}
+#endpoint de salvar progresso da checkbox PUT
 
 #rodar o server
 if __name__=="__main__":

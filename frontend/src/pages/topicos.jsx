@@ -85,10 +85,10 @@ function Topicos() {
     // função p/ dar fetch nos dados da API
     const fetchTopicos = async() => {
       try {
-        // 1. pega o token de autenticação e salva no localStorage
+        // pega o token de autenticação e salva no localStorage
         const token = localStorage.getItem("token");
 
-        // 2. verifica se o usuário ta logado
+        // verifica se o usuário ta logado
         if (!token) {// se não,
           setError("Você precisa estar logado para ver os cursos. Redirecionando...");
           setLoading(false);
@@ -97,7 +97,7 @@ function Topicos() {
           return;
         }//if token
 
-        // 3. requisição para a API com o token de 1.
+        // requisição para a API com o token de 1.
         const response = await axios.get("http://localhost:8000/cursos", { //async!!
           headers: {// header de metadados, não header do site (obviamente)
             // Authorization -> está autenticado
@@ -105,12 +105,12 @@ function Topicos() {
           }
         });
 
-        // 4. salva os dados no estado, loading = false
+        //salva os dados no estado, loading = false
         setTopicos(response.data);
         setLoading(false);
 
       } catch (err) {
-        // 5. catch de possíveis erros
+        // catch de possíveis erros
         if (err.response && err.response.status === 401) {
           // nao autorizado
           setError("Sua sessão expirou. Por favor, faça login novamente.");
