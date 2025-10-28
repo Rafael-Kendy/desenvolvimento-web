@@ -11,14 +11,12 @@ import Equipe from './pages/equipe.jsx'
 import Topicos from './pages/topicos.jsx'
 import Login from './pages/login.jsx';
 import Internet from './pages/lista_topicos/internet.jsx'
-import Computadores from './pages/lista_topicos/computadores.jsx'
-import Mensagens from './pages/lista_topicos/mensagens.jsx'
+//import Computadores from './pages/lista_topicos/computadores.jsx'
+//import Mensagens from './pages/lista_topicos/mensagens.jsx'
 import Perfil from './pages/perfil.jsx'
 import Configuracoes from './pages/configuracoes.jsx'
-import PgRede from "./pages/lista_topicos/lessons/pg_rede.jsx";
-import PgComoFunciona from "./pages/lista_topicos/lessons/pg_comofunciona.jsx";
-import PgParaQueServe from "./pages/lista_topicos/lessons/pg_paraqueserve.jsx";
 import Comunidade from './pages/comunidade.jsx'
+import LessonPage from './pages/lista_topicos/lessons/LessonPage.jsx'
 
 
 const router = createBrowserRouter([
@@ -32,14 +30,7 @@ const router = createBrowserRouter([
   {path:"/perfil", element:<Perfil /> },
   {path:"/configuracoes", element:<Configuracoes /> },
   {path:"/cursos/:id", element:<Internet/>}, 
-  {path:"/cursos/:id", element:<Computadores/>}, 
-  {path:"/cursos/:id", element:<Mensagens/>}, 
-  /*{path:"/lista_topicos/internet", element:<Internet/>}, ESTÁTICO
-  {path:"/lista_topicos/computadores", element:<Computadores/>},// TODO -- escalabilidade com useParams
-  {path:"/lista_topicos/mensagens", element:<Mensagens/>},
-  { path:"/lista_topicos/lessons/pg_rede", element: <PgRede /> },
-  { path:"/lista_topicos/lessons/pg_comofunciona", element: <PgComoFunciona /> },
-  { path:"/lista_topicos/lessons/pg_paraqueserve", element: <PgParaQueServe /> },*/
+  {path:"/licoes/:lessonId", element:<LessonPage/>}, 
   { path:"/comunidade", element: <Comunidade /> },
 ]);
 

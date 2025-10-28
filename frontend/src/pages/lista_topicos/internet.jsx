@@ -64,7 +64,7 @@ function LessonSection({ title, items, userProgress, onProgressChange }) {
             }));
             onProgressChange(lessonId, isCurrentlyChecked); // reverte no "pai" tb
 
-            // lida com falta de permissão ou caso nao esteja logado
+            // lida com falta de permissão ou caso nao esteja logado (ou não tiver permissão)
             if (err.response && (err.response.status === 401 || err.response.status === 403)) {
                 alert("A sua sessão expirou ou você não tem permissão. Por favor, faça login novamente.");
                 navigate("/login");

@@ -2,7 +2,7 @@ import uvicorn #pra rodar, uvicorn api.main:app --reload
 from fastapi import FastAPI, UploadFile, Form, File, Body
 from fastapi.middleware.cors import CORSMiddleware #liga front e back
 from pydantic import BaseModel #pros tipos das coisas
-from typing import List, Optional
+from typing import List, Optional, Dict
 from fastapi import HTTPException #pra codigo de erros
 
 #pip install passlib[bcrypt]
@@ -19,7 +19,7 @@ from jose import JWTError, jwt #jose kkkkkk JSON object signing and encryption
 import hashlib #p/ usar o gravatar
 
 app = FastAPI() #objeto base pra cuidar dos endpoint
-
+print("\nDebug: Server iniciou\n") # <-- ADICIONE ESTA LINHA
 origins = [
     "http://localhost:5173", #front
     "http://localhost:8000" #back
@@ -119,8 +119,24 @@ class UserProgress(BaseModel):
     lesson_id: int
 #classes pras checkbox
 
-# bando de dados na memória p salvar o progresso
+# bando de dados na memória p salvar o progresso da checkbox
 user_progress = []
+
+#classes para o conteúdo das lições
+class Step(BaseModel):
+    # passo na lição
+    text: str
+    # por enquanto só texto, mas uma ideia: image_url: Optional[str] = None
+
+class LessonContent(BaseModel):# o conteúdo da lição
+    lesson_id: int
+    title: str 
+    # todo: icon_url?
+    steps: List[Step] # lista de passos (Step criado acima)
+    video_url: Optional[str] = None # link pro video se tiver algum na lição
+    # todo: 'next_lesson_id' ou 'next_lesson_href'?
+#classes para o conteúdo das lições
+
 
 #login
 #config do JWT (JSON web token)
@@ -402,12 +418,12 @@ courses = [
         is_free=True, # Este curso é gratuito
         sections=[
             Section(title="Conceitos Básicos", items=[
-                Lesson(id=101, label="O que é a Internet", href="/licoes/internet/licao1"),
-                Lesson(id=102, label="Navegadores", href="/licoes/internet/licao2"),
-                Lesson(id=103, label="Sites e links", href="/licoes/internet/licao3"),
+                Lesson(id=101, label="O que é a Internet", href="/licoes/101"),
+                Lesson(id=102, label="Navegadores", href=f"/licoes/102"),
+                Lesson(id=103, label="Sites e links", href=f"/licoes/103"),
             ]),
             Section(title="Segurança", items=[
-                Lesson(id=104, label="Segurança básica", href="/licoes/internet/licao4")
+                Lesson(id=104, label="Segurança básica", href="/licoes/104")
             ])
         ]
     ),
@@ -418,8 +434,8 @@ courses = [
         is_free=True,
         sections=[
             Section(title="Componentes", items=[
-                Lesson(id=201, label="Mouse e Teclado", href="/licoes/computador/licao1"),
-                Lesson(id=202, label="Monitor", href="/licoes/computador/licao2"),
+                Lesson(id=201, label="Mouse e Teclado", href=f"/licoes/{201}"),
+                Lesson(id=202, label="Monitor", href=f"/licoes/{202}"),
             ])
         ]
     ),
@@ -430,7 +446,7 @@ courses = [
         is_free=False, # CURSO PREMIUM!
         sections=[
             Section(title="WhatsApp", items=[
-                Lesson(id=301, label="Chamada de Vídeo", href="/licoes/chamadas/licao1"),
+                Lesson(id=301, label="Chamada de Vídeo", href=f"/licoes/{301}"),
             ])
         ]
     )
@@ -528,6 +544,53 @@ async def salvar_progresso( # a async marca ou tira o progresso de uma lição p
 
     return {"status": "sucesso", "progresso_atual": user_progress}
 #endpoint de salvar progresso da checkbox PUT
+
+# o "BD" que salva o conteúdo das lições, na memória
+# mapeia o ID da lição(int) pro conteúdo
+lesson_contents: Dict[int, LessonContent] = {
+    101: LessonContent(
+        lesson_id=101,
+        title="O que é a Internet",
+        steps=[
+            Step(text="A internet é tipo"),
+            Step(text="Ela meio que"),
+            Step(text="Pensa assim")
+        ],
+        video_url="/videos/o-que-e-internet.mp4" #caminho do video
+    ),
+    102: LessonContent(
+        lesson_id=102,
+        title="Navegadores",
+        steps=[
+            Step(text="placeholder"),
+            Step(text="placeholder"),
+            Step(text="placeholder")
+        ],
+        # exemplo de lição sem vídeo
+    ),
+    # caminho pra outras lições
+    103: LessonContent(lesson_id=104, title="Segurança Básica", steps=[Step(text="placeholder")]),
+    104: LessonContent(lesson_id=104, title="Segurança Básica", steps=[Step(text="placeholder")]),
+    201: LessonContent(lesson_id=201, title="Mouse e Teclado", steps=[Step(text="placeholder")]),
+    202: LessonContent(lesson_id=202, title="Monitor", steps=[Step(text="placeholder")]),
+    301: LessonContent(lesson_id=301, title="Chamada de Vídeo", steps=[Step(text="placeholder")], video_url="/videos/chamada.mp4"),
+}
+
+print("\n--- DEFININDO ENDPOINT GET /licoes/{lesson_id} ORIGINAL ---\n")
+
+@app.get("/licoes/{lesson_id}", response_model=LessonContent)
+async def get_lesson_content(lesson_id: int,current_user: Annotated[User, Depends(get_current_active_user)]):
+
+    content = lesson_contents.get(lesson_id) #pega o id da lição e coloca em content
+
+    if not content:# se não for encontrada
+        raise HTTPException(status_code=404, detail="Conteúdo da lição não encontrado")
+    
+    if lesson_id == 301 and not current_user.is_premium: # estatico por enquanto, 
+        raise HTTPException(status_code=403, detail="Esta lição é premium.")
+
+    return content
+    
 
 #rodar o server
 if __name__=="__main__":
