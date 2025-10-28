@@ -131,7 +131,7 @@ No backend o endpoint é protegido pela dependência current_user: Annotated[Use
 
 ##### Delete
 
-`/users/me`: outro endpoint de autorização, no frontend A função handleDeleteAccount em `configuracoes.jsx` é chamada pelo onClick do botão "Deletar Conta". Ela chama a `api.delete("/users/me")`, enviando o token no cabeçalho Authorization. Ao receber a resposta de sucesso o frontend limpa o localStorage.removeItem("token") e redireciona para `/login`.
+`/users/me`: outro endpoint de autorização, no frontend a função handleDeleteAccount em `configuracoes.jsx` é chamada pelo onClick do botão "Deletar Conta". Ela chama a `api.delete("/users/me")`, enviando o token no cabeçalho Authorization. Ao receber a resposta de sucesso o frontend limpa o localStorage.removeItem("token") e redireciona para `/login`.
 
 No backend também há proteção pela dependência Depends(get_current_active_user). Se o token for válido, o current_user colocado é removido da lista users através do users.remove(current_user).
 
@@ -140,7 +140,7 @@ No backend também há proteção pela dependência Depends(get_current_active_u
 
 `/users/me`: mais um endpoint de autorização, no frontend a página configuracoes.jsx primeiro usa useEffect para buscar(GET) os dados e preencher os estados name e description. O handleSubmit então chama `api.put("/users/me", ...)`, enviando os novos dados dos estados (name, description) como corpo e o token como cabeçalho Authorization.
 
-No backend o endpoint usa duas fontes de dados o JSON do corpo, validado no modelo user_update: UserUpdate, e o token do cabeçalho validado pela dependência Depends(get_current_active_user). A lógica de negócios então mistura os dados, aplicando as atualizações de user_update, como user_update.name, ao objeto current_user, como current_user.name = user_update.name. O current_user atualizado é retornado.
+No backend o endpoint usa duas fontes de dados o JSON do corpo, validado no modelo user_update: UserUpdate, e o token do cabeçalho validado pela dependência Depends(get_current_active_user). Os dados são misturados, aplicando as atualizações de user_update, como por exemplo user_update.name, ao objeto current_user, como por exemplo current_user.name = user_update.name. O current_user atualizado é retornado.
 
 
 #### API externa
@@ -149,7 +149,7 @@ A integração da API externa foi implementada no backend, dentro do endpoint `G
 
 Sobre a implementação no backend, inves de uma chamada fetch, a integração consiste em construir uma URL de API. Dentro do read_users_me, o email do usuário (current_user.email) é normalizado (.lower().strip()) e então hasheado usando a biblioteca hashlib (hashlib.md5(email_address.encode('utf-8')).hexdigest()).
 
-O md5_hash é inserido em uma f-string para construir a URL da API: `"https://www.gravatar.com/avatar/{md5_hash}?d=identicon"`. O parâmetro d=identicon instrui a API externa a gerar um ícone geométrico caso nenhum avatar esteja associado ao email.
+O md5_hash é inserido em uma f-string para construir a URL da API: `f"https://www.gravatar.com/avatar/{md5_hash}?d=identicon"`. O parâmetro d=identicon instrui a API externa a gerar um ícone geométrico caso nenhum avatar esteja associado ao email.
 
 Esse avatar é salvo em avatar_url e adicionado ao modelo de resposta UserPublic que é enviado ao frontend. O `perfil.jsx` recebe este user.avatar_url via setUser(response.data) e o insere diretamente no src da tag <img>.
 
@@ -160,7 +160,7 @@ Autenticação:  o usuário insere email e senha, o frontend `login.jsx` envia u
 
 Autorização: no frontend todas as chamadas protegidas em `perfil.jsx` e `configuracoes.jsx` leem o token do localStorage e o jogam no cabeçalho headers: { Authorization: \Bearer ${token}` }`. 
 
-No backend o oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") é definido, a função de segurança get_current_active_user usa Depends(oauth2_scheme) para pegar o token. O get_current_active_user usa jwt.decode(token, SECRET_KEY, ...) para validar a assinatura e a expiração do token. Ele extrai a identidade do usuário do payload.get("sub").
+No backend o oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") é definido, a função de segurança get_current_active_user usa Depends(oauth2_scheme) para pegar o token. O get_current_active_user usa jwt.decode(token, SECRET_KEY, ...) para validar a assinatura e a quando o token expira. Ele extrai a identidade do usuário do payload.get("sub").
 
 Se a validação do token falhar, o get_current_active_user levanta uma HTTPException 401 Unauthorized, bloqueando o acesso. O frontend `perfil.jsx` e `configuracoes.jsx` captura esse erro 401, remove o token inválido (localStorage.removeItem), e redireciona o usuário para o `/login` completando o fluxo de proteção de rota.
 
