@@ -1,4 +1,4 @@
-import {useState} from "react"; //hook pra guardar estado
+import {useState, useEffect} from "react"; //hook pra guardar estado
 import {Link} from "react-router-dom"; //equivale ao <a>
 import logo from "./assets/img/main_logo.png";
 import user from "./assets/img/user_icon.png";
@@ -7,12 +7,27 @@ function Header({activePage}){
     const [isModalOpen, setModalOpen] = useState(false); //se a pop ta aberta ou nao
     const [searchValue, setSearchValue] = useState(""); //texto da busca
 
+    const [profileLink, setProfileLink] = useState("/login");
+
     const links=[
         {id:"topics", href: "/topicos", label: "Tópicos"},
         {id:"community", href: "/comunidade", label: "Comunidade"},
         {id:"about", href: "/sobre", label: "Sobre"}
     ];
 
+    useEffect(() => {
+
+        const token = localStorage.getItem("token");//verifica se ha um token
+
+        // se tiver
+        if (token) {
+            //atualiza o estado do link para apontar para "/perfil"
+            setProfileLink("/perfil");
+        } else {
+            // senao garante que ele aponte para "/login"
+            setProfileLink("/login");
+        }
+    }, []);
 
     const toggleModal = () => setModalOpen(!isModalOpen); //abre/fecha a modal
 
@@ -47,7 +62,7 @@ function Header({activePage}){
                         {link.label}
                     </Link>
                 ))}
-                <Link to="/registro" className="icon">
+                <Link to={profileLink} className="icon">
                     <img src={user} alt="Perfil" />
                 </Link>
             </nav>
