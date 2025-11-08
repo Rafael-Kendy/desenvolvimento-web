@@ -35,6 +35,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+#=====================================================================================================================================================
+#parte do banco de dados
+
+@app.on_event("startup") #cria as tabelas no inicio
+def on_startup():
+    from sqlmodel import SQLModel
+    SQLModel.metadata.create_all(engine)
+
+#=====================================================================================================================================================
+#questoes
 
 questions = [] #guardando as questoes na memoria msm por enquanto, reseta com o server
 class Question(BaseModel): #estrutura das questoes
@@ -44,6 +54,99 @@ class Question(BaseModel): #estrutura das questoes
     title: str
     question: str
     image_url: str | None=None
+
+#cria a nova duvida, retorna sucesso de der certo
+@app.post("/comunidade")
+async def setQuestion( #acessa os dados do formulario
+    name: str=Form(...),
+    email: str=Form(...),
+    title: str=Form(...),
+    question: str=Form(...),
+    image: UploadFile | None = File(None),
+    session = Depends(get_session),
+):
+    image_url = f"/fake/path/{image.filename}" if image else None #ainda finge que salvou
+
+    new_question = Question( #cria a questao
+        name=name,
+        email=email,
+        title=title,
+        question=question,
+        image_url=image_url
+    )
+    session.add(new_question)
+    session.commit()
+    session.refresh(new_question)
+
+    return {"message": "Questão adicionada", "question": new_question}
+
+# #cria a nova duvida, retorna sucesso de der certo
+# @app.post("/comunidade")
+# async def setQuestion( #acessa os dados do formulario
+#     name: str=Form(...),
+#     email: str=Form(...),
+#     title: str=Form(...),
+#     question: str=Form(...),
+#     image: UploadFile | None = File(None)
+# ):
+#     image_url=None
+#     if image:
+#         image_url=f"/fake/path/{image.filename}" #finge q salvou
+#     new_question=Question( #cria a questao
+#         id=len(questions)+1,
+#         name=name,
+#         email=email,
+#         title=title,
+#         question=question,
+#         image_url=image_url
+#     )
+#     questions.append(new_question) #guarda na memoria
+#     return {"message": "Questão adicionada", "question": new_question}
+
+
+# #pega todas as questoes
+# @app.get("/comunidade", response_model=List[Question])
+# async def getQuestions():
+#     return questions
+
+
+# #deleta 1 questao, se confirmar o email
+# @app.delete("/comunidade/{question_id}")
+# async def deleteQuestion(question_id: int, email: str = Body(..., embed=True)):
+#     global questions
+#     for q in questions: #percorre tds as questoes
+#         if q.id == question_id: #qnd acha pelo id
+#             if q.email != email: #digitou o email errado
+#                 raise HTTPException(status_code=403, detail="Email incorreto. Você não pode deletar esta dúvida.")
+#             questions.remove(q) #digitou o certo
+#             return {"message": f"Questão {question_id} deletada com sucesso"}
+#     raise HTTPException(status_code=404, detail="Questão não encontrada")
+
+
+# #edita a questao, segue a msm logica do email do delete
+# @app.put("/comunidade/{question_id}")
+# async def updateQuestion(question_id: int, email:str = Body(..., embed=True), name:str|None = Body(None), title:str|None = Body(None), question:str|None = Body(None)):
+#     global questions
+#     for q in questions: #percorre as questoes
+#         if q.id == question_id: #acha o id
+#             if q.email != email: #email errado
+#                 raise HTTPException(status_code=403, detail="Email incorreto. Você não pode editar esta dúvida.")
+            
+#             #email certo, att os dados
+#             if name is not None:
+#                 q.name = name
+#             if title is not None:
+#                 q.title = title
+#             if question is not None:
+#                 q.question = question
+
+#             return {"message": f"Questão {question_id} atualizada com sucesso", "question": q}
+#     raise HTTPException(status_code=404, detail="Questão não encontrada")
+
+
+
+#=====================================================================================================================================================
+
 
 
 #users
@@ -212,72 +315,6 @@ async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)])
         raise credentials_exception
     return user
 #perfil
-
-#questoes --------------------------------------------------------------------------------------------
-
-#cria a nova duvida, retorna sucesso de der certo
-@app.post("/comunidade")
-async def setQuestion( #acessa os dados do formulario
-    name: str=Form(...),
-    email: str=Form(...),
-    title: str=Form(...),
-    question: str=Form(...),
-    image: UploadFile | None = File(None)
-):
-    image_url=None
-    if image:
-        image_url=f"/fake/path/{image.filename}" #finge q salvou
-    new_question=Question( #cria a questao
-        id=len(questions)+1,
-        name=name,
-        email=email,
-        title=title,
-        question=question,
-        image_url=image_url
-    )
-    questions.append(new_question) #guarda na memoria
-    return {"message": "Questão adicionada", "question": new_question}
-
-
-#pega todas as questoes
-@app.get("/comunidade", response_model=List[Question])
-async def getQuestions():
-    return questions
-
-
-#deleta 1 questao, se confirmar o email
-@app.delete("/comunidade/{question_id}")
-async def deleteQuestion(question_id: int, email: str = Body(..., embed=True)):
-    global questions
-    for q in questions: #percorre tds as questoes
-        if q.id == question_id: #qnd acha pelo id
-            if q.email != email: #digitou o email errado
-                raise HTTPException(status_code=403, detail="Email incorreto. Você não pode deletar esta dúvida.")
-            questions.remove(q) #digitou o certo
-            return {"message": f"Questão {question_id} deletada com sucesso"}
-    raise HTTPException(status_code=404, detail="Questão não encontrada")
-
-
-#edita a questao, segue a msm logica do email do delete
-@app.put("/comunidade/{question_id}")
-async def updateQuestion(question_id: int, email:str = Body(..., embed=True), name:str|None = Body(None), title:str|None = Body(None), question:str|None = Body(None)):
-    global questions
-    for q in questions: #percorre as questoes
-        if q.id == question_id: #acha o id
-            if q.email != email: #email errado
-                raise HTTPException(status_code=403, detail="Email incorreto. Você não pode editar esta dúvida.")
-            
-            #email certo, att os dados
-            if name is not None:
-                q.name = name
-            if title is not None:
-                q.title = title
-            if question is not None:
-                q.question = question
-
-            return {"message": f"Questão {question_id} atualizada com sucesso", "question": q}
-    raise HTTPException(status_code=404, detail="Questão não encontrada")
-
 
 #registro/usuarios -----------------------------------------------------------------------------------
 

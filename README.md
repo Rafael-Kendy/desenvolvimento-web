@@ -1,5 +1,18 @@
 # Plataforma de aprendizado digital - Chave Digital
 
+## Entrega 3 - APIs
+
+### Integração com banco de dados
+
+#### Página de comunidade - Rafael Kendy
+
+
+### Hospedagem
+
+### Documentação
+
+
+
 ## Entrega 2 - APIs
 
 Link para o drive com os vídeos e slides em PDF: https://drive.google.com/drive/u/1/folders/1plhqkK0ybvU141FTmoKz5iFKDRcI79YZ
