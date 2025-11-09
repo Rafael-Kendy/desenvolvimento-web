@@ -19,6 +19,12 @@ from jose import JWTError, jwt #jose kkkkkk JSON object signing and encryption
 import hashlib #p/ usar o gravatar
 import httpx # p usar o unsplash
 
+#coisa pro bd
+from sqlmodel import SQLModel, Session, select
+from .database import engine, get_session
+from .model import Question
+
+
 app = FastAPI() #objeto base pra cuidar dos endpoint
 print("\nDebug: Server iniciou\n") # <-- ADICIONE ESTA LINHA
 origins = [
@@ -46,14 +52,14 @@ def on_startup():
 #=====================================================================================================================================================
 #questoes
 
-questions = [] #guardando as questoes na memoria msm por enquanto, reseta com o server
-class Question(BaseModel): #estrutura das questoes
-    id: int
-    name: str
-    email: str
-    title: str
-    question: str
-    image_url: str | None=None
+# questions = [] #guardando as questoes na memoria msm por enquanto, reseta com o server
+# class Question(BaseModel): #estrutura das questoes
+#     id: int
+#     name: str
+#     email: str
+#     title: str
+#     question: str
+#     image_url: str | None=None
 
 #cria a nova duvida, retorna sucesso de der certo
 @app.post("/comunidade")
@@ -80,34 +86,11 @@ async def setQuestion( #acessa os dados do formulario
 
     return {"message": "Questão adicionada", "question": new_question}
 
-# #cria a nova duvida, retorna sucesso de der certo
-# @app.post("/comunidade")
-# async def setQuestion( #acessa os dados do formulario
-#     name: str=Form(...),
-#     email: str=Form(...),
-#     title: str=Form(...),
-#     question: str=Form(...),
-#     image: UploadFile | None = File(None)
-# ):
-#     image_url=None
-#     if image:
-#         image_url=f"/fake/path/{image.filename}" #finge q salvou
-#     new_question=Question( #cria a questao
-#         id=len(questions)+1,
-#         name=name,
-#         email=email,
-#         title=title,
-#         question=question,
-#         image_url=image_url
-#     )
-#     questions.append(new_question) #guarda na memoria
-#     return {"message": "Questão adicionada", "question": new_question}
 
 
-# #pega todas as questoes
-# @app.get("/comunidade", response_model=List[Question])
-# async def getQuestions():
-#     return questions
+@app.get("/comunidade")
+def get_questions(session: Session = Depends(get_session)):
+    return session.exec(select(Question)).all()
 
 
 # #deleta 1 questao, se confirmar o email
