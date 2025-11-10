@@ -88,43 +88,60 @@ async def setQuestion( #acessa os dados do formulario
 
 
 
+#pega as duvidas
 @app.get("/comunidade")
 def get_questions(session: Session = Depends(get_session)):
     return session.exec(select(Question)).all()
 
 
-# #deleta 1 questao, se confirmar o email
-# @app.delete("/comunidade/{question_id}")
-# async def deleteQuestion(question_id: int, email: str = Body(..., embed=True)):
-#     global questions
-#     for q in questions: #percorre tds as questoes
-#         if q.id == question_id: #qnd acha pelo id
-#             if q.email != email: #digitou o email errado
-#                 raise HTTPException(status_code=403, detail="Email incorreto. Você não pode deletar esta dúvida.")
-#             questions.remove(q) #digitou o certo
-#             return {"message": f"Questão {question_id} deletada com sucesso"}
-#     raise HTTPException(status_code=404, detail="Questão não encontrada")
+
+#deleta 1 questao, se confirmar o email
+@app.delete("/comunidade/{question_id}")
+async def delete_question(
+    question_id: int,
+    email: str = Body(..., embed=True),
+    session = Depends(get_session),
+):
+    q = session.get(Question, question_id) #pega direto pelo id
+    if not q:
+        raise HTTPException(status_code=404, detail="Questão não encontrada")
+    if q.email != email: #digitou o email errado
+        raise HTTPException(status_code=403, detail="Email incorreto. Você não pode deletar esta dúvida.")
+
+    session.delete(q) #qnd acha pelo id e email certo
+    session.commit() #confirma no banco
+    return {"message": f"Questão {question_id} deletada com sucesso"}
 
 
-# #edita a questao, segue a msm logica do email do delete
-# @app.put("/comunidade/{question_id}")
-# async def updateQuestion(question_id: int, email:str = Body(..., embed=True), name:str|None = Body(None), title:str|None = Body(None), question:str|None = Body(None)):
-#     global questions
-#     for q in questions: #percorre as questoes
-#         if q.id == question_id: #acha o id
-#             if q.email != email: #email errado
-#                 raise HTTPException(status_code=403, detail="Email incorreto. Você não pode editar esta dúvida.")
-            
-#             #email certo, att os dados
-#             if name is not None:
-#                 q.name = name
-#             if title is not None:
-#                 q.title = title
-#             if question is not None:
-#                 q.question = question
 
-#             return {"message": f"Questão {question_id} atualizada com sucesso", "question": q}
-#     raise HTTPException(status_code=404, detail="Questão não encontrada")
+#edita a questao, segue a msm logica do email do delete
+@app.put("/comunidade/{question_id}")
+async def update_question(
+    question_id: int,
+    email: str = Body(..., embed=True),
+    name: str | None = Body(None),
+    title: str | None = Body(None),
+    question: str | None = Body(None),
+    session = Depends(get_session),
+):
+    q = session.get(Question, question_id) #pega direto pelo id
+    if not q:
+        raise HTTPException(status_code=404, detail="Questão não encontrada")
+    if q.email != email: #email errado
+        raise HTTPException(status_code=403, detail="Email incorreto. Você não pode editar esta dúvida.")
+    #atualiza os dados, ainda to ignorando a imagem
+    if name is not None:
+        q.name = name
+    if title is not None:
+        q.title = title
+    if question is not None:
+        q.question = question
+
+    session.add(q)
+    session.commit()
+    session.refresh(q)
+
+    return {"message": "Questão atualizada com sucesso", "question": q}
 
 
 
