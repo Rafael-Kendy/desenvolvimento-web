@@ -283,7 +283,8 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 #login
 
 #perfil
-async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)]):# o depends() faz a fastAPI pegar o token do cabeçalho e mandar ele p/ variavel token
+async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    # o depends() faz a fastAPI pegar o token do cabeçalho e mandar ele p/ variavel token
     #token: Annotated pega o token do cabeçalho Authorization, abre ele, acha o email "sub", usa o email pra achar o user na lista de users,
     #endpoint ent retorna os dados em return current_user la em baixo~
     #response_model=UserPublic filtra para id, name, email
@@ -308,8 +309,10 @@ async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)])
         #se o token for inválido ou expirado msotra o erro
         raise credentials_exception
     
-    #se o token for valido, busca o usuário na lista users
-    user = get_user(email=email)
+    #busca no sql, seleciona o usuario onde o email é igual ao email do token
+    statement = select(User).where(User.email == email)
+    user = session.exec(statement).first()
+
     if user is None:
         #se o usuário não existir mostra o erro
         raise credentials_exception
