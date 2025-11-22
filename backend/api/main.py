@@ -22,7 +22,8 @@ import httpx # p usar o unsplash
 #coisa pro bd
 from sqlmodel import SQLModel, Session, select
 from .database import engine, get_session
-from .model import Question
+from .model import Question, User
+
 
 
 app = FastAPI() #objeto base pra cuidar dos endpoint
@@ -150,17 +151,31 @@ async def update_question(
 
 
 #users
-users = []  #guardando na memoria por enquanto
+#users = []  #guardando na memoria por enquanto
 #configura o passlib, diz p ele q quero usar o bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")#configuração pro hashing de senha
 
-class User(BaseModel): #estrutura do user sque é salva
-    id: int
-    name: str
-    email: EmailStr #faz validação automatica de email
-    hashed_password: str
-    description: str | None = None #p/ descrição no perfil
-    is_premium: bool = False
+#class User(BaseModel): #estrutura do user sque é salva
+#    id: int
+#    name: str
+#    email: EmailStr #faz validação automatica de email
+#    hashed_password: str
+#    description: str | None = None #p/ descrição no perfil
+#    is_premium: bool = False
+
+#converter usuario do bd para uusario publico
+def user_to_public(user: User) -> "UserPublic":
+    email_address = user.email.lower().strip()
+    md5_hash = hashlib.md5(email_address.encode('utf-8')).hexdigest()
+    avatar_url = f"https://www.gravatar.com/avatar/{md5_hash}?d=identicon"
+
+    return UserPublic(
+        id=user.id,
+        name=user.name,
+        email=user.email,
+        description=user.description,
+        avatar_url=avatar_url
+    )
 
 
 class UserCreate(BaseModel): #estrutura dos dados que vão chegar do front
@@ -322,17 +337,20 @@ async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)],
 #registro/usuarios -----------------------------------------------------------------------------------
 
 #endpoint registro
-@app.post("/registro", response_model=User)#response model define o formato, no caso User
-async def register_user(user_data: UserCreate): #a API automaticamente pega o JSON do frontend, valida com o userCreate e joga, como um objeto, pro user_data
+@app.post("/registro", response_model=UserPublic)#response model define o formato, no caso UserPublic no retorno pra esconder a senha
+async def register_user(user_data: UserCreate, session: Session = Depends(get_session)): #a API automaticamente pega o JSON do frontend, valida com o userCreate e joga, como um objeto, pro user_data
     
-    for u in users: #verifica se o email existe
-        if u.email == user_data.email:#se existe, cria o erro 400, q o front vai capturar 
-            raise HTTPException(status_code=400, detail="Esse email já existe!")
+    #verifica no bd se o email existe
+    statement = select(User).where(User.email == user_data.email)
+    existing_user = session.exec(statement).first()
+
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Esse email já existe") 
+
 
     hashed_password = pwd_context.hash(user_data.password)#criptografa a senha
 
     new_user = User( #cria um novo usuário
-        id=len(users) + 1,
         name=user_data.name,
         email=user_data.email,
         hashed_password=hashed_password, #salva a versao criptografada
@@ -340,11 +358,14 @@ async def register_user(user_data: UserCreate): #a API automaticamente pega o JS
         is_premium=False
     )
 
-    users.append(new_user)#salva o usuario na lista
+    #salva no bd
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user) #atualiza o new_user com o id gerado pelo bd
     
-    print("Usuários cadastrados: ", users) #pra manter o controle e ver no terminal
+    print("Novo usuário registrado, id:", new_user.id)
     
-    return new_user#retonra o usuario criado, envia la pro frontend em registro.jsx
+    return user_to_public(new_user)#retonra o usuario criado, envia la pro frontend em registro.jsx
 #endpoint registro
 
 #login -----------------------------------------------------------------------------------
@@ -352,12 +373,14 @@ async def register_user(user_data: UserCreate): #a API automaticamente pega o JS
 #endpoint login
 #chamado qnd o usuario clica em entrar  
 @app.post("/token")#fastAPI ve a req POST em /token
-async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]#o OAuth2PasswordRequestForm é um modelo especial do fastAPI e força o login a usar dados de formulário,
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],session: Session = Depends(get_session)):
+    #o OAuth2PasswordRequestForm é um modelo especial do fastAPI e força o login a usar dados de formulário,
     #automaticamente pega os dados enviados pelo login e coloca no form_data
-):
-    #encontra o usuario
-    user = get_user(form_data.username)#email vem do form.data_username 
+
+    #busca no bd o email
+    statement = select(User).where(User.email == form_data.username)
+    user = session.exec(statement).first()
+
     #pega os dados da lista de usuario feita no endpoint do /registro, ele procura na lista users por alguem com tal email
     if not user:
         raise HTTPException(
@@ -414,37 +437,35 @@ async def read_users_me(
         description=current_user.description,
         avatar_url=avatar_url #envia a URL para o frontend, perfil.jsx recebe em response.data.avatar_url
     )
+
+    return user_to_public(current_user)
 #endpoint perfil GET
 
 #configurações -----------------------------------------------------------------------------------
 
 #endpoint config DELETE
 @app.delete("/users/me")
-async def delete_user_me(
+async def delete_user_me(current_user: Annotated[User, Depends(get_current_active_user)], session: Session = Depends(get_session)):
     #usa o get_current_active_user p/ pegar o token do cabeçalho da requisiçãoe encontrar o usuario na lista users e colocar no current_user
-    current_user: Annotated[User, Depends(get_current_active_user)] #se o token for inválido, ele já falha aqui
-):
+    #se o token for inválido, ele já falha aqui
+
     #se o token for válido, current_user tem o usuário e pode ser remmovido 
     try:
-        users.remove(current_user)#remove itens da lista de usuarios q eh criada pelo endpoint /registro
-        print("Usuário deletado:", current_user)
-        return {"Usuário deletado com sucesso"}
-    except ValueError:
-        #se current_user n estiver na lista users
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")#checagem dupla,eh oq o get_current_active_user já checa,
+        session.delete(current_user) #deleta do bd
+        session.commit() #confirmação da deletaçaõ
+        return {"message": "Usuário deletado com sucesso"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Erro ao deletar usuário")
 #endpoint config DELETE
 
 #descrição perfil -----------------------------------------------------------------------------------
 
 #endpoint perfil UPDATE
 @app.put("/users/me", response_model=UserPublic)
-async def update_user_me(
+async def update_user_me( user_update: UserUpdate,current_user: Annotated[User, Depends(get_current_active_user)], session: Session = Depends(get_session)):
     # pega os dados a serem atualizados do corpo da requisição, fastAPI valida se o JSON enviado bate com o modelo UserUpdate
-    user_update: UserUpdate,
-    
     #usa o get_current_active_user para pegar o token do cabeçalho e validar ele, alem de dar o objeto user
-    current_user: Annotated[User, Depends(get_current_active_user)]#o usuário só pode editar a si mesmo
-):
+
     #atualiza os campos se o frontend enviou um name q nao eh nulo
     if user_update.name is not None:
         current_user.name = user_update.name#atualiza o nome
@@ -453,10 +474,12 @@ async def update_user_me(
     if user_update.description is not None:
         current_user.description = user_update.description#atualiza a descrição
         
-    print("Usuário atualizado:", current_user) 
+    session.add(current_user) #marca para atualização
+    session.commit() #salva no bd
+    session.refresh(current_user) #pega os dados atualizados
     
     #retorna o usuário com os dados atualizados, o response_model=UserPublic garante que a senha hash não vaze
-    return current_user
+    return user_to_public(current_user)
 #endpoint perfil PUT
 
 #cursos -----------------------------------------------------------------------------------
