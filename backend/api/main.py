@@ -34,7 +34,13 @@ print("\nDebug: Server iniciou\n")
 #    "http://localhost:8000" #back
 #]
 
-origins = ["*"] #o asterisco significa acesso p/ todos
+origins = [
+    "http://localhost:5173",
+    "http://localhost:8000",
+    "https://chave-digital-front.vercel.app",      
+    "https://desenvolvimento-web-topaz.vercel.app", 
+    "*" 
+]
 
 #vai permitir qlqr URL vindo da origem
 app.add_middleware(
