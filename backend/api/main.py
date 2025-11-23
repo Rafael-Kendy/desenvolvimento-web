@@ -27,11 +27,14 @@ from .model import Question, User
 
 
 app = FastAPI() #objeto base pra cuidar dos endpoint
-print("\nDebug: Server iniciou\n") # <-- ADICIONE ESTA LINHA
-origins = [
-    "http://localhost:5173", #front
-    "http://localhost:8000" #back
-]
+print("\nDebug: Server iniciou\n")
+
+#origins = [
+#    "http://localhost:5173", #front
+#    "http://localhost:8000" #back
+#]
+
+origins = ["*"] #o asterisco significa acesso p/ todos
 
 #vai permitir qlqr URL vindo da origem
 app.add_middleware(
