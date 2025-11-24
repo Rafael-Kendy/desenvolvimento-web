@@ -29,17 +29,9 @@ from .model import Question, User
 app = FastAPI() #objeto base pra cuidar dos endpoint
 print("\nDebug: Server iniciou\n")
 
-#origins = [
-#    "http://localhost:5173", #front
-#    "http://localhost:8000" #back
-#]
-
 origins = [
-    "http://localhost:5173",
-    "http://localhost:8000",
-    "https://chave-digital-front.vercel.app",      
-    "https://desenvolvimento-web-topaz.vercel.app", 
-    "*" 
+    "http://localhost:5173", #front
+    "http://localhost:8000" #back
 ]
 
 #vai permitir qlqr URL vindo da origem
