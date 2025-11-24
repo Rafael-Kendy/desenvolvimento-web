@@ -32,6 +32,8 @@ print("\nDebug: Server iniciou\n")
 origins = [
     "http://localhost:5173", #front
     "http://localhost:8000" #back
+    "https://chave-digital.onrender.com/" #back hosteado no render
+    "https://desenvolvimento-web-frontend.onrender.com" #front do render
 ]
 
 #vai permitir qlqr URL vindo da origem
