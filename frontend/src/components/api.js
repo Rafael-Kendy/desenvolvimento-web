@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api=axios.create({
-     baseURL: "http://localhost:8000" //url do backend
+     baseURL: "https://desenvolvimento-web-ibke.onrender.com" //url do backend
 });
 
 export default api;
