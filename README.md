@@ -1,18 +1,50 @@
 # Plataforma de aprendizado digital - Chave Digital
 
-## Entrega 3 - APIs
+## Entrega 3 - Banco de dados e hospedagem
+
+### Guia do usuário final
+
+O site pode ser encontrado no link: https://desenvolvimento-web-frontend.onrender.com
+
+Na página inicial, você pode clicar no logo do site, logo ao lado da escrita ChaveDigital, isso abrirá uma janela explicando o visual básico do site, a escolha das cores foi feita para facilitar a navegação das pessoas. A partir dessa página inicial o usuário também pode acessar todas as outras páginas da plataforma.
+
+Na página de comunidade o usuário pode postar questões e esperar que alguém o responda, ou então usar o título da dúvida para pesquisar ela na internet. A ideia é deixar o site o mais aberto possível, por isso as dúvidas podem ser postadas mesmo sem que esteja logado, devido a isso, para editar ou deletar uma dúvida já postada, o usuário deve digitar o mesmo email usado para a criação dessa dúvida.
+
+No rodapé de qualquer site, o usuário consegue acesso a esse repositório, clicando no ícone do GitHub, na esquerda da página. Ele também tem acesso a 3 páginas sobre o projeto. Lá ele pode ver o objetivo geral do site em 'Sobre', conhecer nossa equipe em 'Equipe' e as diretrizes usadas na criação do site, 'Diretrizes'.
+
 
 ### Integração com banco de dados
 
 #### Página de comunidade - Rafael Kendy
 
+##### Post
+
+Pelo formulário "Tirar dúvida", referente ao componente `question-form.jsx`. Ao clicar no botão "Postar Dúvida" esses dados são enviados via o método `post` da API e ficam salvas no banco de dados, mesmo que a execução seja interrompida, as dúvidas não serão perdidas. 
+
+##### Get
+
+Retorna as dúvidas para exibir em "Dúvidas postadas". A primeira dúvida dessa seção, fica sempre salva no banco para ser um guia para o usuário. são carregadas e mapeiadas para serem usados no componente `posts.jsx`.
+
+##### Delete
+
+Ao clicar no ícone de leixeira, uma modal é aberta. Nela o usuário precisa digitar o mesmo email usado na criação na dúvida, para então a ação de `delete` ser feita. Uma busca é feita usando o ID da dúvida, que é deletada se encontrada.
+
+##### Put
+
+Ao fazer a confirmação do email, como no `delete`, os dados da questão são carregados no formulário, durante esse tempo o sistema "segura" os dados originais.
+Quando o usuário clica no botão para postar a dúvida, a função na página de Comunidade reconhece que esse clique veio de uma edição, então chama o método `put` para atualizar a questão, essa busca no banco de dados também é feito pelo ID dela,.
 
 ### Hospedagem
+
+A hospedagem foi feita usando a plataforma Render (https://render.com/). Plataforma de uso gratuito, porém limitada, após 15 minutos de inatividade o site entra em modo sleep. Devido a essa limitação, os dados do banco de dados são perdidos quando o backend é inativado.
+
+Link para o frontend: https://desenvolvimento-web-frontend.onrender.com
+Link para o backend: https://desenvolvimento-web-ibke.onrender.com
 
 ### Documentação
 
 
-
+<!--
 ## Entrega 2 - APIs
 
 Link para o drive com os vídeos e slides em PDF: https://drive.google.com/drive/u/1/folders/1plhqkK0ybvU141FTmoKz5iFKDRcI79YZ
@@ -209,3 +241,4 @@ Demo limita a 50 requisições por hora.
 #### Autenticação/autorização
 Autenticação é utilizada em todo o percurso do usuário pela página de tópicos, cursos e lições. Caso o usuário não esteja logado, ele não tem direito de visualizar nenhum desses conteúdos, sendo "expulso" de volta à tela de login. Ao expirar a sessão do usuário também é disparado como error response, realizando o mesmo tratamento.
 Autorização foi implementada por meio da existência do "usuário premium". A nível lógico, no momento, um usuário premium é sinônimo de um ADMIN, provisoriamente; um dos cursos, o de "Chamadas", é acessível apenas a usuários premium e não pode ser acessado por usuários free. Tentativas de acessar quaisquer cursos via suas respectivas URLs sem ter a devida autorização devem resultar em barramento e o devido tratamento, seja erro 401 ou 403, e redirecionamento como supramencionado.
+-->
