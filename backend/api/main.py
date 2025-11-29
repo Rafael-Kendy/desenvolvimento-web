@@ -306,6 +306,8 @@ async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)],
     #token: Annotated pega o token do cabeçalho Authorization, abre ele, acha o email "sub", usa o email pra achar o user na lista de users,
     #endpoint ent retorna os dados em return current_user la em baixo~
     #response_model=UserPublic filtra para id, name, email
+
+    #session... é onde é feita a conexão com o bd, é como se ela fosse uma area de trabalho temporaria que pode ser aberta p/ fazer uma req e fechada ao terminar
     
     #erro padrao
     credentials_exception = HTTPException(
@@ -327,8 +329,11 @@ async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)],
         #se o token for inválido ou expirado msotra o erro
         raise credentials_exception
     
-    #busca no sql, seleciona o usuario onde o email é igual ao email do token
+    #busca no sql, seleciona a tabela user onde o campo email é igual ao email do token
     statement = select(User).where(User.email == email)
+
+    #executa no banco e pega o primeiro resultado, se achar retorna o objeto user preenchido com dados do banco
+    #se n achar retorna none
     user = session.exec(statement).first()
 
     if user is None:
@@ -342,8 +347,10 @@ async def get_current_active_user(token: Annotated[str, Depends(oauth2_scheme)],
 #endpoint registro
 @app.post("/registro", response_model=UserPublic)#response model define o formato, no caso UserPublic no retorno pra esconder a senha
 async def register_user(user_data: UserCreate, session: Session = Depends(get_session)): #a API automaticamente pega o JSON do frontend, valida com o userCreate e joga, como um objeto, pro user_data
+
+    #session... é onde é feita a conexão com o bd
     
-    #verifica no bd se o email existe
+    #verifica no bd se o email existe, por meio de um select
     statement = select(User).where(User.email == user_data.email)
     existing_user = session.exec(statement).first()
 
@@ -353,6 +360,7 @@ async def register_user(user_data: UserCreate, session: Session = Depends(get_se
 
     hashed_password = pwd_context.hash(user_data.password)#criptografa a senha
 
+    #cria-se uma instancia da classe user, uma tabela sql
     new_user = User( #cria um novo usuário
         name=user_data.name,
         email=user_data.email,
@@ -362,9 +370,9 @@ async def register_user(user_data: UserCreate, session: Session = Depends(get_se
     )
 
     #salva no bd
-    session.add(new_user)
-    session.commit()
-    session.refresh(new_user) #atualiza o new_user com o id gerado pelo bd
+    session.add(new_user)#avisa q tem um novo registro, dado ainda n esta salvo permanentemente
+    session.commit()#grava tudo no arquivo .db, aqui eh onde gera o id e o dado salvo permanentemente
+    session.refresh(new_user) #atualiza o new_user e tem o id gerado pelo bd, crucial p/ pegar o id q foi gerado automaticamente
     
     print("Novo usuário registrado, id:", new_user.id)
     
@@ -380,7 +388,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     #o OAuth2PasswordRequestForm é um modelo especial do fastAPI e força o login a usar dados de formulário,
     #automaticamente pega os dados enviados pelo login e coloca no form_data
 
-    #busca no bd o email
+    #busca no bd um usuario com o email q foi digitado no login
     statement = select(User).where(User.email == form_data.username)
     user = session.exec(statement).first()
 
@@ -425,7 +433,7 @@ async def read_users_me(
     #pega o email do usuario e formata com letras minusculas e sem espaço
     email_address = current_user.email.lower().strip()
     
-    # cria o hash MD5 do email, requisito do gravatar
+    #cria o hash MD5 do email, requisito do gravatar
     md5_hash = hashlib.md5(email_address.encode('utf-8')).hexdigest()
     
     #url da API do gravatar, nao eh chamada com um api.get
@@ -451,7 +459,9 @@ async def read_users_me(
 async def delete_user_me(current_user: Annotated[User, Depends(get_current_active_user)], session: Session = Depends(get_session)):
     #usa o get_current_active_user p/ pegar o token do cabeçalho da requisiçãoe encontrar o usuario na lista users e colocar no current_user
     #se o token for inválido, ele já falha aqui
-
+    
+    #current_user ja veio do banco de dados pelo get curent_active_user
+    
     #se o token for válido, current_user tem o usuário e pode ser remmovido 
     try:
         session.delete(current_user) #deleta do bd
@@ -469,6 +479,9 @@ async def update_user_me( user_update: UserUpdate,current_user: Annotated[User, 
     # pega os dados a serem atualizados do corpo da requisição, fastAPI valida se o JSON enviado bate com o modelo UserUpdate
     #usa o get_current_active_user para pegar o token do cabeçalho e validar ele, alem de dar o objeto user
 
+    #o current_user ja veio do banco pelo get current_active_user
+    # o sqlmodel sabe q esse objeto esta conectado a uma linha especifica da tabela
+    
     #atualiza os campos se o frontend enviou um name q nao eh nulo
     if user_update.name is not None:
         current_user.name = user_update.name#atualiza o nome
@@ -476,10 +489,11 @@ async def update_user_me( user_update: UserUpdate,current_user: Annotated[User, 
     #atualiza os campos se o frontend enviou uma descrição q nao eh nula
     if user_update.description is not None:
         current_user.description = user_update.description#atualiza a descrição
-        
+
+    #como current_user ja tem um id, o sqlmodel entende que é uma atualização, n um novo registro
     session.add(current_user) #marca para atualização
     session.commit() #salva no bd
-    session.refresh(current_user) #pega os dados atualizados
+    session.refresh(current_user) #pega os dados atualizados, garantindo q ta corretamente atualizado
     
     #retorna o usuário com os dados atualizados, o response_model=UserPublic garante que a senha hash não vaze
     return user_to_public(current_user)
