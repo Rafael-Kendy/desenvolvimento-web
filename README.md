@@ -10,7 +10,15 @@ Na página inicial, você pode clicar no logo do site, logo ao lado da escrita C
 
 Na página de comunidade o usuário pode postar questões e esperar que alguém o responda, ou então usar o título da dúvida para pesquisar ela na internet. A ideia é deixar o site o mais aberto possível, por isso as dúvidas podem ser postadas mesmo sem que esteja logado, devido a isso, para editar ou deletar uma dúvida já postada, o usuário deve digitar o mesmo email usado para a criação dessa dúvida.
 
+Na página de registro, é possível criar uma nova conta preenchendo nome, e-mail e senha. O sistema garante que cada e-mail seja único e, ao concluir o cadastro, redireciona automaticamente para a entrada.
+
+Na página de login, o usuário insere suas credenciais para acessar a área restrita do site. Uma vez autenticado, ele é levado ao seu perfil, onde pode visualizar suas informações pessoais. A foto do perfil é carregada automaticamente através de um serviço externo baseado no e-mail do usuário. Caso ele não possua uma foto, um ícone geométrico exclusivo é gerado para identificá-lo.
+
+Na página de configurações o usuário tem total controle sobre seus dados. Ele pode atualizar seu nome de exibição e editar sua biografia a qualquer momento. Além disso, se desejar deixar a plataforma, existe a opção de deletar conta, que, após uma confirmação de segurança, remove permanentemente todos os seus dados do sistema.
+
 No rodapé de qualquer site, o usuário consegue acesso a esse repositório, clicando no ícone do GitHub, na esquerda da página. Ele também tem acesso a 3 páginas sobre o projeto. Lá ele pode ver o objetivo geral do site em 'Sobre', conhecer nossa equipe em 'Equipe' e as diretrizes usadas na criação do site, 'Diretrizes'.
+
+
 
 
 ### Integração com banco de dados
