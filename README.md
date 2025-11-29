@@ -34,12 +34,36 @@ Ao clicar no ícone de leixeira, uma modal é aberta. Nela o usuário precisa di
 Ao fazer a confirmação do email, como no `delete`, os dados da questão são carregados no formulário, durante esse tempo o sistema "segura" os dados originais.
 Quando o usuário clica no botão para postar a dúvida, a função na página de Comunidade reconhece que esse clique veio de uma edição, então chama o método `put` para atualizar a questão, essa busca no banco de dados também é feito pelo ID dela,.
 
+
+#### Páginas de autenticação e perfil - Hugo Massaro
+
+##### Post
+
+No formulário de criação de conta, `registro.jsx`, os dados são enviados para a API. O backend verifica no banco de dados se o email já existe, select. Se não existir, a senha é criptografada e o novo usuário é salvo permanentemente na tabela User usando session.add e session.commit. 
+
+No formulário de login, `login.jsx`, o sistema busca o usuário no banco de dados pelo email. Se a senha bater com o hash salvo, um token JWT é gerado e retornado para autenticar o usuário nas próximas sessões.
+
+##### Get
+
+Utilizado na página de perfil, `perfil.jsx`. Ao acessar a página, o sistema envia o token JWT do usuário, o backend valida esse token, busca os dados atualizados do usuário no banco de dados select(User) e retorna as informações para preencher a tela dinamicamente, substituindo todo o conteúdo estático.
+
+##### Delete
+
+Utilizado na opção "Deletar Conta". Por segurança, exige confirmação. O backend identifica o usuário pelo token, localiza o registro correspondente no banco de dados e executa a remoção da linha session.delete. Após o sucesso, o usuário é deslogado e redirecionado para o início.
+
+##### Put
+
+Utilizado na página de configurações, `configuracoes.jsx` para editar o perfil. O usuário pode alterar seu nome ou biografia. Ao salvar, os novos dados são enviados para a API. O backend localiza o usuário no banco através do token, atualiza os campos na tabela e confirma a transação com session.commit. Ao retornar ao perfil os dados novos já são carregados do banco.
+
+
 ### Hospedagem
 
 A hospedagem foi feita usando a plataforma Render (https://render.com/). Plataforma de uso gratuito, porém limitada, após 15 minutos de inatividade o site entra em modo sleep. Devido a essa limitação, os dados do banco de dados são perdidos quando o backend é inativado.
 
 Link para o frontend: https://desenvolvimento-web-frontend.onrender.com
 Link para o backend: https://desenvolvimento-web-ibke.onrender.com
+
+
 
 
 <!--
