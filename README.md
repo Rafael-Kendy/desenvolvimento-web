@@ -41,8 +41,6 @@ A hospedagem foi feita usando a plataforma Render (https://render.com/). Platafo
 Link para o frontend: https://desenvolvimento-web-frontend.onrender.com
 Link para o backend: https://desenvolvimento-web-ibke.onrender.com
 
-### Documentação
-
 
 <!--
 ## Entrega 2 - APIs
