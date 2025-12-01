@@ -105,24 +105,36 @@ export default function LessonPage() {
         fetchLesson();
     }, [lessonId]); 
 
-    const handleDeleteLesson = async () => {
-        if (!window.confirm("ATENÇÃO: Tem certeza que deseja deletar esta lição?")) return;
+    const handleDeleteLesson = async () => {// função de deletar lição (só admin)
+        if (!window.confirm("ATENÇÃO: Tem certeza que deseja deletar esta lição? Essa ação não tem volta.")) return;
 
         const token = localStorage.getItem("token");
-        if (!token) return;
+        if (!token) {
+            alert("Erro de sessão. Faça login novamente.");
+            navigate("/login");
+            return;
+        }
 
         try {
-            await api.delete(`/licoes/${lessonId}`, {
+            await api.delete(`/licoes/${lessonId}`, { // chamada a API, novamente
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert("Lição deletada!");
             navigate("/topicos");
-        } catch (err) {
+        } catch (err) { // possiveis exceções
             alert("Erro ao deletar (Permissão negada).");
+            if (err.response && err.response.status === 403) {
+                alert("Permissão negada: Apenas administradores podem deletar.");
+            } else if (err.response && err.response.status === 404) {
+                alert("Erro: Essa lição já não existe ou não consta como existente.");
+                navigate("/topicos");
+            } else {
+                alert("Ocorreu um erro ao tentar deletar.");
+            }
         }
     };
 
-    // --- RENDERIZAÇÃO ---
+    // renderizações condicionais
 
     if (loading) {
         return (

@@ -6,6 +6,7 @@ from typing import List, Optional, Dict, Any
 from fastapi import HTTPException #pra codigo de erros
 from contextlib import asynccontextmanager
 import os
+import google.generativeai as genai #NOVA API EXTERNA! pra gerar os cursos.
 
 #pip install passlib[bcrypt]
 #pip install 'pydantic[email]'
@@ -25,6 +26,20 @@ import httpx # p usar o unsplash
 from sqlmodel import SQLModel, Session, select
 from .database import engine, get_session # se tiver dando errado, ve o caminho de database e model
 from .model import User, Question, Course, Section, Lesson, Step, UserLessonProgress
+
+# api do google gemini
+
+#genai.configure(api_key="") # TROCAR API KEY (GOOGLE GEMINI) AQUI SE FOR LOCAL
+
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")  # PEGA A CHAVE DO AMBIENTE NO RENDER
+if not GOOGLE_API_KEY:
+    # Fallback apenas para teste local se você não usar arquivo .env
+    # Mas evite subir isso pro GitHub
+    print("Chave API não encontrada nas variáveis de ambiente.")
+else:
+    genai.configure(api_key=GOOGLE_API_KEY) #configura a api do google
+
+model = genai.GenerativeModel('models/gemini-2.5-pro')
 
 #=====================================================================================================================================================
 #parte do banco de dados
@@ -120,10 +135,8 @@ async def lifespan(app: FastAPI):
             # s2.id existe pelo flush
             l201 = Lesson(id=201, title="Mouse e Teclado", section_id=s21.id, header_image_url="https://cdn-icons-png.flaticon.com/128/887/887142.png")
             session.add(l201)
-            session.add(Step(text="passo 1", lesson=l201))
-            session.add(Step(text="passo 2", lesson=l201))
             
-            l202 = Lesson(id=202, title="Pen-drives e memória", section_id=s21.id, video_url="https://www.youtube.com/watch?v=x2btfv_IyUE", header_image_url="https://cdn-icons-png.flaticon.com/128/479/479063.png")
+            l202 = Lesson(id=202, title="Pen-drives e memória", section_id=s21.id, header_image_url="https://cdn-icons-png.flaticon.com/128/479/479063.png")
             session.add(l202)
             session.add(Step(text="passo 1", lesson=l202))
             session.add(Step(text="passo 2", lesson=l202))
@@ -157,6 +170,7 @@ origins = [
     "http://localhost:8000", #back
     "https://chave-digital.onrender.com", #back hosteado no render
     "https://desenvolvimento-web-frontend.onrender.com" #front do render
+    "*"
 ]
 
 #vai permitir qlqr URL vindo da origem
@@ -748,9 +762,9 @@ async def update_course(
 async def delete_lesson(
     licao_id: int,
     current_user: Annotated[User, Depends(get_current_active_user)],
-    session: Session = Depends(get_session) # <--- Injeção do Banco
+    session: Session = Depends(get_session) # dependencia do banco
 ):
-    if not current_user.is_premium:
+    if not current_user.is_premium: # autorização
         raise HTTPException(status_code=403, detail="Apenas admins podem remover lições.")
 
     # busca a lição p ver se existe
@@ -767,7 +781,12 @@ async def delete_lesson(
     # por segurança, apaga os passos manualmente aqui.
     for step in lesson_db.steps:
         session.delete(step)
-        
+    
+    # deleta o progresso dos usuários nessa lição
+    progress = session.exec(select(UserLessonProgress).where(UserLessonProgress.lesson_id == licao_id)).all()
+    for p in progress:
+        session.delete(p)
+
     # depois apaga a lição
     session.delete(lesson_db)
     
@@ -799,6 +818,81 @@ async def toggle_progress(lesson_id: int, current_user: Annotated[User, Depends(
     session.commit()
     return {"message": msg}
 
+# POST da api externa do google genAI para popular lições vazias
+@app.post("/admin/gerar-conteudo-ia")
+async def popular_licoes_com_ia( # VERIFICAÇÃO DE USER LOGADO!
+        current_user: Annotated[User, Depends(get_current_active_user)], 
+        session: Session = Depends(get_session) 
+    ):
+
+    # 2. Verificação de Segurança: Só o admin@teste.com pode rodar isso
+    # (Ou use current_user.is_premium se preferir bloquear por status)
+    if current_user.is_premium == False:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Apenas administradores podem gerar conteúdo com IA."
+        )
+
+    print(f"---------- INICIANDO GERAÇÃO POR IA (Solicitada por: {current_user.email}) -------------")
+    
+    # verifica se existe lição
+    lessons = session.exec(select(Lesson)).all()
+    print(f"DEBUG: Encontrei {len(lessons)} lições no banco de dados.") #debug
+
+    if not lessons: # se a tabela lições n existe
+        return {"message": "ERRO: O banco está vazio. Delete .db e inicie de novo."}
+
+    count = 0 #contador de lições geradas
+    
+    for lesson in lessons:
+        print(f"Processando lição {lesson.id}: {lesson.title}...")
+        
+        # Remove passos antigos
+        existing_steps = session.exec(select(Step).where(Step.lesson_id == lesson.id)).all()
+        for step in existing_steps:
+            session.delete(step)
+        session.commit()
+        
+        try:
+            # prompt da genai
+            prompt = (
+                f"Você é um professor de informática para idosos, iniciantes e pessoas com dificuldade em computadores. "
+                f"Crie um tutorial de 3 passos curtos sobre: '{lesson.title}'. "
+                f"Sem introdução, sem conclusão. Apenas os 3 passos. 4 passos se achar estritamente necessário."
+                f"Não use números (1., 2.) no início das linhas."
+            )
+            
+            # chama o modelo de IA pela API externa
+            # se der ruim, vai pro except
+            response = model.generate_content(prompt)
+            texto_gerado = response.text
+            
+            # processamento do texto que foi gerado
+            linhas = texto_gerado.strip().split('\n')
+            passos_limpos = [linha for linha in linhas if linha.strip()]
+            
+            for texto_passo in passos_limpos:
+                texto_limpo = texto_passo.replace('*', '').replace('-', '').strip()
+                # tenta tirar umas numerações chatas que ficaram
+                if len(texto_limpo) > 2 and texto_limpo[0].isdigit() and texto_limpo[1] in ['.', ')']:
+                     texto_limpo = texto_limpo[2:].strip()
+
+                if texto_limpo: # adiciona o step
+                    new_step = Step(text=texto_limpo, lesson_id=lesson.id)
+                    session.add(new_step)
+            
+            count += 1
+            print(f" -> SUCESSO na lição: {lesson.title}")
+            
+        except Exception as e:
+            # se der ruim pra GERAR
+            print(f" -------------------------> ERRO GRAVE na lição {lesson.title}: {e}")
+            continue
+
+    session.commit()
+    return {"message": f"Processo finalizado. Conteúdo gerado para {count} lições."}
+
 #rodar o server
 if __name__=="__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
