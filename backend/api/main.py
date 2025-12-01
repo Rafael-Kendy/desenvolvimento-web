@@ -31,7 +31,7 @@ from .model import User, Question, Course, Section, Lesson, Step, UserLessonProg
 
 #genai.configure(api_key="") # TROCAR API KEY (GOOGLE GEMINI) AQUI SE FOR LOCAL
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")  # PEGA A CHAVE DO AMBIENTE NO RENDER
+#GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")  # PEGA A CHAVE DO AMBIENTE NO RENDER
 if not GOOGLE_API_KEY:
     # Fallback apenas para teste local se você não usar arquivo .env
     # Mas evite subir isso pro GitHub
@@ -179,7 +179,7 @@ origins = [
 #vai permitir qlqr URL vindo da origem
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -789,8 +789,6 @@ async def popular_licoes_com_ia( # VERIFICAÇÃO DE USER LOGADO!
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Apenas administradores podem gerar conteúdo com IA."
         )
-
-    print(f"---------- INICIANDO GERAÇÃO POR IA (Solicitada por: {current_user.email}) -------------")
     
     # verifica se existe lição na página (caso fosse gerar só pra vazias)
     lessons = session.exec(select(Lesson)).all()
