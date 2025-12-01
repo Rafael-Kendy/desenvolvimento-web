@@ -30,7 +30,6 @@ const router = createBrowserRouter([
   {path:"/cursos/:id", element:<CoursePage/>}, 
   {path:"/aula/:lessonId", element:<LessonPage/>}, 
   {path:"/comunidade", element: <Comunidade /> },
-  {path: "/admin/criar-curso", element: <CreateCoursePage /> },
 ]);
 
 createRoot(document.getElementById('root')).render(

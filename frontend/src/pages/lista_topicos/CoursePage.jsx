@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
-import axios from "axios";
 import api from "../../components/api"; // Certifique-se de importar sua api configurada
 
 import Header from "../../components/header";
@@ -142,12 +141,6 @@ function CoursePage() {
 
                 // usa 'Promise.all' para buscar os dois dados em paralelo
                 const [courseResponse, progressResponse] = await Promise.all([
-                    // 2 calls: (ANTIGO)
-                    // buscar os detalhes do curso do main.py
-                    //axios.get(`http://localhost:8000/cursos/${courseId}`, authHeaders),
-                    // buscar o progresso do endpoint
-                    //axios.get(`http://localhost:8000/progresso/curso/${courseId}`, authHeaders)
-
                     //NOVO - pega o token e faz as chamadas com API
                     api.get(`/cursos/${courseId}`, headers),
                     // se não tiver token, falha

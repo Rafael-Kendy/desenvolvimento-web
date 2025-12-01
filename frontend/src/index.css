@@ -770,6 +770,128 @@ header button{
   z-index: 2;
 }
 
+.hero-topics {
+  text-align: center;
+  padding: 60px 20px 50px 20px;
+}
+
+.lessons-grid-container {
+  /* Garante margem segura embaixo para não colar no rodapé */
+  margin-bottom: 120px; 
+  max-width: 1100px; /* Largura máxima controlada para não esticar demais */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+}
+
+/* O GRID (A Mágica acontece aqui) */
+.cards-large {
+  display: grid;
+  /* Cria colunas automaticamente:
+     - Mínimo de 320px de largura
+     - Se sobrar espaço, divide em frações iguais (1fr)
+  */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  
+  /* ESPAÇAMENTO: Isso resolve a sobreposição */
+  gap: 40px; 
+  row-gap: 50px; /* Espaço extra verticalmente entre as linhas */
+  
+  width: 100%;
+}
+
+/* O CARTÃO (Design) */
+.topic-card-visual {
+  background-color: var(--white);
+  border-radius: 16px; /* Bordas bem arredondadas */
+  padding: 40px 30px;
+  
+  /* Layout interno do card */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between; /* Empurra o botão para o final */
+  height: 100%; /* Faz todos os cards da linha terem a mesma altura */
+  min-height: 350px; /* Altura mínima para ficar imponente */
+  
+  /* Sombra Suave (Efeito de flutuar) */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0,0,0,0.03); /* Borda quase invisível */
+  
+  transition: all 0.3s ease; /* Animação suave */
+  position: relative; /* Garante que o z-index funcione */
+}
+
+/* Efeito Hover (Ao passar o mouse) */
+.topic-card-link:hover .topic-card-visual {
+  transform: translateY(-10px); /* Sobe mais */
+  box-shadow: 0 20px 40px rgba(20, 77, 194, 0.15); /* Sombra azulada */
+  border-color: var(--blue);
+}
+
+/* Imagem do Ícone */
+.topic-card-img {
+  height: 90px;
+  width: 90px;
+  object-fit: contain;
+  margin-bottom: 25px;
+  /* Fundo circular sutil atrás do ícone */
+  background-color: var(--lightgray); 
+  border-radius: 50%;
+  padding: 15px;
+}
+
+/* Tipografia */
+.topic-card-title {
+  color: var(--blue);
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.topic-card-text {
+  color: var(--darkgray);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 30px;
+  flex-grow: 1; /* Ocupa o espaço disponível para alinhar o botão */
+}
+
+/* Botão Falso (Link) */
+.card-cta {
+  color: var(--blue);
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  border: 2px solid var(--lightgray);
+  border-radius: 50px;
+  transition: all 0.3s;
+}
+
+.topic-card-link:hover .card-cta {
+  background-color: var(--blue);
+  color: var(--white);
+  border-color: var(--blue);
+}
+
+/* Estado de Erro e Loading */
+.state-message {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.error-text {
+  color: var(--red);
+  font-weight: bold;
+  margin-top: 10px;
+}
+
 /* Área do Vídeo */
 .video-wrapper {
   width: 100%;

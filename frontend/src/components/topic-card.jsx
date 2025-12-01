@@ -1,31 +1,27 @@
-import { Link } from "react-router-dom";  
-import MiniCard from "./mini-card";
+import { Link } from "react-router-dom";
 
-function TopicCard({ img, alt, title, text, subtopics, link }) {
+function TopicCard({ img, alt, title, text, link }) {
   return (
-    <Link to={link} className="topic-card-link"> {/* Link do react-router-dom envolvendo tudo;
-      o card inteiro é clicável */}
-      <div className="card-large bg-lightgray">
-        <figure>
-          <img src={img} alt={alt} className="img-small" />
-        </figure>
-        <h3>{title}</h3>
-        <p>{text}</p>
-        {/* porção dos mini cards dentro dos cards grandes */}
-        {subtopics && subtopics.length > 0 && (
-          <div className="mini-cards">
-            {subtopics.map((sub, index) => (
-              <MiniCard
-                key={index}
-                img={sub.img}
-                alt={sub.alt}
-                title={sub.title}
-                text={sub.text}
-              />
-            ))}
-          </div>
-        )}
+    <Link to={link} className="topic-card-link" style={{ textDecoration: 'none' }}>
+      
+      <div className="topic-card-visual">
+        
+        {/* Ícone */}
+        <img src={img} alt={alt} className="topic-card-img" />
+        
+        {/* Textos */}
+        <div style={{width: '100%'}}>
+            <h3 className="topic-card-title">{title}</h3>
+            <p className="topic-card-text">{text}</p>
+        </div>
+        
+        {/* Botão Visual */}
+        <span className="card-cta">
+            Acessar Curso →
+        </span>
+
       </div>
+
     </Link>
   );
 }

@@ -94,6 +94,8 @@ export default function LessonPage() {
                     setError("Esta lição é exclusiva para assinantes Premium.");
                 } else if (err.response?.status === 404) {
                     setError("Lição não encontrada.");
+                }else if (err.response?.status === 401) {
+                    setError("Você não tem permissão para acessar isso. Verifique se está logado.");
                 } else {
                     setError("Erro ao carregar a lição.");
                 }

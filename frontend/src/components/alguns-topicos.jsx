@@ -1,61 +1,69 @@
-import www from "./assets/img/site.png";
-import social from "./assets/img/social-media-hand.png";
-import msg from "./assets/img/messages.png";
-import cart from "./assets/img/shopping-cart.png";
-import app from "./assets/img/apps.png";
-import file from "./assets/img/folder-open.png";
-import img from "./assets/img/picture.png";
-import doc from "./assets/img/document.png";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import api from "./api"; // Importe a api configurada
 
+// Imagens Fallback
+import internetIcon from "./assets/img/internet.png";
+import pcIcon from "./assets/img/computer-desktop.png";
+import zapIcon from "./assets/img/phone-call.png";
 
-const topics=[
-	{
-		category: "Internet",
-		items:[
-			{img: www, alt: "Sites", title: "Sites", text: "O básico para uma navegação segura."},
-			{img: social, alt: "Redes sociais", title: "Redes sociais", text: "Se conecte com seus amigos."},
-      		{img: msg, alt: "Mensagens", title: "Mensagens", text: "Fique sempre perto da sua família."},
-      		{img: cart, alt: "Compras", title: "Compras", text: "Para pedir aquele produto que você queria."},
-		]
-	},
-	{
-		category: "Computadores",
-		items:[
-			{ img: app, alt: "Aplicativos", title: "Aplicativos", text: "Tudo o que você precisa no computador." },
-			{ img: file, alt: "Arquivos", title: "Arquivos", text: "Como gerenciar seus arquivos." },
-			{ img: img, alt: "Imagens", title: "Imagens", text: "Nunca perca uma lembrança de família." },
-			{ img: doc, alt: "Documentos", title: "Documentos", text: "Anote e salve seus pensamentos." },
-		]
-	}
-];
+const iconMap = {
+  "internet.png": internetIcon,
+  "computer-desktop.png": pcIcon,
+  "phone-call.png": zapIcon,
+};
 
-function AlgunsTop(){
-    return(
-        <algunstop className="center">
-			<div className="component general-width topics">
-				
-				<h2>Alguns dos tópicos disponíveis</h2>
-			
-				{topics.map((topic)=>(
-					<div key={topic.category} className="topic-section">
-						<h2 className="gold">{topic.category}</h2>
+function AlgunsTop() {
+    const [courses, setCourses] = useState([]);
 
-						<div className="cards">
-							{topic.items.map((item)=>(
-								<div key={item.title} className="card-small bg-white">
-									<figure>
-										<img src={item.img} alt={item.alt} className="img-smaller"/>
-									</figure>
-									<h3>{item.title}</h3>
-									<p>{item.text}</p>
-								</div>	
-							))}
-						</div>
-					</div>
-				))}
-			</div>
-        </algunstop>
+    const getTopicImage = (imageName) => {
+        if (!imageName) return internetIcon;
+        if (imageName.startsWith("http")) return imageName;
+        return iconMap[imageName] || internetIcon;
+    };
+
+    useEffect(() => {
+        const fetchRecentCourses = async () => {
+            try {
+                // Busca do seu Backend Local
+                const response = await api.get("/cursos");
+                setCourses(response.data.slice(0, 3)); // Pega só os 3 primeiros
+            } catch (error) {
+                console.error("Erro ao carregar destaques:", error);
+            }
+        };
+        fetchRecentCourses();
+    }, []);
+
+    if (courses.length === 0) return null;
+
+    return (
+        <div className="center">
+            <div className="component general-width topics">
+                <h2 style={{marginBottom: '30px'}}>Comece por aqui</h2>
+                <div className="cards">
+                    {courses.map((course) => (
+                        <div key={course.id} className="card-medium bg-white" style={{padding: '20px', borderRadius: '10px'}}>
+                            <figure style={{marginBottom: '15px'}}>
+                                <img 
+                                    src={getTopicImage(course.image)} 
+                                    alt={course.title} 
+                                    style={{height: '60px', objectFit: 'contain'}} 
+                                />
+                            </figure>
+                            <div className="center">
+                                <h3 className="blue">{course.title}</h3>
+                                <p className="dark-gray">{course.description}</p>
+                                <Link to={`/cursos/${course.id}`} className="btn-padrao" style={{marginTop: '15px', display: 'inline-block'}}>
+                                    Acessar
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     );
 }
 
-export default AlgunsTop
+export default AlgunsTop;
