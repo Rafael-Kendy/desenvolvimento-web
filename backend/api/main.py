@@ -31,7 +31,7 @@ from .model import User, Question, Course, Section, Lesson, Step, UserLessonProg
 
 #genai.configure(api_key="") # TROCAR API KEY (GOOGLE GEMINI) AQUI SE FOR LOCAL
 
-#GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")  # PEGA A CHAVE DO AMBIENTE NO RENDER
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")  # PEGA A CHAVE DO AMBIENTE NO RENDER
 if not GOOGLE_API_KEY:
     # Fallback apenas para teste local se você não usar arquivo .env
     # Mas evite subir isso pro GitHub
