@@ -14,6 +14,12 @@ Na página de registro, é possível criar uma nova conta preenchendo nome, e-ma
 
 Na página de login, o usuário insere suas credenciais para acessar a área restrita do site. Uma vez autenticado, ele é levado ao seu perfil, onde pode visualizar suas informações pessoais. A foto do perfil é carregada automaticamente através de um serviço externo baseado no e-mail do usuário. Caso ele não possua uma foto, um ícone geométrico exclusivo é gerado para identificá-lo.
 
+Na página de cursos, o usuário - quando logado - tem acesso aos tópicos aos quais as lições abrangem. Esses tópicos são clicáveis, e levam a uma lista de subtópicos que foi feita para ser seguida de maneira incremental: o usuário deve começar pelo primeiro, e o conhecimento vai acumulando conforme passa o tempo. Vale perceber que existe uma configuração não acessível ao usuário que acaba de criar uma nova conta - a de usuário premium. Ela faz com que o usuário seja capaz de deletar lições e, caso tenha acesso ao Swagger, gerar conteúdos de lições novas, mas nunca subtópicos novos, pois o fluxo do site é considerado importante. Também há um exemplo (o tópico 3 - mensagens) de assunto que é destinado apenas a usuários premium, fazendo menção a um serviço de inscrição pago.
+
+Nas páginas de subtópicos, pode ser salvo o progresso do usuário. Cada lição que ele clicar marcará a checkbox, sinalizando que já foi realizada; essas lições são guardadas por usuário, e permanecem mesmo se o mesmo trocar de página.
+
+Nas páginas de lições, haverão tópicos gerados automaticamente pelo Gemini: dão um geral, claro e conciso, do tema desejado. Também será fornecido, quando possível, um vídeo pertinente, que o usuário pode assistir antes de prosseguir à parte escrita das lições.
+
 Na página de configurações o usuário tem total controle sobre seus dados. Ele pode atualizar seu nome de exibição e editar sua biografia a qualquer momento. Além disso, se desejar deixar a plataforma, existe a opção de deletar conta, que, após uma confirmação de segurança, remove permanentemente todos os seus dados do sistema.
 
 No rodapé de qualquer site, o usuário consegue acesso a esse repositório, clicando no ícone do GitHub, na esquerda da página. Ele também tem acesso a 3 páginas sobre o projeto. Lá ele pode ver o objetivo geral do site em 'Sobre', conhecer nossa equipe em 'Equipe' e as diretrizes usadas na criação do site, 'Diretrizes'.
@@ -62,6 +68,26 @@ Utilizado na opção "Deletar Conta". Por segurança, exige confirmação. O bac
 ##### Put
 
 Utilizado na página de configurações, `configuracoes.jsx` para editar o perfil. O usuário pode alterar seu nome ou biografia. Ao salvar, os novos dados são enviados para a API. O backend localiza o usuário no banco através do token, atualiza os campos na tabela e confirma a transação com session.commit. Ao retornar ao perfil os dados novos já são carregados do banco.
+
+
+#### Página de cursos - Rafael Zaupa Watanabe
+
+##### Post
+
+Utilizado na porção de geração de conteúdo via genAI (Gemini), o post serve para preencher os conteúdos das lições, dado que o usuário seja um admin. A parte preenchida é exclusivamente a de texto (o vídeo permanece separado) e o prompt usado pode ser encontrado no site. A utilização da API do Google entrou no lugar da anteriormente implementada (entrega 2) pois a outra foi considerada muito simples. Como o fluxo do site é essencial, não demos autoridade ao admin de criar subtópicos novos.
+
+##### Get
+
+Como em ler conteúdo da lição. Busca os detalhes de uma lição, incluindo os passos gerados pela IA e a lógica de qual é a próxima aula sugerida, para que seja utilizada na lista de próximas aulas no fim da página.
+
+##### Delete
+
+Para deletar uma lição, que ao ser gerada por IA construa coisas impróprias ou incorretas, ou em casos de "emergência" em geral, como manutenções às pressas. É uma ferramenta exclusiva de admins (usuários premium, sinônimos a nível de teste), deletando primeiro os passos da lição, desvinculando o progresso do usuário e então removendo o subtópico.
+
+##### Put
+
+Para atualizar o status de conclusão de uma aula para um usuário logado (marcar como visto/não visto). Requer token do usuário logado, além de que, sem isso, ele não deve ser capaz de acessar as páginas de curso. O endpoint alterna o estado de conclusão. Se estava incompleto, marca como completo e vice-versa.
+
 
 
 ### Hospedagem
