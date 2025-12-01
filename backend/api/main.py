@@ -2,8 +2,10 @@ import uvicorn #pra rodar, uvicorn api.main:app --reload
 from fastapi import FastAPI, UploadFile, Form, File, Body
 from fastapi.middleware.cors import CORSMiddleware #liga front e back
 from pydantic import BaseModel #pros tipos das coisas
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from fastapi import HTTPException #pra codigo de erros
+from contextlib import asynccontextmanager
+import os
 
 #pip install passlib[bcrypt]
 #pip install 'pydantic[email]'
@@ -21,13 +23,108 @@ import httpx # p usar o unsplash
 
 #coisa pro bd
 from sqlmodel import SQLModel, Session, select
-from .database import engine, get_session
-from .model import Question, User
+from .database import engine, get_session # se tiver dando errado, ve o caminho de database e model
+from .model import User, Question, Course, Section, Lesson, Step, UserLessonProgress
 
+#=====================================================================================================================================================
+#parte do banco de dados
 
+# USUÁRIOS DE TESTE:
+# user1@teste.com / 123 (normal)
+# user2@teste.com / 123 (premium/admin)
 
-app = FastAPI() #objeto base pra cuidar dos endpoint
-print("\nDebug: Server iniciou\n")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("------------------ INICIANDO O LIFESPAN ------------------")
+    
+    # 1. Cria as tabelas
+    SQLModel.metadata.create_all(engine)
+    print("--- TABELAS CRIADAS ---")
+
+    # 2. Popula o banco
+    with Session(engine) as session:
+
+        user_check = session.exec(select(User)).first()
+        if not user_check:
+            print("--- CRIANDO USUÁRIOS DE TESTE ---")
+            
+            # Usuário Normal
+            user_normal = User(
+                name="Usuario Normal",
+                email="user1@teste.com",
+                hashed_password=pwd_context.hash("123"),
+                description="Conta gratuita de teste",
+                is_premium=False
+            )
+            session.add(user_normal)
+
+            # Usuário Premium (Admin)
+            user_admin = User(
+                name="Admin Premium",
+                email="user2@teste.com",
+                hashed_password=pwd_context.hash("123"),
+                description="Conta premium de teste",
+                is_premium=True
+            )
+            session.add(user_admin)
+            session.commit() # Salva os usuários
+            print("----- USUÁRIOS DE TESTE CRIADOS --------")
+
+        course_check = session.exec(select(Course)).first()
+        
+        if not course_check:
+            print("--------------- BANCO VAZIO DETECTADO, ENCHENDO ------------------")
+            
+            # curso 1
+            c1 = Course(title="Internet", description="Aprenda o que é internet.", image="internet.png")
+            session.add(c1)
+            session.flush() # ID do Curso 1
+
+            s1 = Section(title="Conceitos Básicos", course_id=c1.id)
+            session.add(s1)
+            session.flush() # gera ID da seção 1
+
+            l101 = Lesson(id=101, title="O que é a Internet", section_id=s1.id, video_url="/videos/o-que-e-internet.mp4", header_image_url="")
+            session.add(l101)
+            session.add(Step(text="A internet é uma rede global.", lesson=l101))
+            session.add(Step(text="Conecta bilhões de dispositivos.", lesson=l101))
+
+            l102 = Lesson(id=102, title="Navegadores", section_id=s1.id, header_image_url="")
+            session.add(l102)
+            session.add(Step(text="Navegadores interpretam HTML.", lesson=l102))
+
+            # curso 2
+            c2 = Course(title="Computadores", description="Hardware e Software.", image="computer-desktop.png")
+            session.add(c2)
+            session.flush() # gera ID do curso 2
+            
+            s2 = Section(title="Hardware", course_id=c2.id)
+            session.add(s2)
+            session.flush() # 
+            
+            # s2.id existe pelo flush
+            session.add(Lesson(id=201, title="Mouse e Teclado", section_id=s2.id))
+
+            # curso 3 premium
+            c3 = Course(title="Chamadas (PREMIUM)", description="Aprenda a fazer chamadas.", image="phone-call.png")
+            session.add(c3)
+            session.flush() # ID Curso 3
+            
+            s3 = Section(title="Apps", course_id=c3.id)
+            session.add(s3)
+            session.flush() # 
+            
+            session.add(Lesson(id=301, title="Videochamada", section_id=s3.id))
+
+            session.commit()
+            print("----------- DADOS INSERIDOS COM SUCESSO -------------")
+        else:
+            print("---------------- O BANCO JÁ TEM DADOS, NÃO PRECISA PREENCHER --------------------")
+            
+    yield
+    print("--- ENCERRANDO SERVIDOR ---")
+
+app = FastAPI(lifespan=lifespan) #objeto base pra cuidar dos endpoint
 
 origins = [
     "http://localhost:5173", #front
@@ -44,14 +141,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-#=====================================================================================================================================================
-#parte do banco de dados
-
-@app.on_event("startup") #cria as tabelas no inicio
-def on_startup():
-    from sqlmodel import SQLModel
-    SQLModel.metadata.create_all(engine)
 
 #=====================================================================================================================================================
 #questoes
@@ -157,7 +246,6 @@ async def update_question(
 #users = []  #guardando na memoria por enquanto
 #configura o passlib, diz p ele q quero usar o bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")#configuração pro hashing de senha
-
 #class User(BaseModel): #estrutura do user sque é salva
 #    id: int
 #    name: str
@@ -206,70 +294,60 @@ class UserUpdate(BaseModel):#forma como espera receber os dados do front
     description: str | None = None
 #descrição
 
-#liçoes
-class Lesson(BaseModel):
-    # define um subtópico (lição)
-    id: int
-    label: str # "tipo 'O que é a internet'"
-    href: str  # por exemplo "/licoes/internet/licao1" (link p pag da lição em si)
-# liçoes
-
-#put curso
-class NewCourse(BaseModel):
+class NewCoursePayload(BaseModel): # curso novo
     title: str
     description: str
-    image: str # ex: "hardware.png"
-#put curso
+    image: str
 
-#seçoes
-class Section(BaseModel):
-    # seçao (a lista de assuntos) que contem as liçoes
+class CourseUpdate(BaseModel): # atualizar curso
+    title: str | None = None
+    description: str | None = None
+    image: str | None = None
+
+# modelo de resposta para garantir que o FastAPI converta tudo certinho
+class LessonContentResponse(BaseModel):
+    lesson_id: int
     title: str
-    items: List[Lesson]
-#seçoes
+    video_url: Optional[str] = None
+    steps: List[Dict[str, str]]
+    course_id: int
+    next_lessons: List[Dict[str, Any]] = []
+    header_image_url: Optional[str] = None
 
-#cursos
-class Course(BaseModel): # modelo do curso
+# 1. Schema da Lição (simples)
+class LessonRead(BaseModel):
     id: int
     title: str
-    description: str | None = None
-    sections: List[Section] # lista de seções com os assuntos
-    is_free: bool = True
+    video_url: Optional[str] = None
+    class Config:
+        from_attributes = True # ajuste pra funcionar com o SQLModel, fala que os dados vem de ORM
+
+# 2. Schema da Seção (com lista de lições dentro)
+class SectionRead(BaseModel):
+    id: int
+    title: str
+    lessons: List[LessonRead] = [] # <--- AQUI ESTÁ O SEGREDO
+    class Config:
+        from_attributes = True
+
+# 3. Schema do Curso (com lista de seções dentro)
+class CourseReadWithDetails(BaseModel):
+    id: int
+    title: str
+    description: str
     image: str
-#cursos
+    sections: List[SectionRead] = [] # <--- AQUI TAMBÉM
+    class Config:
+        from_attributes = True
 
 #classes pras checkbox
 class ProgressUpdate(BaseModel):
     #o que o front coloca no PUT
     completado: bool
 
-class UserProgress(BaseModel):
-    # como será colocado no "bando de dados"
-    user_email: EmailStr
-    lesson_id: int
-#classes pras checkbox
+# bando de dados na memória p salvar o progresso da checkbox - RETIRADO NO DB
+#user_progress = [] 
 
-# bando de dados na memória p salvar o progresso da checkbox
-user_progress = []
-
-#classes para o conteúdo das lições
-class Step(BaseModel):
-    # passo na lição
-    text: str
-    # por enquanto só texto, mas uma ideia: image_url: Optional[str] = None
-
-class NextLessonInfo(BaseModel):
-    id: int
-    title: str # título da próxima lição
-
-class LessonContent(BaseModel):# o conteúdo da lição
-    lesson_id: int
-    title: str 
-    header_image_url: Optional[str] = None
-    steps: List[Step] # lista de passos (Step criado acima)
-    video_url: Optional[str] = None # link pro video se tiver algum na lição
-    next_lessons: List[NextLessonInfo] = [] # lista com as próximas lições
-#classes para o conteúdo das lições
 
 #login
 #config do JWT (JSON web token)
@@ -277,12 +355,12 @@ SECRET_KEY = "FACA_O_L_IMEDIATAMENTE" #pode ser qualquer string longa e aleatór
 ALGORITHM = "HS256" #algoritmo de assinatura
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 #tempo de validade do token
 
-#funçao pra buscar o usuario na lista de usuario
-def get_user(email: str):
-    for u in users:
-        if u.email == email:
-            return u
-    return None
+#funçao pra buscar o usuario na lista de usuario (retirado no)
+#def get_user(email: str):
+#    for u in users:
+#        if u.email == email:
+#            return u
+#    return None
 
 #p/criar novo token de acesso
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -387,7 +465,12 @@ async def register_user(user_data: UserCreate, session: Session = Depends(get_se
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],session: Session = Depends(get_session)):
     #o OAuth2PasswordRequestForm é um modelo especial do fastAPI e força o login a usar dados de formulário,
     #automaticamente pega os dados enviados pelo login e coloca no form_data
-
+    print(f"DEBUG LOGIN -> Recebi: '{form_data.username}' | Senha: '{form_data.password}'")
+    user_test = session.exec(select(User).where(User.email == form_data.username)).first()
+    if user_test:
+        print(f"DEBUG BANCO -> Achei usuário! Hash no banco: {user_test.hashed_password[:10]}...")
+    else:
+        print("DEBUG BANCO -> Usuário NÃO encontrado no select.")
     #busca no bd um usuario com o email q foi digitado no login
     statement = select(User).where(User.email == form_data.username)
     user = session.exec(statement).first()
@@ -415,7 +498,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         data={"sub": user.email}, expires_delta=access_token_expires
     )
     #retorna o token pro frontend
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "is_premium": user.is_premium}
 #endpoint login
 
 #perfil -----------------------------------------------------------------------------------
@@ -501,334 +584,194 @@ async def update_user_me( user_update: UserUpdate,current_user: Annotated[User, 
 
 #cursos -----------------------------------------------------------------------------------
 
-# função pra ajudar a achar "próxima lição"
-def find_next_lessons_in_course(current_lesson_id: int) -> List[NextLessonInfo]:
-    found_course = None
-    
-    # acha a qual curso a lição atual pertence
-    for course in courses:
-        for section in course.sections:
-            for lesson in section.items:
-                if lesson.id == current_lesson_id:
-                    found_course = course
-                    break
-            if found_course: break
-        if found_course: break
-    
-    # se a lição não foi encontrada em nenhum curso
-    if not found_course:
-        return [] 
-
-    # cria uma lista "plana" de todas as lições APENAS desse curso
-    course_lessons_flat: List[Lesson] = []
-    for section in found_course.sections:
-        course_lessons_flat.extend(section.items) # .items é List[Lesson]
-
-    # acha a próxima lição na lista
-    for i, lesson in enumerate(course_lessons_flat):
-        if lesson.id == current_lesson_id:
-            # achamos a lição atual em 'i'
-            if i + 1 < len(course_lessons_flat):
-                # se existe uma próxima lição -> (índice i+1)
-                next_lesson = course_lessons_flat[i + 1]
-                
-                # retorna a próxima lição no formato que o frontend quer
-                return [NextLessonInfo(id=next_lesson.id, title=next_lesson.label)] 
-            else:
-                # se for a última lição do curso
-                return [] 
-    
-    return [] # n achou a lição na lista (vai que)
-
-#cursos na memória, igual users e questions. No futuro, virão do banco de dados, mas como ele NÃO EXISTE, estão hardcoded aqui.
-courses = [
-    Course(
-        id=1,
-        title="Internet",
-        description="Aprenda o que é internet e como navegar.",
-        is_free=True, # Este curso é gratuito
-        image="internet.png",
-        sections=[
-            Section(title="Conceitos Básicos", items=[
-                Lesson(id=101, label="O que é a Internet", href="/licoes/101"),
-                Lesson(id=102, label="Navegadores", href=f"/licoes/102"),
-                Lesson(id=103, label="Sites e links", href=f"/licoes/103"),
-            ]),
-            Section(title="Segurança", items=[
-                Lesson(id=104, label="Segurança básica", href="/licoes/104")
-            ])
-        ]
-    ),
-    Course(
-        id=2,
-        title="Computadores",
-        description="Aprenda a usar um computador.",
-        is_free=True,
-        image="computer-desktop.png",
-        sections=[
-            Section(title="Componentes", items=[
-                Lesson(id=201, label="Mouse e Teclado", href=f"/licoes/{201}"),
-                Lesson(id=202, label="Monitor", href=f"/licoes/{202}"),
-            ])
-        ]
-    ),
-    Course(
-        id=3,
-        title="Chamadas (PREMIUM)",
-        description="Conversando com alguém longe de você.",
-        is_free=False, # CURSO PREMIUM!
-        image="phone-call.png",
-        sections=[
-            Section(title="WhatsApp", items=[
-                Lesson(id=301, label="Chamada de Vídeo", href=f"/licoes/{301}"),
-            ])
-        ]
-    )
-]
-
-#endpoint cursos GET
-@app.get("/cursos", response_model=list[Course])
-async def listar_cursos(current_user: Annotated[User, Depends(get_current_active_user)]): #só usuarios logados podem ver os cursos!
-    return courses
+#endpoint cursos GET - com BD
+@app.get("/cursos", response_model=List[Course])
+async def get_courses(session: Session = Depends(get_session)):
+    return session.exec(select(Course)).all()
 #endpoint cursos GET
 
 #endpoint cursos especificos GET
-@app.get("/cursos/{course_id}", response_model=Course) # 1. MUDANÇA: Revertido para 'Course'
-async def get_one_course(course_id: int, current_user: Annotated[User, Depends(get_current_active_user)]):
-  
-    # verificação de achar ou não achar o curso
-    found_course = None
-    for course in courses:
-        if course.id == course_id:
-            found_course = course # pro retorno!
-            break
-    if not found_course:
+@app.get("/cursos/{course_id}", response_model=CourseReadWithDetails)
+async def get_course(course_id: int, session: Session = Depends(get_session)):
+    course = session.get(Course, course_id)
+    if not course:
         raise HTTPException(status_code=404, detail="Curso não encontrado")
+    return course
+#fim do curso especifico get
+
+# conteudo da licao get
+@app.get("/licoes/{lesson_id}", response_model=LessonContentResponse)
+async def get_lesson_content(
+    lesson_id: int, 
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    session: Session = Depends(get_session)
     
-    # a parte daqui é de autorização.
-    # pra fazer a implementação de ambos, foi criado um tipo de conta "premium"
-    # se o curso for de graça, logados acessam.
-    # se não estiver logado, nem entra (pelo current_user: annotated bla bla bla)
-    # se o curso for premium, os de graça não acessam (MARX, 1867)
-    if not found_course.is_free and not current_user.is_premium:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Esse curso requer assinatura premium."
-        )
-
-    return found_course
-#endpoint cursos especificos GET
-
-
-#endpoint de checkbox GET
-@app.get("/progresso/curso/{course_id}", response_model=List[int])
-async def get_progresso_do_curso(
-    course_id: int, # O ID do curso caso precise
-    current_user: Annotated[User, Depends(get_current_active_user)]
 ):
-    # retorna uma lista de ID das lições q o user de agora completou
+    # busca no bd
+    lesson_db = session.get(Lesson, lesson_id)
     
-    completed_lessons_ids = []
-    for progresso in user_progress:
-        if progresso.user_email == current_user.email:
-            # melhorar no futuro: verificar se a lição pertence ao course_id
-            completed_lessons_ids.append(progresso.lesson_id)
+    if not lesson_db:
+        raise HTTPException(status_code=404, detail="Lição não encontrada")
 
-    print(f"Enviando progresso para {current_user.email}: {completed_lessons_ids}")
+    # verifica se o user é premium!
+    if lesson_id == 301 and not current_user.is_premium:
+        raise HTTPException(status_code=403, detail="Esta lição é exclusiva para usuários Premium.")
 
-    return completed_lessons_ids
-#endpoint de checkbox GET
+    # formatação de dados no banco
+    # o banco retorna objetos Step, mas o front espera só dicionários simples
+    steps_formatted = [{"text": s.text} for s in lesson_db.steps]
 
-#endpoint de salvar progresso da checkbox PUT
-@app.put("/progresso/licao/{lesson_id}")
-async def salvar_progresso( # a async marca ou tira o progresso de uma lição pro user logado
-    lesson_id: int, # id da licao
-    update_data: ProgressUpdate, # { "completado": true/false } do front
-    current_user: Annotated[User, Depends(get_current_active_user)] # ql user ta salvando?
-):
-    # verifica o que o user quer fazer
-    if update_data.completado:
-        # checkbox marcada
-        # ve se ja ta salvo, p nao duplicar
-        ja_existe = False
-        for progresso in user_progress:
-            if progresso.user_email == current_user.email and progresso.lesson_id == lesson_id:
-                ja_existe = True
-                break
-        
-        #se nao existe...
-        if not ja_existe:
-            user_progress.append(UserProgress(user_email=current_user.email,lesson_id=lesson_id))
-            # printnado p ver no console do backend!
-            print(f"Progresso salvo: user {current_user.email} completou lição {lesson_id}")
-            print(f"BD de progresso atual: {user_progress}")
-            
-    else:
-        # checkbox desmarcada
-        # procura o progresso na lista p remover
-        progresso_para_remover = None
-        for progresso in user_progress:
-            if progresso.user_email == current_user.email and progresso.lesson_id == lesson_id:
-                progresso_para_remover = progresso
-                break
-        # SE existe algum progresso p ser removido
-        if progresso_para_remover:
-            user_progress.remove(progresso_para_remover)
-            print(f"Progresso removido: user {current_user.email} desmarcou lição {lesson_id}")
-            print(f"BD de progresso atual: {user_progress}")
-
-    return {"status": "sucesso", "progresso_atual": user_progress}
-#endpoint de salvar progresso da checkbox PUT
-
-# o "BD" que salva o conteúdo das lições, na memória
-# mapeia o ID da lição(int) pro conteúdo
-lesson_contents: Dict[int, LessonContent] = {
-    101: LessonContent(
-        lesson_id=101,
-        title="O que é a Internet",
-        steps=[
-            Step(text="A internet é tipo"),
-            Step(text="Ela meio que"),
-            Step(text="Pensa assim")
-        ],
-        video_url="/videos/o-que-e-internet.mp4" #caminho do video
-    ),
-    102: LessonContent(
-        lesson_id=102,
-        title="Navegadores",
-        steps=[
-            Step(text="placeholder"),
-            Step(text="placeholder"),
-            Step(text="placeholder")
-        ],
-        # exemplo de lição sem vídeo
-    ),
-    # caminho pra outras lições
-    103: LessonContent(lesson_id=104, title="Segurança Básica", steps=[Step(text="placeholder")]),
-    104: LessonContent(lesson_id=104, title="Segurança Básica", steps=[Step(text="placeholder")]),
-    201: LessonContent(lesson_id=201, title="Mouse e Teclado", steps=[Step(text="placeholder")]),
-    202: LessonContent(lesson_id=202, title="Monitor", steps=[Step(text="placeholder")]),
-    301: LessonContent(lesson_id=301, title="Chamada de Vídeo", steps=[Step(text="placeholder")], video_url="/videos/chamada.mp4"),
-}
-
-#endpoint GET lesson content
-@app.get("/licoes/{lesson_id}", response_model=LessonContent)
-async def get_lesson_content(lesson_id: int,current_user: Annotated[User, Depends(get_current_active_user)]):
-
-    content = lesson_contents.get(lesson_id) #pega o id da lição e coloca em content
-
-    if not content:# se não for encontrada
-        raise HTTPException(status_code=404, detail="Conteúdo da lição não encontrado")
+    # lógica p/ próxima lição
+    # busca a próxima lição da mesma seção que tenha ID maior que o atual
+    next_lesson_stmt = select(Lesson).where(
+        Lesson.section_id == lesson_db.section_id,
+        Lesson.id > lesson_id
+    ).limit(1)
     
-    if lesson_id == 301 and not current_user.is_premium: # estatico por enquanto, 
-        raise HTTPException(status_code=403, detail="Esta lição é premium.")
-
-    # INTEGRAÇÃO COM API EXTERNA 
-    UNSPLASH_API_KEY = "chave_da_api" # colocando manualmente por enquanto
-    query = content.title # usa o titulo da lição como busca
-
-    try:
-        # 'async with' faz a chamada de forma assíncrona
-        async with httpx.AsyncClient() as client:
-            headers = {"Authorization": f"Client-ID {UNSPLASH_API_KEY}"}
-            params = {"query": query, "per_page": 1, "orientation": "landscape"}
-
-            # chama a API do Unsplash
-            response = await client.get("https://api.unsplash.com/search/photos", headers=headers, params=params)
-            response.raise_for_status() # Lança um erro se a requisição falhar
-
-            data = response.json()
-            if data["results"]:
-                # pega a URL da imagem e a adiciona ao objeto 'content'
-                image_url = data["results"][0]["urls"]["regular"]
-                content.header_image_url = image_url
-    #exceção            
-    except Exception as e:
-        print(f"Erro ao buscar imagem no Unsplash: {e}")
-        content.header_image_url = None # falha mas a lição continua rodando
-    # FIM DA INTEGRAÇÃO C API EXTERNA
-
-    #acha a próxima lição dinamicamente
-    next_lessons_list = find_next_lessons_in_course(lesson_id)
-
-    # add a lista ao objeto de conteúdo antes de retornar
-    # aparentemente Pydantic V2 permite essa atribuição direta? sei lá
-    content.next_lessons = next_lessons_list
-
-    return content
-#endpoint GET lesson content
-
-#endpoint novo curso POST
-@app.post("/cursos", response_model=Course) #axios.post()
-# esse endpoint é parte do trabalho, mas não estamos permitindo usuários premium no momento
-async def create_new_course(
-    new_course: NewCourse,
-    current_user: Annotated[User, Depends(get_current_active_user)]
-):
-    # só usuários "premium" (admin, por enquanto, se precisar) podem criar cursos
-    if not current_user.is_premium:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, 
-            detail="Apenas administradores podem criar cursos."
-        )
-
-    # achar o maior ID existente e somar 1, já que os cursos existentes estão em lista
-    new_id = max(course.id for course in courses) + 1
+    next_lesson_obj = session.exec(next_lesson_stmt).first()
     
-    course_obj = Course(# parâmetros para um novo curso
-        id=new_id,
-        title=new_course.title,
-        description=new_course.description,
-        image=new_course.image,
-        sections=[]  # começa sem seções
+    next_lessons_list = []
+    if next_lesson_obj:
+        next_lessons_list.append({"id": next_lesson_obj.id, "title": next_lesson_obj.title})
+
+    # parte da API externa para criação de cabeçalho das lições
+    
+    header_image = None 
+    # tenta pegar a chave do .env
+    UNSPLASH_API_KEY = os.getenv("UNSPLASH_API_KEY")
+
+    if UNSPLASH_API_KEY:
+        query = lesson_db.title # usa o titulo da lição p fazer a busca na API
+        try:
+            async with httpx.AsyncClient() as client:
+                headers = {"Authorization": f"Client-ID {UNSPLASH_API_KEY}"}
+                params = {"query": query, "per_page": 1, "orientation": "landscape"}
+                
+                response = await client.get("https://api.unsplash.com/search/photos", headers=headers, params=params)
+                
+                # só processa se deu certo, 200 é OK
+                if response.status_code == 200:
+                    data = response.json()
+                    if data["results"]:
+                        header_image = data["results"][0]["urls"]["regular"]
+        except Exception as e:
+            print(f"Erro ao conectar com Unsplash: {e}")
+            # header_image continua None e o site não quebra
+
+    # agrega no retorno final
+    return LessonContentResponse(
+        lesson_id=lesson_db.id,
+        title=lesson_db.title,
+        video_url=lesson_db.video_url,
+        steps=steps_formatted,
+        course_id=lesson_db.section.course_id, # ID do curso via relacionamento
+        next_lessons=next_lessons_list,
+        header_image_url=header_image # url do unsplash pro header da lição
     )
-    
-    # salva na "memória" (append em courses)
-    courses.append(course_obj)
-    
-    # retorna o que acabou de criar
-    return course_obj
-#endpoint novo curso POST
 
-#endpoint DELETE curso
-@app.delete("/licoes/{licao_id}", status_code=status.HTTP_200_OK) #axios.delete()
-# esse endpoint é parte do trabalho, mas não estamos permitindo usuários premium no momento
+#endpoint novo curso POST
+@app.post("/cursos", response_model=Course, status_code=status.HTTP_201_CREATED)
+async def create_course(
+    course_data: NewCoursePayload,
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    session: Session = Depends(get_session)
+):
+    if not current_user.is_premium: # Usando flag premium como admin simples
+        raise HTTPException(status_code=403, detail="Apenas admins podem criar cursos.")
+    
+    new_course = Course(title=course_data.title, description=course_data.description, image=course_data.image)
+    session.add(new_course)
+    session.commit()
+    session.refresh(new_course)
+    return new_course
+#fim endpoint novo curso POST
+
+#endpoint atualizar curso PUT - BD
+@app.put("/cursos/{course_id}", response_model=Course)
+async def update_course(
+    course_id: int,
+    course_data: NewCoursePayload,
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    session: Session = Depends(get_session) # Injeção do Banco
+):
+    # AUTORIZAÇÃO - só deixa admins (premium) editarem cursos
+    if not current_user.is_premium:
+        raise HTTPException(status_code=403, detail="Apenas admins podem editar cursos.")
+
+    # busca o curso no bd
+    course_db = session.get(Course, course_id)
+    
+    if not course_db:
+        raise HTTPException(status_code=404, detail=f"Curso {course_id} não encontrado.")
+
+    # atualiza os campos com novos dados
+    course_db.title = course_data.title
+    course_db.description = course_data.description
+    course_db.image = course_data.image
+    
+    # salva mudanças no bd
+    session.add(course_db)
+    session.commit()
+    session.refresh(course_db)
+    
+    return course_db
+#fim do endpoint atualizar curso PUT - BD
+
+#endpoint DELETE curso - BD
+@app.delete("/licoes/{licao_id}", status_code=status.HTTP_200_OK)
 async def delete_lesson(
     licao_id: int,
-    current_user: Annotated[User, Depends(get_current_active_user)]
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    session: Session = Depends(get_session) # <--- Injeção do Banco
 ):
-    # 1. Autenticação (de novo)
     if not current_user.is_premium:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, 
-            detail="Apenas administradores podem remover lições."
-        )
+        raise HTTPException(status_code=403, detail="Apenas admins podem remover lições.")
 
-    # lógica de remoção:
+    # busca a lição p ver se existe
+    lesson_db = session.get(Lesson, licao_id)
     
-    # remover de "conteúdos"
-    if licao_id in lesson_contents:
-        del lesson_contents[licao_id]
-    else:
-        raise HTTPException(status_code=404, detail="Conteúdo da lição não encontrado para deletar.")
+    # se não der match no ID
+    if not lesson_db:
+        raise HTTPException(status_code=404, detail="Lição não encontrada.")
 
-    # remover da lista de "Cursos" p/ não aparecer no menu
-    found = False
-    for course in courses:
-        for section in course.sections:
-            for i, lesson in enumerate(section.items):
-                if lesson.id == licao_id:
-                    section.items.pop(i) # remove a lição da lista
-                    found = True
-                    break
-            if found: break
-        if found: break
-
-    if not found:
-        raise HTTPException(status_code=404, detail="Lição não encontrada na estrutura do curso.")
+    # apagar lição do banco:
+    # depende dos relacionamentos do SQLModel.
+    # se tiver configurado cascade, somem as lições filhas.
+    # se não, as lições ficam vivas mas órfãs, e talvez o BD avise.
+    # por segurança, apaga os passos manualmente aqui.
+    for step in lesson_db.steps:
+        session.delete(step)
+        
+    # depois apaga a lição
+    session.delete(lesson_db)
+    
+    session.commit()# adivinha o que faz
 
     return {"detail": f"Lição {licao_id} removida com sucesso."}
-#endpoint DELETE cursos
+#fim do endpoint DELETE cursos - BD
+
+# checar progresso get
+@app.get("/progresso/curso/{course_id}", response_model=List[int])
+async def get_progresso(course_id: int, current_user: Annotated[User, Depends(get_current_active_user)], session: Session = Depends(get_session)):
+    # Retorna IDs das lições concluídas pelo usuário
+    results = session.exec(select(UserLessonProgress).where(UserLessonProgress.user_id == current_user.id, UserLessonProgress.completed == True)).all()
+    return [p.lesson_id for p in results]
+
+# atualizar progresso put
+@app.put("/progresso/{lesson_id}")
+async def toggle_progress(lesson_id: int, current_user: Annotated[User, Depends(get_current_active_user)], session: Session = Depends(get_session)):
+    prog = session.exec(select(UserLessonProgress).where(UserLessonProgress.user_id == current_user.id, UserLessonProgress.lesson_id == lesson_id)).first()
+    
+    if prog:
+        prog.completed = not prog.completed
+        msg = "Lição atualizada"
+    else:
+        prog = UserLessonProgress(user_id=current_user.id, lesson_id=lesson_id, completed=True)
+        session.add(prog)
+        msg = "Lição concluída"
+    
+    session.commit()
+    return {"message": msg}
 
 #rodar o server
 if __name__=="__main__":

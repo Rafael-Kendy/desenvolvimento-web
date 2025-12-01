@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import axios from "axios";
+import api from "../../components/api"; // Certifique-se de importar sua api configurada
 
 import Header from "../../components/header";
 import Footer from "../../components/footer";
@@ -10,7 +11,7 @@ import internetIcon from "../../components/assets/img/internet.png";
 import pc from "../../components/assets/img/computer-desktop.png";
 import zap from "../../components/assets/img/phone-call.png";
 
-const iconMap ={
+const iconMap ={ // pros icones locais fixos, caso queira adicionar mais, é só por aqui
     "internet.png": internetIcon,
     "computer-desktop.png": pc,
     "phone-call.png": zap,
@@ -19,7 +20,6 @@ const iconMap ={
 // recebe 'userProgress' pra ler o progresso do user e 'onProgressChange' pra salvar
 function LessonSection({ title, items, userProgress, onProgressChange }) {
     const navigate = useNavigate();
-
     // o useState é inicializado vazio
     const [checked, setChecked] = useState({});
 
@@ -44,8 +44,7 @@ function LessonSection({ title, items, userProgress, onProgressChange }) {
         const newCheckedState = !isCurrentlyChecked;
 
         // atualiza a UI localmente pra mudar rápido ao invés de esperar a resposta
-        setChecked((prev) => ({...prev,[lessonId]: newCheckedState,}));
-
+        setChecked((prev) => ({...prev, [lessonId]: newCheckedState}));
         // avisa o componente "pai" (CoursePage) que o progresso mudou
         // isto permite que o estado 'userProgress' no pai seja atualizado
         onProgressChange(lessonId, newCheckedState);
@@ -58,8 +57,8 @@ function LessonSection({ title, items, userProgress, onProgressChange }) {
                 return;
             }
 
-            await axios.put(
-                `http://localhost:8000/progresso/licao/${lessonId}`,
+            await api.put( // agora faz pela API
+                `/progresso/${lessonId}`,
                 { completado: newCheckedState },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -68,10 +67,7 @@ function LessonSection({ title, items, userProgress, onProgressChange }) {
             console.error("Falha ao salvar progresso no backend:", err);
             
             // reverte a UI se a API não fizer o que deve fazer
-            setChecked((prev) => ({
-                ...prev,
-                [lessonId]: isCurrentlyChecked,
-            }));
+            setChecked((prev) => ({...prev,[lessonId]: isCurrentlyChecked,}));
             onProgressChange(lessonId, isCurrentlyChecked); // reverte no "pai" tb
 
             // lida com falta de permissão ou caso nao esteja logado (ou não tiver permissão)
@@ -95,12 +91,13 @@ function LessonSection({ title, items, userProgress, onProgressChange }) {
                     <label
                         className="lesson-item"
                         onClick={(e) => {
-                            if (e.target.tagName.toLowerCase() === "input") { return; }
-                            navigate(item.href);
+                            if (e.target.tagName.toLowerCase() === "input") {return;}
+                            navigate(`/aula/${item.id}`);// navega pra lição ao clicar no label, mas não no checkbox
                         }}
+                        style={{ cursor: "pointer" }}
                     >
                         <span>
-                            <strong>{index + 1}.</strong> <span className="blue\">{item.label}</span>
+                            <strong>{index + 1}.</strong> <span className="blue\">{item.title}</span>
                         </span>
                         
                         <input
@@ -129,38 +126,56 @@ function CoursePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // o 'useEffect' faz 2 chamadas à API
+    // tratar imagens (URL externa ou arquivo local)
+    const getCourseImage = (imageName) => {
+        if (!imageName) return internetIcon; // padrão
+        if (imageName.startsWith("http")) return imageName; // URL 
+        return iconMap[imageName] || internetIcon; // local ou padrão
+    };
+
+    // o 'useEffect' faz chamadas à API
     useEffect(() => {
         const fetchCourseData = async () => {
             try {
                 const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("Você precisa estar logado para ver este curso.");
-                    setLoading(false);
-                    setTimeout(() => navigate("/login"), 2000);
-                    return;
-                }
-                
-                // authentication header e tal
-                const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
+                const headers = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
                 // usa 'Promise.all' para buscar os dois dados em paralelo
                 const [courseResponse, progressResponse] = await Promise.all([
-                    // 2 calls:
+                    // 2 calls: (ANTIGO)
                     // buscar os detalhes do curso do main.py
-                    axios.get(`http://localhost:8000/cursos/${courseId}`, authHeaders),
+                    //axios.get(`http://localhost:8000/cursos/${courseId}`, authHeaders),
                     // buscar o progresso do endpoint
-                    axios.get(`http://localhost:8000/progresso/curso/${courseId}`, authHeaders)
+                    //axios.get(`http://localhost:8000/progresso/curso/${courseId}`, authHeaders)
+
+                    //NOVO - pega o token e faz as chamadas com API
+                    api.get(`/cursos/${courseId}`, headers),
+                    // se não tiver token, falha
+                    token ? api.get(`/progresso/curso/${courseId}`, headers) : Promise.resolve({ data: [] })
                 ]);
-                
+
+                const course = courseResponse.data;
+
+                // VERIFICA SE É PREMIUM!
+                if (course.id === 3) { // curso premium tem id 3
+                    const premiumStored = localStorage.getItem("is_premium");
+                    const isPremium = premiumStored === "true"; // Só é true se estiver escrito "true"
+                    
+                    if (!isPremium) {
+                        setError("Este curso é exclusivo para assinantes Premium.");
+                        setLoading(false);
+                        return; // N SALVA OS DADOS NEM MOSTRA A TELA
+                    }
+                }
+
                 // salva os dados nos estados separados
                 setCourseData(courseResponse.data); // salva o curso
                 setUserProgress(progressResponse.data); // salva o progresso 
                 
                 document.title = `ChaveDigital - ${courseResponse.data.title}`;
-                console.log("imagem da API:", courseResponse.data.image);
 
             } catch (err) {// o catch pros diferentes erros
+                console.error("Erro no fetch!", err);
                 if (err.response) {
                     if (err.response.status === 401) {
                         setError("Sua sessão expirou. Por favor, faça login novamente.");
@@ -218,6 +233,7 @@ function CoursePage() {
                 <main className="center general-width hero">
                     <h1 className="gold">Erro</h1>
                     <p className="subtitle dark-gray">{error}</p>
+                    <button onClick={() => navigate("/login")} className="btn-padrao">Ir para Login</button>
                 </main>
                 <Footer activePage="topicos" />
             </div>
@@ -225,9 +241,7 @@ function CoursePage() {
     }
     
     // caso nao de erro mas algo de errado (?)
-    if (!courseData) {
-        return null; 
-    }
+    if (!courseData) return null; 
 
     // renderiza com sucesso
     return (
@@ -239,7 +253,9 @@ function CoursePage() {
                 {courseData && ( //só renderiza a img depois que courseData é carregado pela API
                     <img 
                         // 'courseData.image' ("internet.png") pra procurar no 'iconMap' o ícone correto certo (internetIcon, nesse caso)
-                        src={iconMap[courseData.image]} 
+                        //src={iconMap[courseData.image]} ANTIGO
+                        // dinamico agora
+                        src={getCourseImage(courseData.image)} // NOVO
                         alt={`Ícone do curso ${courseData.title}`} 
                     />
                 )}
@@ -256,13 +272,13 @@ function CoursePage() {
             </div>
             </section>
 
-            {/*  passa o progresso e a função para a sub-componente */}
-            {courseData.sections.map((section, idx) => ( 
+            {/* mapeamento das seções agora usando lessons, o nome certo*/}
+            {courseData.sections && courseData.sections.map((section, idx) => (
                 <LessonSection
                     key={idx} 
                     title={section.title}
-                    items={section.items}
-                    userProgress={userProgress} // Passa o progresso
+                    items={section.lessons}
+                    userProgress={userProgress} // passa o progresso
                     onProgressChange={handleProgressChange} // Passa a função
                 />
             ))}
@@ -271,7 +287,7 @@ function CoursePage() {
             <section className="lesson-box">
             <ul className="lesson-list">
                 <li>
-                    <label onClick={() => (window.location.href = "/topicos")}>
+                    <label onClick={() => navigate("/topicos")} style={{cursor: "pointer"}}> {/* navega pra /topicos */}
                         <span>
                             <span className="blue\">Voltar aos tópicos</span>
                         </span>

@@ -736,6 +736,180 @@ header button{
   padding-left: 1.2rem;
 }
 
+/* ==========================================================================
+   ESTILOS DA PÁGINA DE LIÇÃO (LessonPage)
+   ========================================================================== */
+
+/* Container de Loading e Erro */
+.state-container {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Imagem do Cabeçalho */
+.lesson-hero-img {
+  object-fit: contain;
+  max-height: 150px;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+/* Caixa branca principal do conteúdo */
+.lesson-content-card {
+  background-color: var(--white); /* usando sua variável */
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  margin-top: -30px; /* Leve sobreposição visual se desejar, ou ajuste margin */
+  margin-bottom: 50px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Área do Vídeo */
+.video-wrapper {
+  width: 100%;
+  margin-bottom: 30px;
+  background-color: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.lesson-video {
+  width: 100%;
+  max-height: 500px;
+  display: block;
+}
+
+.video-placeholder {
+  padding: 40px;
+  text-align: center;
+  background-color: var(--lightgray);
+  border-radius: 8px;
+  margin-bottom: 30px;
+  color: var(--darkgray);
+}
+
+/* Lista de Passos */
+.steps-title {
+  color: var(--blue);
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.steps-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.5); /* Leve fundo se estiver sobre cor */
+  padding: 10px;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.step-item:hover {
+  transform: translateX(5px);
+}
+
+.step-number {
+  background-color: var(--blue);
+  color: var(--white);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+  flex-shrink: 0; /* Impede a bolinha de esmagar */
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.step-text {
+  margin-top: 4px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--black);
+}
+
+/* Botões de Navegação */
+.lesson-nav-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 40px;
+  margin-bottom: 60px;
+}
+
+.btn-next-lesson {
+  width: 100%;
+  text-align: center;
+  padding: 15px;
+  font-size: 1.1rem;
+  background-color: var(--green); /* Destaque positivo */
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-next-lesson:hover {
+  opacity: 0.9;
+}
+
+.btn-back-outline {
+  background: transparent;
+  border: 2px solid var(--blue);
+  color: var(--blue);
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-back-outline:hover {
+  background-color: var(--blue);
+  color: var(--white);
+}
+
+.btn-delete-red {
+  background-color: var(--red);
+  color: var(--white);
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.btn-delete-red:hover {
+  background-color: #b94a4a; /* Um tom mais escuro de vermelho */
+}
+
+.msg-success {
+  text-align: center;
+  padding: 20px;
+  background-color: #e6fffa;
+  border-radius: 8px;
+  color: #047857;
+  border: 1px solid #047857;
+}
+
 /*Sobre===================================================================================================*/
 .references {
   display: grid;

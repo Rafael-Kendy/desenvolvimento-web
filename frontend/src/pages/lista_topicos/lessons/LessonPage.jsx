@@ -1,119 +1,94 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios"; 
+import api from "../../../components/api"; 
 
 import Header from "../../../components/header";
 import Footer from "../../../components/footer";
-import webs from "../../../components/assets/img/internet.png"; // pode ser dinamicamente mudado
-import zaupa from "../../../components/assets/img/zaupa.png"; // pode ser dinamicamente mudado
 
-// Várias lógicas são reutilizadas de .jsx que vêm antes no flow do site. Não recomentei a mesma coisa em todos.
+// imgs locais
+import internetImg from "../../../components/assets/img/internet.png";
+import pcImg from "../../../components/assets/img/computer-desktop.png";
+import zapImg from "../../../components/assets/img/phone-call.png";
+import zaupaImg from "../../../components/assets/img/zaupa.png"; 
+
+// mapa de imgs
+const lessonImageMap = {
+    "internet.png": internetImg,
+    "computer-desktop.png": pcImg,
+    "phone-call.png": zapImg,
+    "zaupa.png": zaupaImg,
+};
+
 export default function LessonPage() {
-    // pega o ID da lição a partir da URL
     const { lessonId } = useParams();
     const navigate = useNavigate();
 
-    // estados para guardar os dados, carregamento e erro (tudo igual ao resto dos .jsx)
     const [lessonContent, setLessonContent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const handleDeleteLesson = async () => {//DELETE lesson
-        // confirma
-        if (!window.confirm("Tem certeza que deseja deletar esta lição? Esta ação é irreversível.")) {
-            return;
-        }
+    // imagem hibrida igual coursepage
+    const getHeaderImage = (imgString) => {
+        if (!imgString) return internetImg;
+        if (imgString.startsWith("http")) return imgString;
+        return lessonImageMap[imgString] || internetImg;
+    };
 
-        const token = localStorage.getItem("token");
-        if (!token) {// se nao tem o token...
-            alert("Você precisa estar logado como admin para fazer isto.");
-            return;
-        }
-
-        try {
-            // chama DELETE com axios
-            await axios.delete(
-                `http://localhost:8000/licoes/${lessonId}`, // Usa o lessonId da página atual
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}` // Envia o token
-                    }
-                }
-            );
-
-            // se funcionar
-            alert("Lição deletada com sucesso.");
-            
-            // navega o usuário de volta uma página no index
-            navigate(-1); 
-
-        } catch (err) {
-            // se der falha:
-            if (err.response && err.response.status === 403) {
-                alert("Acesso negado. Apenas administradores podem deletar lições.");
-            } else {
-                alert("Erro ao deletar a lição.");
-            }
-            console.error(err);
-        }
-    };//funcao DELETE
-
-    // useEffect para buscar os dados da API quando a pag carrega
     useEffect(() => {
-        const fetchLessonContent = async () => {
-            setLoading(true); 
-            setError(null); // limpa erros anteriores!
-
+        const fetchLesson = async () => {
             try {
+                // força o scroll pro inicio
+                window.scrollTo(0, 0);
+
                 const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("Você precisa estar logado para ver esta lição.");
-                    setLoading(false);
-                    setTimeout(() => navigate("/login"), 5000);
-                    return;
-                }
+                const headers = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
-                // endpoint GET /licoes/{id}
-                const response = await axios.get(
-                    `http://localhost:8000/licoes/${lessonId}`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` }
-                    }
-                );
-
-                // se sucesso, guarda os dados
+                const response = await api.get(`/licoes/${lessonId}`, headers);
                 setLessonContent(response.data);
-                document.title = `ChaveDigital - ${response.data.title}`; // att titulo da pag
+                document.title = `ChaveDigital - ${response.data.title}`;
 
-            } catch (err) {// o de sempre né
-                if (err.response) {
-                    if (err.response.status === 401 || err.response.status === 403) {
-                        setError("Sua sessão expirou ou você não tem permissão para acessar essa lição.");
-                        setTimeout(() => navigate("/login"), 5000);
-                    } else if (err.response.status === 404) {
-                        setError("Lição não encontrada.");
-                    } else {
-                        setError(`Erro ao carregar a lição: ${err.response.data.detail || 'Erro desconhecido'}`);
-                    }
+            } catch (err) {
+                console.error(err);
+                if (err.response?.status === 403) {
+                    setError("Esta lição é exclusiva para assinantes Premium.");
+                } else if (err.response?.status === 404) {
+                    setError("Lição não encontrada.");
                 } else {
-                    setError("Erro de rede ao carregar a lição. Verifique sua conexão.");
+                    setError("Erro ao carregar a lição.");
                 }
             } finally {
-                setLoading(false); // carrega com sucesso ou n
+                setLoading(false);
             }
         };
 
-        fetchLessonContent();
+        fetchLesson();
+    }, [lessonId]); // recarrega se mudar ID
 
-    }, [lessonId, navigate]); // roda o efeito se o ID da lição mudar
+    const handleDeleteLesson = async () => {
+        if (!window.confirm("ATENÇÃO: Tem certeza que deseja deletar esta lição?")) return;
 
-    // parte da renderização condicional
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+            await api.delete(`/licoes/${lessonId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert("Lição deletada!");
+            navigate("/topicos");
+        } catch (err) {
+            alert("Erro ao deletar (Permissão negada).");
+        }
+    };
+
+    // renderização condicional
+
     if (loading) {
         return (
-            <div>
+            <div className="page-container">
                 <Header activePage="topicos" />
-                <main className="center general-width hero">
-                    <h1>Carregando lição...</h1>
+                <main className="center general-width hero" style={{minHeight: '60vh'}}>
+                    <h2 className="loading-text">Carregando conteúdo...</h2>
                 </main>
                 <Footer activePage="topicos" />
             </div>
@@ -122,105 +97,150 @@ export default function LessonPage() {
 
     if (error) {
         return (
-            <div>
+            <div className="page-container">
                 <Header activePage="topicos" />
-                <main className="center general-width hero">
-                    <h1 className="gold">Erro</h1>
-                    <p className="subtitle dark-gray">{error}</p>
-                    {/* Botão opcional para voltar */}
-                    <button onClick={() => navigate(-1)} style={{marginTop: '20px'}}>Voltar</button>
+                <main className="center general-width hero" style={{minHeight: '60vh', textAlign: 'center'}}>
+                    <h1 className="gold">Ops!</h1>
+                    <p className="subtitle dark-gray" style={{marginBottom: '20px'}}>{error}</p>
+                    <button onClick={() => navigate('/topicos')} className="btn-padrao">
+                        Voltar aos Tópicos
+                    </button>
                 </main>
                 <Footer activePage="topicos" />
             </div>
         );
     }
 
-    if (!lessonContent) {
-        return null; 
-    }
+    if (!lessonContent) return null;
+
+    // tem próxima lição? -> o backend manda uma lista, pegamos a primeira
+    const nextLesson = lessonContent.next_lessons && lessonContent.next_lessons.length > 0 
+        ? lessonContent.next_lessons[0] 
+        : null;
 
     return (
-        <div>
+        <div className="page-container">
             <Header activePage="topicos" />
-
-            <main className="general-width lesson-layout">
-                {/* coluna esquerda - conteúdo tenta ser dinâmico */}
-                <section className="lesson-content">
-                    <div className="lesson-header">
-                        <img
-                            src={lessonContent.header_image_url || webs} // usa a URL da API, ou a imagem estática se precisar
-                            alt={`Ícone da lição ${lessonContent.title}`}
-                         />
-                        <h1 className="gold">{lessonContent.title}</h1> {/* título da API */}
+            
+            <main className="center">
+                
+                {/* header da lição */}
+                <section className="general-width hero-lesson">
+                    <figure className="lesson-icon">
+                        <img 
+                            src={getHeaderImage(lessonContent.header_image_url)} 
+                            alt="Ícone do Tópico"
+                            style={{ objectFit: 'contain', maxHeight: '150px' }} // ajusta a imagem dentro do espaço
+                        />
+                    </figure>
+                    <div className="lesson-text">
+                        <h1 className="gold">{lessonContent.title}</h1>
+                        <p className="subtitle">Módulo de Aprendizado</p>
                     </div>
-
-                    {/* mapeia os steps da API */}
-                    {lessonContent.steps.map((step, index) => (
-                        <div className="lesson-step" key={index}>
-                            {/* todo: usar uma imagem dinâmica vinda da API? De novo?*/}
-                            <img src={zaupa} alt={`Passo ${index + 1}`} />
-                            <p>{step.text}</p> {/* texto do step, da API */}
-                        </div>
-                    ))}
                 </section>
 
-                {/* coluna direita - vídeo e próximos (todo: deixar os próximos dinâmicos) */}
-                <aside className="lesson-sidebar">
-                    {/* renderiza o vídeo só se a API enviar uma URL */}
-                    {lessonContent.video_url && (
-                        <div className="lesson-video">
-                            <h2>Vídeo da lição</h2>
-                            {/* TODO: O URL do vídeo precisa ser ajustado ou servido pelo backend... */}
-                            <video controls width="100%">
-                                <source src={lessonContent.video_url} type="video/mp4" />
-                                Seu navegador não suporta vídeo.
-                            </video>
-                        </div>
-                    )}
-
-                    <div className="lesson-next">
-                        <h2>Próximos tópicos</h2>
-                        {/* verificamos se lessonContent.next_lessons existe E se tem pelo menos 1 item
-                          o 'lessonContent' é o estado que já busco em useEffect*/}
-                        {lessonContent.next_lessons && lessonContent.next_lessons.length > 0 ? (
-                            // se sim, cria a lista
-                            <ul className="list-disc list-inside">
-                                {/* .map() pra criar um <li> para cada item que o backend enviou*/}
-                                {lessonContent.next_lessons.map((nextLesson) => (
-                                    <li key={nextLesson.id}>
-                                        <a
-                                            href={`/licoes/${nextLesson.id}`}
-                                            onClick={(e) => {
-                                                // previne que a pagina seja completamente regarregada
-                                                e.preventDefault(); 
-                                                // usa o navigate do react-router para ir pra próxima lição
-                                                navigate(`/licoes/${nextLesson.id}`);
-                                            }}
-                                            className="blue"
-                                        >
-                                            {nextLesson.title} {/* título pela API */}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
+                {/* --- CONTEÚDO PRINCIPAL --- */}
+                <section className="general-width" style={{ marginTop: '20px', marginBottom: '50px' }}>
+                    
+                    {/* 1. VÍDEO */}
+                    <div className="lesson-content-box" style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                        {lessonContent.video_url ? (
+                            <div className="video-wrapper" style={{ marginBottom: '30px' }}>
+                                <video 
+                                    controls 
+                                    className="lesson-video" 
+                                    style={{ width: '100%', borderRadius: '8px', maxHeight: '500px', backgroundColor: '#000' }}
+                                >
+                                    <source src={lessonContent.video_url} type="video/mp4" />
+                                    Seu navegador não suporta o player de vídeo.
+                                </video>
+                            </div>
                         ) : (
-                            // se não, fala que concluiu
-                            <p style={{margin: '15px 0'}}>
-                                Você concluiu este módulo!
-                            </p>
+                            <div className="video-placeholder" style={{ padding: '40px', textAlign: 'center', backgroundColor: '#f9f9f9', borderRadius: '8px', marginBottom: '30px' }}>
+                                <p className="dark-gray">Esta lição é baseada em leitura. Siga os passos abaixo.</p>
+                            </div>
                         )}
-                         {/* botão p voltar pra a lista de lições do curso */}
-                         {/* TODO: voltar pro curso, não pra lista de tópicos */}
-                         <button onClick={() => navigate('/topicos')} style={{marginTop: '20px', width: '100%'}}>Voltar para os tópicos</button>
-                         {localStorage.getItem("is_premium") === "true" && (
-                         <button onClick={handleDeleteLesson} 
-                             style={{marginTop: '10px', width: '100%', backgroundColor: 'var(--red)', color: 'var(--white)'}}
-                         >
-                             Deletar Lição (Apenas admin)
-                         </button>
-                     )}
+
+                        {/* 2. PASSOS (TEXTO) */}
+                        <div className="steps-container">
+                            <h2 className="blue" style={{ marginBottom: '20px' }}>O que vamos aprender:</h2>
+                            
+                            {lessonContent.steps && lessonContent.steps.length > 0 ? (
+                                <ul className="steps-list" style={{ listStyle: 'none', padding: 0 }}>
+                                    {lessonContent.steps.map((step, index) => (
+                                        <li key={index} className="step-item" style={{ display: 'flex', marginBottom: '15px', alignItems: 'flex-start' }}>
+                                            <span style={{ 
+                                                backgroundColor: 'var(--blue)', 
+                                                color: 'white', 
+                                                width: '30px', 
+                                                height: '30px', 
+                                                borderRadius: '50%', 
+                                                display: 'flex', 
+                                                justifyContent: 'center', 
+                                                alignItems: 'center',
+                                                marginRight: '15px',
+                                                flexShrink: 0,
+                                                fontWeight: 'bold'
+                                            }}>
+                                                {index + 1}
+                                            </span>
+                                            <p style={{ marginTop: '4px', fontSize: '1.1rem', lineHeight: '1.5' }}>
+                                                {step.text}
+                                            </p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>Conteúdo em texto indisponível no momento.</p>
+                            )}
+                        </div>
                     </div>
-                </aside>
+
+                    {/* 3. NAVEGAÇÃO E BOTÕES */}
+                    <div className="navigation-buttons" style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        
+                        {/* Se tiver próxima lição, mostra o botão de avançar */}
+                        {nextLesson ? (
+                            <button 
+                                onClick={() => navigate(`/aula/${nextLesson.id}`)}
+                                className="btn-padrao"
+                                style={{ width: '100%', textAlign: 'center', padding: '15px', fontSize: '1.1rem' }}
+                            >
+                                Próxima Lição: {nextLesson.title} →
+                            </button>
+                        ) : (
+                            <div style={{ textAlign: 'center', padding: '20px', backgroundColor: '#e6fffa', borderRadius: '8px', color: '#047857' }}>
+                                <strong>Parabéns!</strong> Você concluiu todas as lições desta seção.
+                            </div>
+                        )}
+
+                        <button 
+                            onClick={() => navigate('/topicos')} 
+                            style={{ 
+                                background: 'transparent', 
+                                border: '2px solid var(--blue)', 
+                                color: 'var(--blue)', 
+                                padding: '10px', 
+                                borderRadius: '5px', 
+                                cursor: 'pointer',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            Voltar para os Tópicos
+                        </button>
+
+                        {/* Botão Admin */}
+                        {localStorage.getItem("is_premium") === "true" && (
+                            <button 
+                                onClick={handleDeleteLesson} 
+                                style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '10px', borderRadius: '5px', cursor: 'pointer' }}
+                            >
+                                🗑️ Deletar Lição (Admin)
+                            </button>
+                        )}
+                    </div>
+
+                </section>
             </main>
 
             <Footer activePage="topicos" />

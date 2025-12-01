@@ -28,7 +28,7 @@ const router = createBrowserRouter([
   {path:"/perfil", element:<Perfil /> },
   {path:"/configuracoes", element:<Configuracoes /> },
   {path:"/cursos/:id", element:<CoursePage/>}, 
-  {path:"/licoes/:lessonId", element:<LessonPage/>}, 
+  {path:"/aula/:lessonId", element:<LessonPage/>}, 
   {path:"/comunidade", element: <Comunidade /> },
   {path: "/admin/criar-curso", element: <CreateCoursePage /> },
 ]);

@@ -29,15 +29,26 @@ function Login() {//componente, retorna o jsx
     // /login(backend) espera os dados do formulario no formato application/x-www-form-urlencoded e nao JSON
     //o OAuth2PasswordRequestFore exige que o campo email seja enviado como username
     const params = new URLSearchParams();//URLSearch eh pro navegador criar o formato 
-    params.append('username', email); 
+    params.append('username', email.trim());//trim remove espaços em branco no começo e fim
     params.append('password', password);
     
 
     try {
-      const response = await api.post("/token", params);//api.post envia o params pro no backend /token como corpo da requisição, ele é no formato definido acima, preenchido com email e senha
+      const response = await api.post("/token", params, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }, // pra seguranca do admin premium (CRIADO NA PARTE 3)
+      });//api.post envia o params pro no backend /token como corpo da requisição, ele é no formato definido acima, preenchido com email e senha
       //await pausa a função e espera a API responder ao POST no /token, eh procurado o usuário na lista users e usa pwd_context.verify para checar se a senha está correta
       //Se o login estiver correto, ele cria um token e retorna um dicionário {"access_token": access_token, "token_type": "bearer"}
       //o token eh guardado no response pelo login.jsx
+
+      // salva o token de acesso
+      localStorage.setItem("token", response.data.access_token);
+      
+      // salva o status premium (admin)
+      // JS booleano true/false -> string "true"/"false"
+      localStorage.setItem("is_premium", response.data.is_premium);
+
+      console.log("Login salvo:", response.data); // debugar
 
       //se o await deu bom
       console.log("Login com sucesso:", response.data);
