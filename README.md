@@ -69,7 +69,7 @@ Utilizado na página de configurações, `configuracoes.jsx` para editar o perfi
 A hospedagem foi feita usando a plataforma Render (https://render.com/). Plataforma de uso gratuito, porém limitada, após 15 minutos de inatividade o site entra em modo sleep. Devido a essa limitação, os dados do banco de dados são perdidos quando o backend é inativado.
 
 Link para o frontend: https://desenvolvimento-web-frontend.onrender.com
-Link para o backend: https://desenvolvimento-web-ibke.onrender.com
+Link para o backend: https://chave-digital.onrender.com/
 
 
 
