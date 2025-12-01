@@ -15,7 +15,6 @@ import Perfil from './pages/perfil.jsx'
 import Configuracoes from './pages/configuracoes.jsx'
 import Comunidade from './pages/comunidade.jsx'
 import LessonPage from './pages/lista_topicos/lessons/LessonPage.jsx'
-import CreateCoursePage from './pages/Admin/CreateCoursePage.jsx';
 
 const router = createBrowserRouter([
   {path:"/", element:<App/>},
