@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import LabelField from "./label-field";
 import Modal from './modal';
-import api from '../components/api'; // (Verifique se o caminho ../components/api está certo para sua pasta)
-
 function QuestionForm({ onSubmit, initialData }) {
   const [formData, setFormData] = useState({
     name: "",
@@ -40,8 +38,7 @@ function QuestionForm({ onSubmit, initialData }) {
       if(!token)return; //se nao tiver token, nao deve estar logado
 
       try{
-        const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        const res = await fetch(`${baseUrl}/users/me`, {
+        const res = await fetch("http://localhost:8000/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         }); //manda o token pra validar
 
