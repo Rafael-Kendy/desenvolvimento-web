@@ -45,9 +45,10 @@ class Lesson(SQLModel, table=True): # onde ficam os conteúdos
     section: Section = Relationship(back_populates="lessons")
     steps: List["Step"] = Relationship(back_populates="lesson")
     
-    # Relacionamento reverso do progresso
+    # Relacionamento reverso do progresso, para saber quais usuários completaram a lição
     user_progress: List["UserLessonProgress"] = Relationship(back_populates="lesson")
 
+# passo a passo de cada página de lição
 class Step(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     text: str

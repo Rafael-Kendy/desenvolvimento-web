@@ -55,18 +55,18 @@ model = genai.GenerativeModel('models/gemini-2.5-pro')
 async def lifespan(app: FastAPI):
     print("------------------ INICIANDO O LIFESPAN ------------------")
     
-    # 1. Cria as tabelas
+    # cria tables
     SQLModel.metadata.create_all(engine)
     print("--- TABELAS CRIADAS ---")
 
-    # 2. Popula o banco
+    # enche o banco, pra não precisar fazer manualmente
     with Session(engine) as session:
 
         user_check = session.exec(select(User)).first()
         if not user_check:
             print("--- CRIANDO USUÁRIOS DE TESTE ---")
             
-            # Usuário Normal
+            # exemplo de user padrão
             user_normal = User(
                 name="Usuario Normal",
                 email="user1@teste.com",
@@ -76,7 +76,7 @@ async def lifespan(app: FastAPI):
             )
             session.add(user_normal)
 
-            # Usuário Premium (Admin)
+            # exemplo de user premium/admin
             user_admin = User(
                 name="Admin Premium",
                 email="user2@teste.com",
@@ -91,9 +91,9 @@ async def lifespan(app: FastAPI):
         course_check = session.exec(select(Course)).first()
         
         # padrão: 1 dígito se for seção, 2 dígitos se for subseção, 3 dígitos se for lição
-        # provavelmente dá problema de escalabilidade, mas é facilmente resolvível e não necessariamente demonstra nada
-        # então manter assim por simplicidade
-
+        # provavelmente dá problema de escalabilidade, mas é facilmente resolvível por uma lógica mais robusta de nomeação
+        # e não necessariamente demonstra nada
+        # então mantendo assim por simplicidade
         if not course_check:
             print("--------------- BANCO VAZIO DETECTADO, ENCHENDO ------------------")
             
@@ -102,23 +102,24 @@ async def lifespan(app: FastAPI):
             session.add(c1)
             session.flush() # ID do Curso 1
 
-            # subseção 1
+            # curso 1 subseção 1
             s11 = Section(title="Conceitos Básicos", course_id=c1.id)
             session.add(s11)
             session.flush() # gera ID da seção 1
 
-            #lição 1
-            l101 = Lesson(id=101, title="O que é a Internet", section_id=s11.id, video_url="/videos/o-que-e-internet.mp4", header_image_url="https://cdn-icons-png.flaticon.com/128/3322/3322046.png")
+            # curso 1 subseção 1 lição 1
+            l101 = Lesson(id=101, title="O que é a Internet", section_id=s11.id, video_url="https://www.youtube.com/watch?v=AABqPceCwZk", header_image_url="https://cdn-icons-png.flaticon.com/128/3322/3322046.png")
             session.add(l101)
             session.add(Step(text="A internet é uma rede global.", lesson=l101))
             session.add(Step(text="Conecta bilhões de dispositivos.", lesson=l101))
 
-            l102 = Lesson(id=102, title="Navegadores", section_id=s11.id, header_image_url="https://cdn-icons-png.flaticon.com/128/2774/2774523.png")
+            # curso 1 subseção 1 lição 2
+            l102 = Lesson(id=102, title="Navegadores", section_id=s11.id, video_url="https://www.youtube.com/watch?v=AKRJ6wYPryw&t=55s", header_image_url="https://cdn-icons-png.flaticon.com/128/2774/2774523.png")
             session.add(l102)
             session.add(Step(text="Navegadores interpretam HTML.", lesson=l102))
             session.add(Step(text="Eles te deixam navegar por links.", lesson=l102))
 
-            # subseção 2
+            # curso 1 subseção 2 
             s12 = Section(title="Segurança básica", course_id=c1.id)
             session.add(s12)
             session.flush() # gera ID da seção 1
@@ -128,11 +129,13 @@ async def lifespan(app: FastAPI):
             session.add(c2)
             session.flush() # gera ID do curso 2
             
+            #curso 2 subseção 1
             s21 = Section(title="Hardware", course_id=c2.id)
             session.add(s21)
             session.flush() # 
             
             # s2.id existe pelo flush
+            #curso 2 subseção 1 lição 1
             l201 = Lesson(id=201, title="Mouse e Teclado", section_id=s21.id, header_image_url="https://cdn-icons-png.flaticon.com/128/887/887142.png")
             session.add(l201)
             
@@ -185,15 +188,6 @@ app.add_middleware(
 #=====================================================================================================================================================
 #questoes
 
-# questions = [] #guardando as questoes na memoria msm por enquanto, reseta com o server
-# class Question(BaseModel): #estrutura das questoes
-#     id: int
-#     name: str
-#     email: str
-#     title: str
-#     question: str
-#     image_url: str | None=None
-
 #cria a nova duvida, retorna sucesso de der certo
 @app.post("/comunidade")
 async def setQuestion( #acessa os dados do formulario
@@ -220,12 +214,10 @@ async def setQuestion( #acessa os dados do formulario
     return {"message": "Questão adicionada", "question": new_question}
 
 
-
 #pega as duvidas
 @app.get("/comunidade")
 def get_questions(session: Session = Depends(get_session)):
     return session.exec(select(Question)).all()
-
 
 
 #deleta 1 questao, se confirmar o email
@@ -244,7 +236,6 @@ async def delete_question(
     session.delete(q) #qnd acha pelo id e email certo
     session.commit() #confirma no banco
     return {"message": f"Questão {question_id} deletada com sucesso"}
-
 
 
 #edita a questao, segue a msm logica do email do delete
@@ -277,22 +268,11 @@ async def update_question(
     return {"message": "Questão atualizada com sucesso", "question": q}
 
 
-
 #=====================================================================================================================================================
-
-
-
 #users
-#users = []  #guardando na memoria por enquanto
+
 #configura o passlib, diz p ele q quero usar o bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")#configuração pro hashing de senha
-#class User(BaseModel): #estrutura do user sque é salva
-#    id: int
-#    name: str
-#    email: EmailStr #faz validação automatica de email
-#    hashed_password: str
-#    description: str | None = None #p/ descrição no perfil
-#    is_premium: bool = False
 
 #converter usuario do bd para uusario publico
 def user_to_public(user: User) -> "UserPublic":
@@ -674,39 +654,17 @@ async def get_lesson_content(
     if next_lesson_obj:
         next_lessons_list.append({"id": next_lesson_obj.id, "title": next_lesson_obj.title})
 
-    # parte da API externa para criação de cabeçalho das lições
-    
-    header_image = None 
-    # tenta pegar a chave do .env
-    UNSPLASH_API_KEY = os.getenv("UNSPLASH_API_KEY")
+    # API DO UNSPLASH REMOVIDA!
 
-    if UNSPLASH_API_KEY:
-        query = lesson_db.title # usa o titulo da lição p fazer a busca na API
-        try:
-            async with httpx.AsyncClient() as client:
-                headers = {"Authorization": f"Client-ID {UNSPLASH_API_KEY}"}
-                params = {"query": query, "per_page": 1, "orientation": "landscape"}
-                
-                response = await client.get("https://api.unsplash.com/search/photos", headers=headers, params=params)
-                
-                # só processa se deu certo, 200 é OK
-                if response.status_code == 200:
-                    data = response.json()
-                    if data["results"]:
-                        header_image = data["results"][0]["urls"]["regular"]
-        except Exception as e:
-            print(f"Erro ao conectar com Unsplash: {e}")
-            # header_image continua None e o site não quebra
-
-    # agrega no retorno final
+    # agrega no retorno final os valores de conteúdo que tem numa página de lição
     return LessonContentResponse(
-        lesson_id=lesson_db.id,
-        title=lesson_db.title,
-        video_url=lesson_db.video_url,
-        steps=steps_formatted,
+        lesson_id=lesson_db.id, # id da lição, único
+        title=lesson_db.title, # titulo da lição
+        video_url=lesson_db.video_url, # video
+        steps=steps_formatted, # passos da lição formatados
         course_id=lesson_db.section.course_id, # ID do curso via relacionamento
-        next_lessons=next_lessons_list,
-        header_image_url=lesson_db.header_image_url # url do unsplash pro header da lição
+        next_lessons=next_lessons_list, # lista de próximas lições
+        header_image_url=lesson_db.header_image_url # url pro header da lição
     )
 
 #endpoint novo curso POST
@@ -716,7 +674,7 @@ async def create_course(
     current_user: Annotated[User, Depends(get_current_active_user)],
     session: Session = Depends(get_session)
 ):
-    if not current_user.is_premium: # Usando flag premium como admin simples
+    if not current_user.is_premium: # usando flag premium como admin simples
         raise HTTPException(status_code=403, detail="Apenas admins podem criar cursos.")
     
     new_course = Course(title=course_data.title, description=course_data.description, image=course_data.image)
@@ -825,8 +783,7 @@ async def popular_licoes_com_ia( # VERIFICAÇÃO DE USER LOGADO!
         session: Session = Depends(get_session) 
     ):
 
-    # 2. Verificação de Segurança: Só o admin@teste.com pode rodar isso
-    # (Ou use current_user.is_premium se preferir bloquear por status)
+    # current_user.is_premium pra poder gerar conteúdos das lições
     if current_user.is_premium == False:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -835,9 +792,8 @@ async def popular_licoes_com_ia( # VERIFICAÇÃO DE USER LOGADO!
 
     print(f"---------- INICIANDO GERAÇÃO POR IA (Solicitada por: {current_user.email}) -------------")
     
-    # verifica se existe lição
+    # verifica se existe lição na página (caso fosse gerar só pra vazias)
     lessons = session.exec(select(Lesson)).all()
-    print(f"DEBUG: Encontrei {len(lessons)} lições no banco de dados.") #debug
 
     if not lessons: # se a tabela lições n existe
         return {"message": "ERRO: O banco está vazio. Delete .db e inicie de novo."}

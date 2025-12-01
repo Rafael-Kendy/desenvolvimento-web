@@ -27,21 +27,21 @@ export default function LessonPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // 3. FUNÇÃO DE IMAGEM HÍBRIDA
+    // aquela função de imagem híbrida -> pode ser tanto url quanto local
     const getHeaderImage = (imgString) => {
-        if (!imgString) return internetImg;
-        if (imgString.startsWith("http")) return imgString;
-        return lessonImageMap[imgString] || internetImg;
+        if (!imgString) return internetImg;// local
+        if (imgString.startsWith("http")) return imgString; //url - é string e começa com http
+        return lessonImageMap[imgString] || internetImg; // retorna uma das duas
     };
 
     const renderVideo = (url) => {
         if (!url) return null;
 
-        // Verifica se é link do YouTube (comum ou encurtado)
+        // link do youtube, comum ou encurtado
         const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
 
         if (isYouTube) {
-            // Lógica para extrair o ID do vídeo e transformar em link "embed"
+            // extrai ID do vídeo e transforma em embed
             let embedUrl = url;
             if (url.includes("watch?v=")) {
                 const videoId = url.split("watch?v=")[1].split("&")[0];
@@ -79,16 +79,16 @@ export default function LessonPage() {
     useEffect(() => {
         const fetchLesson = async () => {
             try {
-                window.scrollTo(0, 0); // Scroll pro topo ao carregar
+                window.scrollTo(0, 0); // scroll pro topo da página qnd carrega
 
                 const token = localStorage.getItem("token");
-                const headers = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+                const headers = token ? { headers: { Authorization: `Bearer ${token}` } } : {};// se tiver token, manda no header
 
-                const response = await api.get(`/licoes/${lessonId}`, headers);
+                const response = await api.get(`/licoes/${lessonId}`, headers);// chamada a API
                 setLessonContent(response.data);
                 document.title = `ChaveDigital - ${response.data.title}`;
 
-            } catch (err) {
+            } catch (err) {// erros tratados
                 console.error(err);
                 if (err.response?.status === 403) {
                     setError("Esta lição é exclusiva para assinantes Premium.");
@@ -116,11 +116,11 @@ export default function LessonPage() {
         }
 
         try {
-            await api.delete(`/licoes/${lessonId}`, { // chamada a API, novamente
-                headers: { Authorization: `Bearer ${token}` }
+            await api.delete(`/licoes/${lessonId}`, { // chamada a API, novamente. Deleta aa lição com o id correspondente
+                headers: { Authorization: `Bearer ${token}` }// manda token no header
             });
             alert("Lição deletada!");
-            navigate("/topicos");
+            navigate("/topicos");// volta pra pag de topicos
         } catch (err) { // possiveis exceções
             alert("Erro ao deletar (Permissão negada).");
             if (err.response && err.response.status === 403) {
