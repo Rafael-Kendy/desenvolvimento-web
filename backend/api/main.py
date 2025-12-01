@@ -33,6 +33,9 @@ from .model import User, Question, Course, Section, Lesson, Step, UserLessonProg
 # user1@teste.com / 123 (normal)
 # user2@teste.com / 123 (premium/admin)
 
+# OS DADOS AQUI DENTRO NÃO ESTÃO ESTÁTICOS! só rodam uma vez qnd o servidor inicia pra poupar tempo de teste.
+# se o banco já tiver dados, não faz nada.
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("------------------ INICIANDO O LIFESPAN ------------------")
@@ -67,11 +70,15 @@ async def lifespan(app: FastAPI):
                 is_premium=True
             )
             session.add(user_admin)
-            session.commit() # Salva os usuários
+            session.commit() # salva os usuários
             print("----- USUÁRIOS DE TESTE CRIADOS --------")
 
         course_check = session.exec(select(Course)).first()
         
+        # padrão: 1 dígito se for seção, 2 dígitos se for subseção, 3 dígitos se for lição
+        # provavelmente dá problema de escalabilidade, mas é facilmente resolvível e não necessariamente demonstra nada
+        # então manter assim por simplicidade
+
         if not course_check:
             print("--------------- BANCO VAZIO DETECTADO, ENCHENDO ------------------")
             
@@ -80,41 +87,60 @@ async def lifespan(app: FastAPI):
             session.add(c1)
             session.flush() # ID do Curso 1
 
-            s1 = Section(title="Conceitos Básicos", course_id=c1.id)
-            session.add(s1)
+            # subseção 1
+            s11 = Section(title="Conceitos Básicos", course_id=c1.id)
+            session.add(s11)
             session.flush() # gera ID da seção 1
 
-            l101 = Lesson(id=101, title="O que é a Internet", section_id=s1.id, video_url="/videos/o-que-e-internet.mp4", header_image_url="")
+            #lição 1
+            l101 = Lesson(id=101, title="O que é a Internet", section_id=s11.id, video_url="/videos/o-que-e-internet.mp4", header_image_url="https://cdn-icons-png.flaticon.com/128/3322/3322046.png")
             session.add(l101)
             session.add(Step(text="A internet é uma rede global.", lesson=l101))
             session.add(Step(text="Conecta bilhões de dispositivos.", lesson=l101))
 
-            l102 = Lesson(id=102, title="Navegadores", section_id=s1.id, header_image_url="")
+            l102 = Lesson(id=102, title="Navegadores", section_id=s11.id, header_image_url="https://cdn-icons-png.flaticon.com/128/2774/2774523.png")
             session.add(l102)
             session.add(Step(text="Navegadores interpretam HTML.", lesson=l102))
+            session.add(Step(text="Eles te deixam navegar por links.", lesson=l102))
+
+            # subseção 2
+            s12 = Section(title="Segurança básica", course_id=c1.id)
+            session.add(s12)
+            session.flush() # gera ID da seção 1
 
             # curso 2
             c2 = Course(title="Computadores", description="Hardware e Software.", image="computer-desktop.png")
             session.add(c2)
             session.flush() # gera ID do curso 2
             
-            s2 = Section(title="Hardware", course_id=c2.id)
-            session.add(s2)
+            s21 = Section(title="Hardware", course_id=c2.id)
+            session.add(s21)
             session.flush() # 
             
             # s2.id existe pelo flush
-            session.add(Lesson(id=201, title="Mouse e Teclado", section_id=s2.id))
+            l201 = Lesson(id=201, title="Mouse e Teclado", section_id=s21.id, header_image_url="https://cdn-icons-png.flaticon.com/128/887/887142.png")
+            session.add(l201)
+            session.add(Step(text="passo 1", lesson=l201))
+            session.add(Step(text="passo 2", lesson=l201))
+            
+            l202 = Lesson(id=202, title="Pen-drives e memória", section_id=s21.id, video_url="https://www.youtube.com/watch?v=x2btfv_IyUE", header_image_url="https://cdn-icons-png.flaticon.com/128/479/479063.png")
+            session.add(l202)
+            session.add(Step(text="passo 1", lesson=l202))
+            session.add(Step(text="passo 2", lesson=l202))
 
             # curso 3 premium
             c3 = Course(title="Chamadas (PREMIUM)", description="Aprenda a fazer chamadas.", image="phone-call.png")
             session.add(c3)
             session.flush() # ID Curso 3
             
-            s3 = Section(title="Apps", course_id=c3.id)
-            session.add(s3)
-            session.flush() # 
+            s31 = Section(title="Aplicativos", course_id=c3.id)
+            session.add(s31)
+            session.flush() # id seção  do 3
             
-            session.add(Lesson(id=301, title="Videochamada", section_id=s3.id))
+            l301 = Lesson(id=301, title="Mensagens", section_id=s31.id, video_url="https://www.youtube.com/watch?v=5FaEtvA_11A", header_image_url="https://cdn-icons-png.flaticon.com/128/4423/4423697.png")
+            session.add(l301)
+            session.add(Step(text="passo 1", lesson=l301))
+            session.add(Step(text="passo 2", lesson=l301))
 
             session.commit()
             print("----------- DADOS INSERIDOS COM SUCESSO -------------")
@@ -314,7 +340,7 @@ class LessonContentResponse(BaseModel):
     next_lessons: List[Dict[str, Any]] = []
     header_image_url: Optional[str] = None
 
-# 1. Schema da Lição (simples)
+# scheme lição
 class LessonRead(BaseModel):
     id: int
     title: str
@@ -322,7 +348,7 @@ class LessonRead(BaseModel):
     class Config:
         from_attributes = True # ajuste pra funcionar com o SQLModel, fala que os dados vem de ORM
 
-# 2. Schema da Seção (com lista de lições dentro)
+# scheme seção
 class SectionRead(BaseModel):
     id: int
     title: str
@@ -330,7 +356,7 @@ class SectionRead(BaseModel):
     class Config:
         from_attributes = True
 
-# 3. Schema do Curso (com lista de seções dentro)
+# scheme curso 
 class CourseReadWithDetails(BaseModel):
     id: int
     title: str
@@ -666,7 +692,7 @@ async def get_lesson_content(
         steps=steps_formatted,
         course_id=lesson_db.section.course_id, # ID do curso via relacionamento
         next_lessons=next_lessons_list,
-        header_image_url=header_image # url do unsplash pro header da lição
+        header_image_url=lesson_db.header_image_url # url do unsplash pro header da lição
     )
 
 #endpoint novo curso POST

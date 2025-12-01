@@ -5,13 +5,13 @@ import api from "../../../components/api";
 import Header from "../../../components/header";
 import Footer from "../../../components/footer";
 
-// imgs locais
+// 1. IMAGENS LOCAIS
 import internetImg from "../../../components/assets/img/internet.png";
 import pcImg from "../../../components/assets/img/computer-desktop.png";
 import zapImg from "../../../components/assets/img/phone-call.png";
 import zaupaImg from "../../../components/assets/img/zaupa.png"; 
 
-// mapa de imgs
+// 2. MAPA DE IMAGENS
 const lessonImageMap = {
     "internet.png": internetImg,
     "computer-desktop.png": pcImg,
@@ -27,18 +27,59 @@ export default function LessonPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // imagem hibrida igual coursepage
+    // 3. FUNÇÃO DE IMAGEM HÍBRIDA
     const getHeaderImage = (imgString) => {
         if (!imgString) return internetImg;
         if (imgString.startsWith("http")) return imgString;
         return lessonImageMap[imgString] || internetImg;
     };
 
+    const renderVideo = (url) => {
+        if (!url) return null;
+
+        // Verifica se é link do YouTube (comum ou encurtado)
+        const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+
+        if (isYouTube) {
+            // Lógica para extrair o ID do vídeo e transformar em link "embed"
+            let embedUrl = url;
+            if (url.includes("watch?v=")) {
+                const videoId = url.split("watch?v=")[1].split("&")[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            } else if (url.includes("youtu.be/")) {
+                const videoId = url.split("youtu.be/")[1].split("?")[0];
+                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            }
+
+            return (
+                <div className="video-wrapper" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden' }}>
+                    <iframe 
+                        src={embedUrl}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                    ></iframe>
+                </div>
+            );
+        }
+
+        // se n for youtube, vai de mp4 mesmo
+        return (
+            <div className="video-wrapper">
+                <video controls className="lesson-video">
+                    <source src={url} type="video/mp4" />
+                    Seu navegador não suporta o player de vídeo.
+                </video>
+            </div>
+        );
+    };
+
     useEffect(() => {
         const fetchLesson = async () => {
             try {
-                // força o scroll pro inicio
-                window.scrollTo(0, 0);
+                window.scrollTo(0, 0); // Scroll pro topo ao carregar
 
                 const token = localStorage.getItem("token");
                 const headers = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
@@ -62,7 +103,7 @@ export default function LessonPage() {
         };
 
         fetchLesson();
-    }, [lessonId]); // recarrega se mudar ID
+    }, [lessonId]); 
 
     const handleDeleteLesson = async () => {
         if (!window.confirm("ATENÇÃO: Tem certeza que deseja deletar esta lição?")) return;
@@ -81,14 +122,14 @@ export default function LessonPage() {
         }
     };
 
-    // renderização condicional
+    // --- RENDERIZAÇÃO ---
 
     if (loading) {
         return (
-            <div className="page-container">
+            <div>
                 <Header activePage="topicos" />
-                <main className="center general-width hero" style={{minHeight: '60vh'}}>
-                    <h2 className="loading-text">Carregando conteúdo...</h2>
+                <main className="center general-width state-container">
+                    <h2 className="blue">Carregando conteúdo...</h2>
                 </main>
                 <Footer activePage="topicos" />
             </div>
@@ -97,11 +138,11 @@ export default function LessonPage() {
 
     if (error) {
         return (
-            <div className="page-container">
+            <div>
                 <Header activePage="topicos" />
-                <main className="center general-width hero" style={{minHeight: '60vh', textAlign: 'center'}}>
+                <main className="center general-width state-container">
                     <h1 className="gold">Ops!</h1>
-                    <p className="subtitle dark-gray" style={{marginBottom: '20px'}}>{error}</p>
+                    <p className="subtitle dark-gray">{error}</p>
                     <button onClick={() => navigate('/topicos')} className="btn-padrao">
                         Voltar aos Tópicos
                     </button>
@@ -113,24 +154,23 @@ export default function LessonPage() {
 
     if (!lessonContent) return null;
 
-    // tem próxima lição? -> o backend manda uma lista, pegamos a primeira
     const nextLesson = lessonContent.next_lessons && lessonContent.next_lessons.length > 0 
         ? lessonContent.next_lessons[0] 
         : null;
 
     return (
-        <div className="page-container">
+        <div>
             <Header activePage="topicos" />
             
             <main className="center">
                 
-                {/* header da lição */}
+                {/* --- CABEÇALHO DA LIÇÃO (HERO) --- */}
                 <section className="general-width hero-lesson">
                     <figure className="lesson-icon">
                         <img 
                             src={getHeaderImage(lessonContent.header_image_url)} 
                             alt="Ícone do Tópico"
-                            style={{ objectFit: 'contain', maxHeight: '150px' }} // ajusta a imagem dentro do espaço
+                            className="lesson-hero-img"
                         />
                     </figure>
                     <div className="lesson-text">
@@ -139,92 +179,62 @@ export default function LessonPage() {
                     </div>
                 </section>
 
-                {/* --- CONTEÚDO PRINCIPAL --- */}
-                <section className="general-width" style={{ marginTop: '20px', marginBottom: '50px' }}>
+                {/* --- CONTEÚDO PRINCIPAL (CARD BRANCO) --- */}
+                <section className="general-width">
                     
-                    {/* 1. VÍDEO */}
-                    <div className="lesson-content-box" style={{ padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+                    <div className="lesson-content-card">
+                        
+                        {/* chamando renderVideo pra rodar se for youtube */}
                         {lessonContent.video_url ? (
-                            <div className="video-wrapper" style={{ marginBottom: '30px' }}>
-                                <video 
-                                    controls 
-                                    className="lesson-video" 
-                                    style={{ width: '100%', borderRadius: '8px', maxHeight: '500px', backgroundColor: '#000' }}
-                                >
-                                    <source src={lessonContent.video_url} type="video/mp4" />
-                                    Seu navegador não suporta o player de vídeo.
-                                </video>
-                            </div>
+                            renderVideo(lessonContent.video_url)
                         ) : (
-                            <div className="video-placeholder" style={{ padding: '40px', textAlign: 'center', backgroundColor: '#f9f9f9', borderRadius: '8px', marginBottom: '30px' }}>
-                                <p className="dark-gray">Esta lição é baseada em leitura. Siga os passos abaixo.</p>
+                            <div className="video-placeholder">
+                                <p>Esta lição é baseada em leitura e não contém vídeo! Siga abaixo.</p>
                             </div>
                         )}
 
-                        {/* 2. PASSOS (TEXTO) */}
+                        {/* steps da lição (em texto) */}
                         <div className="steps-container">
-                            <h2 className="blue" style={{ marginBottom: '20px' }}>O que vamos aprender:</h2>
+                            <h2 className="steps-title">Comece a aprender:</h2>
                             
                             {lessonContent.steps && lessonContent.steps.length > 0 ? (
-                                <ul className="steps-list" style={{ listStyle: 'none', padding: 0 }}>
+                                <ul className="steps-list">
                                     {lessonContent.steps.map((step, index) => (
-                                        <li key={index} className="step-item" style={{ display: 'flex', marginBottom: '15px', alignItems: 'flex-start' }}>
-                                            <span style={{ 
-                                                backgroundColor: 'var(--blue)', 
-                                                color: 'white', 
-                                                width: '30px', 
-                                                height: '30px', 
-                                                borderRadius: '50%', 
-                                                display: 'flex', 
-                                                justifyContent: 'center', 
-                                                alignItems: 'center',
-                                                marginRight: '15px',
-                                                flexShrink: 0,
-                                                fontWeight: 'bold'
-                                            }}>
+                                        <li key={index} className="step-item">
+                                            <span className="step-number">
                                                 {index + 1}
                                             </span>
-                                            <p style={{ marginTop: '4px', fontSize: '1.1rem', lineHeight: '1.5' }}>
+                                            <p className="step-text">
                                                 {step.text}
                                             </p>
                                         </li>
                                     ))}
                                 </ul>
                             ) : (
-                                <p>Conteúdo em texto indisponível no momento.</p>
+                                <p className="dark-gray">Conteúdo em texto indisponível no momento.</p>
                             )}
                         </div>
                     </div>
 
                     {/* 3. NAVEGAÇÃO E BOTÕES */}
-                    <div className="navigation-buttons" style={{ marginTop: '30px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    <div className="lesson-nav-container">
                         
-                        {/* Se tiver próxima lição, mostra o botão de avançar */}
                         {nextLesson ? (
                             <button 
                                 onClick={() => navigate(`/aula/${nextLesson.id}`)}
-                                className="btn-padrao"
-                                style={{ width: '100%', textAlign: 'center', padding: '15px', fontSize: '1.1rem' }}
+                                className="btn-next-lesson"
                             >
                                 Próxima Lição: {nextLesson.title} →
                             </button>
                         ) : (
-                            <div style={{ textAlign: 'center', padding: '20px', backgroundColor: '#e6fffa', borderRadius: '8px', color: '#047857' }}>
+                            <div className="msg-success">
                                 <strong>Parabéns!</strong> Você concluiu todas as lições desta seção.
                             </div>
                         )}
 
                         <button 
                             onClick={() => navigate('/topicos')} 
-                            style={{ 
-                                background: 'transparent', 
-                                border: '2px solid var(--blue)', 
-                                color: 'var(--blue)', 
-                                padding: '10px', 
-                                borderRadius: '5px', 
-                                cursor: 'pointer',
-                                fontWeight: 'bold'
-                            }}
+                            className="btn-back-outline"
                         >
                             Voltar para os Tópicos
                         </button>
@@ -233,7 +243,7 @@ export default function LessonPage() {
                         {localStorage.getItem("is_premium") === "true" && (
                             <button 
                                 onClick={handleDeleteLesson} 
-                                style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '10px', borderRadius: '5px', cursor: 'pointer' }}
+                                className="btn-delete-red"
                             >
                                 🗑️ Deletar Lição (Admin)
                             </button>
